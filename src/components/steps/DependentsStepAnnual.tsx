@@ -95,7 +95,9 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
               checked={hasEligibleChildren}
               onChange={(e) => {
                 setHasEligibleChildren(e.target.checked);
-                if (!e.target.checked) {
+                if (e.target.checked) {
+                  setFormData({ ...formData, childrenEligibilityConfirmed: true });
+                } else {
                   setFormData({ ...formData, children: [], childrenEligibilityConfirmed: false });
                 }
               }}

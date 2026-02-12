@@ -441,4 +441,63 @@ describe('AnnualTaxWizard', () => {
     const nextButton = screen.getByLabelText(/go to next step/i);
     expect(nextButton).not.toBeDisabled();
   });
+
+  it('enables Next button on Dependents step when eligibility checkbox is clicked', () => {
+    // Start at step 4 (Dependents) with no children
+    mockSessionStorage.getItem.mockImplementation((key: string) => {
+      if (key === 'thai_tax_annual_wizard_step') return '3';
+      if (key === 'thai_tax_annual_wizard_data') {
+        return JSON.stringify({
+          employmentType: 'salaried',
+          annualIncome: 500000,
+          maritalStatus: 'single',
+          spouseHasNoIncome: false,
+          children: [],
+          childrenEligibilityConfirmed: false,
+          numberOfParents: 0,
+          hasLifeInsurance: false,
+          lifeInsurance: 0,
+          hasHealthInsurance: false,
+          healthInsurance: 0,
+          hasPensionFund: false,
+          pensionFund: 0,
+          hasProvidentFund: false,
+          providentFund: 0,
+          hasRMF: false,
+          rmf: 0,
+          hasSSF: false,
+          ssf: 0,
+          hasDonations: false,
+          donations: 0,
+          taxWithheld: 0,
+        });
+      }
+      return null;
+    });
+
+    renderWithRouter(<AnnualTaxWizard />);
+
+    // Verify we're on the Dependents step
+    expect(screen.getByText('Dependents & Allowances')).toBeInTheDocument();
+
+    // Next button should be enabled initially (no children = valid)
+    let nextButton = screen.getByLabelText(/go to next step/i);
+    expect(nextButton).not.toBeDisabled();
+
+    // Check the eligibility checkbox to confirm having eligible children
+    const childrenCheckbox = screen.getByLabelText(/i have children who meet these criteria/i);
+    fireEvent.click(childrenCheckbox);
+
+    // Next button should still be enabled because childrenEligibilityConfirmed is now true
+    nextButton = screen.getByLabelText(/go to next step/i);
+    expect(nextButton).not.toBeDisabled();
+
+    // Add a child
+    const addButton = screen.getByLabelText(/add child/i);
+    fireEvent.click(addButton);
+
+    // Next button should still be enabled because eligibility was confirmed
+    nextButton = screen.getByLabelText(/go to next step/i);
+    expect(nextButton).not.toBeDisabled();
+  });
 });

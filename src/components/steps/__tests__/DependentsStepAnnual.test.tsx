@@ -97,6 +97,58 @@ describe('DependentsStepAnnual', () => {
     expect(setFormData).toHaveBeenCalled();
   });
 
+  it('sets childrenEligibilityConfirmed to true when eligibility checkbox is checked', () => {
+    const formData = createBaseFormData();
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <DependentsStepAnnual
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    // Check the eligibility checkbox
+    const childrenCheckbox = screen.getByLabelText(/i have children who meet these criteria/i);
+    fireEvent.click(childrenCheckbox);
+
+    // Should set childrenEligibilityConfirmed to true
+    expect(setFormData).toHaveBeenCalledWith({
+      ...formData,
+      childrenEligibilityConfirmed: true,
+    });
+  });
+
+  it('clears children and sets childrenEligibilityConfirmed to false when checkbox is unchecked', () => {
+    const formData = createBaseFormData({
+      children: [{ birthYear: 2015 }],
+      childrenEligibilityConfirmed: true,
+    });
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <DependentsStepAnnual
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    // Uncheck the eligibility checkbox
+    const childrenCheckbox = screen.getByLabelText(/i have children who meet these criteria/i);
+    fireEvent.click(childrenCheckbox);
+
+    // Should clear children and set childrenEligibilityConfirmed to false
+    expect(setFormData).toHaveBeenCalledWith({
+      ...formData,
+      children: [],
+      childrenEligibilityConfirmed: false,
+    });
+  });
+
   it('updates parent count when + button is clicked', () => {
     const formData = createBaseFormData({ numberOfParents: 0 });
     const setFormData = vi.fn();
