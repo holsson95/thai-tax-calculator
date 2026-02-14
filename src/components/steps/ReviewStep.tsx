@@ -229,7 +229,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
       </div>
 
       <button
-        onClick={nextStep}
+        onClick={() => nextStep()}
         className="w-full mt-8 py-4 bg-green-500 text-white rounded-lg font-semibold text-lg hover:bg-green-600 transition-colors"
       >
         Calculate My Tax
