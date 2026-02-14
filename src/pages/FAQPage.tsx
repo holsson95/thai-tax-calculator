@@ -102,7 +102,7 @@ const FAQPage: React.FC = () => {
             <div className="sticky top-24 space-y-6">
               {/* Ad Slot */}
               <div className="flex justify-center">
-                <AdSlot size="rectangle" />
+                <AdSlot size="rectangle" adSlot="3447757856" />
               </div>
 
               {/* Calculator CTA */}

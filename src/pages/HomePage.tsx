@@ -72,10 +72,10 @@ const HomePage: React.FC = () => {
       {/* Ad Slot */}
       <div className="flex justify-center mb-8 px-4">
         <div className="hidden md:block">
-          <AdSlot size="leaderboard" />
+          <AdSlot size="leaderboard" adSlot="5959313072" />
         </div>
         <div className="md:hidden">
-          <AdSlot size="mobile-banner" />
+          <AdSlot size="mobile-banner" adSlot="6916229573" />
         </div>
       </div>
 

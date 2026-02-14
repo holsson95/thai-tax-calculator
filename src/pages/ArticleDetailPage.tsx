@@ -61,7 +61,7 @@ const ArticleDetailPage: React.FC = () => {
 
         {/* Mid-article Ad */}
         <div className="flex justify-center my-8">
-          <AdSlot size="rectangle" />
+          <AdSlot size="rectangle" adSlot="3447757856" />
         </div>
 
         {/* Article Content - Second Half */}

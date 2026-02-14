@@ -1,35 +1,69 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+
+const ADSENSE_PUBLISHER_ID = 'ca-pub-4471962643516217';
+
+// Declare adsbygoogle for TypeScript
+declare global {
+  interface Window {
+    adsbygoogle: unknown[];
+  }
+}
 
 type AdSize = 'leaderboard' | 'rectangle' | 'mobile-banner';
 
 interface AdSlotProps {
   size: AdSize;
+  adSlot: string; // Your AdSense ad unit slot ID
   className?: string;
 }
 
-const sizeConfig: Record<AdSize, { width: string; height: string; label: string }> = {
-  'leaderboard': { width: '728px', height: '90px', label: '728x90' },
-  'rectangle': { width: '300px', height: '250px', label: '300x250' },
-  'mobile-banner': { width: '320px', height: '100px', label: '320x100' },
+const sizeConfig: Record<AdSize, { width: number; height: number }> = {
+  'leaderboard': { width: 728, height: 90 },
+  'rectangle': { width: 300, height: 250 },
+  'mobile-banner': { width: 320, height: 100 },
 };
 
-const AdSlot: React.FC<AdSlotProps> = ({ size, className = '' }) => {
+const AdSlot: React.FC<AdSlotProps> = ({ size, adSlot, className = '' }) => {
+  const adRef = useRef<HTMLModElement>(null);
+  const isAdLoaded = useRef(false);
   const config = sizeConfig[size];
+
+  useEffect(() => {
+    // Only load ad once per component instance
+    if (isAdLoaded.current) return;
+
+    try {
+      if (adRef.current && window.adsbygoogle) {
+        window.adsbygoogle.push({});
+        isAdLoaded.current = true;
+      }
+    } catch (error) {
+      console.error('AdSense error:', error);
+    }
+  }, []);
 
   return (
     <div
-      className={`flex items-center justify-center bg-gray-100 border border-dashed border-gray-300 rounded ${className}`}
+      className={`flex items-center justify-center ${className}`}
       style={{
         maxWidth: config.width,
-        height: config.height,
+        minHeight: config.height,
         width: '100%'
       }}
       aria-label="Advertisement"
       role="complementary"
     >
-      <span className="text-gray-400 text-sm">
-        Ad Space ({config.label})
-      </span>
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={{
+          display: 'block',
+          width: config.width,
+          height: config.height,
+        }}
+        data-ad-client={ADSENSE_PUBLISHER_ID}
+        data-ad-slot={adSlot}
+      />
     </div>
   );
 };

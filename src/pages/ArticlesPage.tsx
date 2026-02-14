@@ -33,10 +33,10 @@ const ArticlesPage: React.FC = () => {
         {secondBatch.length > 0 && (
           <div className="flex justify-center mb-8">
             <div className="hidden md:block">
-              <AdSlot size="leaderboard" />
+              <AdSlot size="leaderboard" adSlot="5959313072" />
             </div>
             <div className="md:hidden">
-              <AdSlot size="rectangle" />
+              <AdSlot size="rectangle" adSlot="3447757856" />
             </div>
           </div>
         )}
