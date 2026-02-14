@@ -5,6 +5,7 @@ interface MaritalStatusStepProps {
   formData: any;
   setFormData: (data: any) => void;
   nextStep: () => void;
+  showValidationErrors?: boolean;
 }
 
 const MaritalStatusStep: React.FC<MaritalStatusStepProps> = ({ formData, setFormData, nextStep }) => {
@@ -72,7 +73,7 @@ const MaritalStatusStep: React.FC<MaritalStatusStepProps> = ({ formData, setForm
 
       {/* Spouse Income Question - Only shown when married is selected */}
       {showSpouseQuestion && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-start gap-3 mb-4">
             <div className="flex-shrink-0 mt-0.5">
               <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
@@ -84,7 +85,7 @@ const MaritalStatusStep: React.FC<MaritalStatusStepProps> = ({ formData, setForm
             </p>
           </div>
 
-          <label className="flex items-center gap-3 cursor-pointer mb-4">
+          <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={formData.spouseHasNoIncome}
@@ -93,15 +94,9 @@ const MaritalStatusStep: React.FC<MaritalStatusStepProps> = ({ formData, setForm
             />
             <span className="text-gray-800">My spouse has no income</span>
           </label>
-
-          <button
-            onClick={nextStep}
-            className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600"
-          >
-            Continue
-          </button>
         </div>
       )}
+
     </div>
   );
 };

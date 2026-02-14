@@ -36,9 +36,11 @@ function getInitialFormData(): MonthlyFormData {
     socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,
+    parentsEligibilityConfirmed: false,
     hasLifeInsurance: false,
     lifeInsurance: 0,
     hasHealthInsurance: false,
@@ -59,14 +61,66 @@ function getInitialFormData(): MonthlyFormData {
 const MonthlyWithholding: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [formData, setFormData] = useState<MonthlyFormData>(getInitialFormData);
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
-  const handleNextStep = () => {
+  // Auto-advance function for card-selection steps (no validation needed)
+  const advanceStep = () => {
     setCurrentStep(currentStep + 1);
+  };
+
+  // Validated next step for form input steps
+  const handleNextStep = () => {
+    if (isStepValid()) {
+      setShowValidationErrors(false);
+      setCurrentStep(currentStep + 1);
+    } else {
+      setShowValidationErrors(true);
+    }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 0) {
+      setShowValidationErrors(false);
       setCurrentStep(currentStep - 1);
+    }
+  };
+
+  // Validate current step to enable/disable Next button
+  const isStepValid = (): boolean => {
+    const stepId = steps[currentStep]?.id;
+    switch (stepId) {
+      case 'estimate-type':
+        return formData.estimateType !== '';
+      case 'income-type':
+        return formData.incomeType !== '';
+      case 'monthly-income':
+        return formData.monthlySalary > 0;
+      case 'variable-income':
+        if (formData.variableIncome?.length === 12) {
+          const total = formData.variableIncome.reduce((sum, entry) =>
+            sum + entry.salary + entry.bonus + entry.housingAllowance + entry.otherIncome, 0);
+          return total > 0;
+        }
+        return false;
+      case 'marital-status':
+        return formData.maritalStatus !== '';
+      case 'dependents':
+        const childrenValid = !formData.childrenEligibilityConfirmed || formData.children.length > 0;
+        const parentsValid = !formData.parentsEligibilityConfirmed || formData.numberOfParents > 0;
+        return childrenValid && parentsValid;
+      case 'deductions':
+        const deductionChecks = [
+          { has: formData.hasLifeInsurance, amount: formData.lifeInsurance },
+          { has: formData.hasHealthInsurance, amount: formData.healthInsurance },
+          { has: formData.hasPensionFund, amount: formData.pensionFund },
+          { has: formData.hasProvidentFund, amount: formData.providentFund },
+          { has: formData.hasRMF, amount: formData.rmf },
+          { has: formData.hasSSF, amount: formData.ssf },
+          { has: formData.hasDonations, amount: formData.donations },
+        ];
+        return deductionChecks.every(d => !d.has || d.amount > 0);
+      default:
+        return true;
     }
   };
 
@@ -85,18 +139,18 @@ const MonthlyWithholding: React.FC = () => {
   const steps: Step[] = useMemo(() => {
     const stepList: Step[] = [];
 
-    // Step 1: Always show estimate type selection
+    // Step 1: Always show estimate type selection (card selection, auto-advances)
     stepList.push({
       id: 'estimate-type',
       title: 'Estimate Type',
-      component: <EstimateTypeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+      component: <EstimateTypeStep formData={formData} setFormData={setFormData} nextStep={advanceStep} />,
     });
 
-    // Step 2: Income type selection (fixed vs variable)
+    // Step 2: Income type selection (card selection, auto-advances)
     stepList.push({
       id: 'income-type',
       title: 'Income Type',
-      component: <IncomeTypeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+      component: <IncomeTypeStep formData={formData} setFormData={setFormData} nextStep={advanceStep} />,
     });
 
     // Step 3: Income entry (depends on income type)
@@ -104,37 +158,37 @@ const MonthlyWithholding: React.FC = () => {
       stepList.push({
         id: 'variable-income',
         title: 'Monthly Income',
-        component: <VariableIncomeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+        component: <VariableIncomeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} showValidationErrors={showValidationErrors} />,
       });
     } else {
       stepList.push({
         id: 'monthly-income',
         title: 'Assessable Income',
-        component: <MonthlyIncomeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+        component: <MonthlyIncomeStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} showValidationErrors={showValidationErrors} />,
       });
     }
 
     // For detailed estimate, add additional steps
     if (formData.estimateType === 'detailed') {
-      // Marital Status
+      // Marital Status (card selection for single, auto-advances)
       stepList.push({
         id: 'marital-status',
         title: 'Marital Status',
-        component: <MaritalStatusStep formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+        component: <MaritalStatusStep formData={formData} setFormData={setFormData} nextStep={advanceStep} showValidationErrors={showValidationErrors} />,
       });
 
       // Dependents & Allowances
       stepList.push({
         id: 'dependents',
         title: 'Dependents',
-        component: <DependentsStepMonthly formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+        component: <DependentsStepMonthly formData={formData} setFormData={setFormData} nextStep={handleNextStep} showValidationErrors={showValidationErrors} />,
       });
 
       // Deductions
       stepList.push({
         id: 'deductions',
         title: 'Deductions',
-        component: <DeductionsStepMonthly formData={formData} setFormData={setFormData} nextStep={handleNextStep} />,
+        component: <DeductionsStepMonthly formData={formData} setFormData={setFormData} nextStep={handleNextStep} showValidationErrors={showValidationErrors} />,
       });
     }
 
@@ -266,9 +320,16 @@ const MonthlyWithholding: React.FC = () => {
               </svg>
               Previous
             </button>
-            <div>
-              {/* Next button is handled within each step component */}
-            </div>
+            <button
+              onClick={handleNextStep}
+              className="px-6 py-2 rounded-lg transition-colors flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
+              aria-label="Go to next step"
+            >
+              Next
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </button>
           </div>
         )}
       </div>

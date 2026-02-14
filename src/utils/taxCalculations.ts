@@ -34,6 +34,11 @@ export function calculateAllowances(formData: TaxFormData): number {
     total += TAX_CONSTANTS.SPOUSE_ALLOWANCE;
   }
 
+  // Senior allowance (65 years or older)
+  if (formData.isAge65OrOlder) {
+    total += TAX_CONSTANTS.SENIOR_ALLOWANCE;
+  }
+
   // Child allowance (calculated based on birth year)
   total += calculateChildAllowance(formData.children);
 
@@ -66,8 +71,14 @@ export function calculateDeductions(formData: TaxFormData, taxableIncomeBeforeDe
 
     personalAllowance: TAX_CONSTANTS.PERSONAL_ALLOWANCE,
     spouseAllowance: (formData.maritalStatus === 'married' && formData.spouseHasNoIncome) ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0,
+    seniorAllowance: formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0,
     childAllowance: calculateChildAllowance(formData.children),
     parentAllowance: Math.min(formData.numberOfParents, TAX_CONSTANTS.MAX_PARENTS) * TAX_CONSTANTS.PARENT_ALLOWANCE,
+
+    // Social security contribution
+    socialSecurity: formData.includeSocialSecurity
+      ? Math.min(formData.socialSecurityContribution, TAX_CONSTANTS.MAX_SOCIAL_SECURITY)
+      : 0,
 
     // Insurance (capped individually and combined)
     lifeInsurance: formData.hasLifeInsurance
@@ -120,6 +131,7 @@ export function calculateAnnualTax(formData: TaxFormData): TaxCalculationResult 
   // Step 5: Sum up all deductions (excluding standard deduction and allowances)
   const totalDeductions =
     breakdown.standardDeduction +
+    breakdown.socialSecurity +
     breakdown.lifeInsurance +
     breakdown.healthInsurance +
     breakdown.pensionFund +

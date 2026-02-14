@@ -7,8 +7,11 @@ function createBaseFormData(overrides: Partial<TaxFormData> = {}): TaxFormData {
   return {
     employmentType: '',
     annualIncome: 0,
+    includeSocialSecurity: false,
+    socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,

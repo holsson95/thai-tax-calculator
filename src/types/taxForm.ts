@@ -36,6 +36,7 @@ export interface MonthlyFormData {
   // Detailed estimate additional fields
   maritalStatus: 'single' | 'married' | '';
   spouseHasNoIncome: boolean;
+  isAge65OrOlder: boolean;
 
   // Children with detailed birth year tracking (same as annual)
   children: ChildData[];
@@ -43,6 +44,7 @@ export interface MonthlyFormData {
 
   // Parent support allowance
   numberOfParents: number;
+  parentsEligibilityConfirmed: boolean;
 
   // Detailed deductions (checkboxes)
   hasLifeInsurance: boolean;
@@ -73,6 +75,7 @@ export const MONTHLY_TAX_CONSTANTS = {
   MAX_SOCIAL_SECURITY: 10500, // New SSO ceiling for 2026
   PERSONAL_ALLOWANCE: 60000,
   SPOUSE_ALLOWANCE: 60000,
+  SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
   // Child allowance with birth year bonus
   CHILD_ALLOWANCE_BASE: 30000,        // Base allowance per child
   CHILD_ALLOWANCE_BONUS: 30000,       // Additional for 2nd+ child born 2018+
@@ -98,6 +101,7 @@ export interface MonthlyStepProps {
   formData: MonthlyFormData;
   setFormData: (data: MonthlyFormData) => void;
   nextStep: () => void;
+  showValidationErrors?: boolean;
 }
 
 export interface TaxFormData {
@@ -106,15 +110,19 @@ export interface TaxFormData {
 
   // Step 2: Annual Income
   annualIncome: number;
+  includeSocialSecurity: boolean;
+  socialSecurityContribution: number; // Max 9,000 for 2025
 
-  // Step 3: Marital Status + Spouse Income
+  // Step 3: Marital Status + Spouse Income + Senior Status
   maritalStatus: 'single' | 'married' | '';
   spouseHasNoIncome: boolean; // Only relevant if married - determines spouse allowance eligibility
+  isAge65OrOlder: boolean; // Senior citizen allowance (190,000 THB)
 
   // Step 4: Dependents & Allowances
   children: ChildData[];
   childrenEligibilityConfirmed: boolean; // User confirms children meet eligibility criteria
   numberOfParents: number;
+  parentsEligibilityConfirmed: boolean; // User confirms parents meet eligibility criteria
 
   // Step 5: Deductions (conditional with checkboxes)
   hasLifeInsurance: boolean;
@@ -161,8 +169,12 @@ export interface TaxBreakdown {
   // Allowances (always visible)
   personalAllowance: number;
   spouseAllowance: number;
+  seniorAllowance: number;
   childAllowance: number;
   parentAllowance: number;
+
+  // Social security deduction
+  socialSecurity: number;
 
   // Deductions (from checkboxes)
   lifeInsurance: number;
@@ -181,6 +193,7 @@ export interface StepProps {
   formData: TaxFormData;
   setFormData: (data: TaxFormData) => void;
   nextStep: () => void;
+  showValidationErrors?: boolean;
 }
 
 /**
@@ -199,8 +212,10 @@ export const TAX_CONSTANTS = {
   // Standard expense deduction for employment income (50% of income, max 100,000)
   STANDARD_DEDUCTION_RATE: 0.5,
   MAX_STANDARD_DEDUCTION: 100000,
+  MAX_SOCIAL_SECURITY: 9000, // SSO ceiling for 2025
   PERSONAL_ALLOWANCE: 60000,
   SPOUSE_ALLOWANCE: 60000,
+  SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
   CHILD_ALLOWANCE_BASE: 30000,        // Base allowance per child
   CHILD_ALLOWANCE_BONUS: 30000,       // Additional for 2nd+ child born 2018+
   PARENT_ALLOWANCE: 30000,

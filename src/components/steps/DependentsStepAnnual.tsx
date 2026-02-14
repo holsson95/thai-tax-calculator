@@ -3,9 +3,9 @@ import { StepProps, ChildData, TAX_CONSTANTS } from '../../types/taxForm';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) => {
-  const [hasEligibleChildren, setHasEligibleChildren] = useState(formData.children.length > 0);
-  const [hasEligibleParents, setHasEligibleParents] = useState(formData.numberOfParents > 0);
+const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, showValidationErrors }) => {
+  const [hasEligibleChildren, setHasEligibleChildren] = useState(formData.childrenEligibilityConfirmed || formData.children.length > 0);
+  const [hasEligibleParents, setHasEligibleParents] = useState(formData.parentsEligibilityConfirmed || formData.numberOfParents > 0);
 
   const calculateAge = (birthYear: number): number => {
     return CURRENT_YEAR - birthYear;
@@ -67,6 +67,7 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
   const totalAllowance =
     TAX_CONSTANTS.PERSONAL_ALLOWANCE +
     (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
+    (formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0) +
     getTotalChildAllowance() +
     formData.numberOfParents * TAX_CONSTANTS.PARENT_ALLOWANCE;
 
@@ -89,7 +90,11 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className="flex items-center gap-3 cursor-pointer p-3 border border-gray-200 rounded-lg bg-white">
+          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
+            showValidationErrors && hasEligibleChildren && formData.children.length === 0
+              ? 'border-red-500'
+              : 'border-gray-200'
+          }`}>
             <input
               type="checkbox"
               checked={hasEligibleChildren}
@@ -105,6 +110,13 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
             />
             <span className="text-gray-800">I have children who meet these criteria</span>
           </label>
+
+          {/* Validation Error */}
+          {showValidationErrors && hasEligibleChildren && formData.children.length === 0 && (
+            <p className="mt-2 text-sm text-red-600">
+              Please add at least one child or uncheck the box above.
+            </p>
+          )}
 
           {/* Number of Children - only shown when checkbox is checked */}
           {hasEligibleChildren && (
@@ -204,20 +216,33 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className="flex items-center gap-3 cursor-pointer p-3 border border-gray-200 rounded-lg bg-white">
+          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
+            showValidationErrors && hasEligibleParents && formData.numberOfParents === 0
+              ? 'border-red-500'
+              : 'border-gray-200'
+          }`}>
             <input
               type="checkbox"
               checked={hasEligibleParents}
               onChange={(e) => {
                 setHasEligibleParents(e.target.checked);
-                if (!e.target.checked) {
-                  setFormData({ ...formData, numberOfParents: 0 });
+                if (e.target.checked) {
+                  setFormData({ ...formData, parentsEligibilityConfirmed: true });
+                } else {
+                  setFormData({ ...formData, numberOfParents: 0, parentsEligibilityConfirmed: false });
                 }
               }}
               className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             />
             <span className="text-gray-800">I have parents who meet these criteria</span>
           </label>
+
+          {/* Validation Error */}
+          {showValidationErrors && hasEligibleParents && formData.numberOfParents === 0 && (
+            <p className="mt-2 text-sm text-red-600">
+              Please add at least one parent or uncheck the box above.
+            </p>
+          )}
 
           {/* Number of Parents - only shown when checkbox is checked */}
           {hasEligibleParents && (
@@ -264,6 +289,12 @@ const DependentsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
             <div className="flex justify-between">
               <span>Spouse:</span>
               <span>฿{TAX_CONSTANTS.SPOUSE_ALLOWANCE.toLocaleString()}</span>
+            </div>
+          )}
+          {formData.isAge65OrOlder && (
+            <div className="flex justify-between">
+              <span>Senior (65+):</span>
+              <span>฿{TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()}</span>
             </div>
           )}
           {formData.children.length > 0 && (

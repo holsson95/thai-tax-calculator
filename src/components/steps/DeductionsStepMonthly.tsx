@@ -9,7 +9,8 @@ interface DeductionItem {
   maxValue: number;
 }
 
-const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormData, nextStep }) => {
+const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormData, showValidationErrors = false }) => {
+
   // Calculate annual income from formData
   const getAnnualIncome = (): number => {
     if (formData.incomeType === 'variable' && formData.variableIncome?.length === 12) {
@@ -118,6 +119,7 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
     return value > 0 ? value.toLocaleString() : '';
   };
 
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-2">Tax Deductions</h2>
@@ -125,13 +127,38 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
         Select any deductions you qualify for. These will reduce your taxable income.
       </p>
 
+      {/* Senior Citizen Allowance */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="flex-shrink-0 mt-0.5">
+            <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <p className="text-sm text-amber-700">
+            Taxpayers aged 65 or older are entitled to an additional ฿{MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()} allowance.
+          </p>
+        </div>
+
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.isAge65OrOlder}
+            onChange={(e) => setFormData({ ...formData, isAge65OrOlder: e.target.checked })}
+            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+          />
+          <span className="text-gray-800">I am 65 years or older</span>
+        </label>
+      </div>
+
       <div className="space-y-4 mb-6">
         {DEDUCTION_ITEMS.map((item) => {
           const isChecked = localData[item.hasKey as keyof typeof localData] as boolean;
           const value = localData[item.key as keyof typeof localData] as number;
+          const hasError = showValidationErrors && isChecked && value === 0;
 
           return (
-            <div key={item.key} className="border border-gray-200 rounded-lg p-4">
+            <div key={item.key} className={`border rounded-lg p-4 ${hasError ? 'border-red-500' : 'border-gray-200'}`}>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -156,26 +183,29 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                       type="text"
                       value={formatNumber(value)}
                       onChange={(e) => handleValueChange(item.key, e.target.value, item.maxValue)}
-                      className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 ${
+                        hasError
+                          ? 'border-red-500 focus:ring-red-200'
+                          : 'border-gray-300 focus:ring-blue-500'
+                      }`}
                       placeholder="0"
                     />
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Maximum: ฿{item.maxValue.toLocaleString()} per year
-                  </p>
+                  {hasError ? (
+                    <p className="text-sm text-red-600 mt-1">
+                      Please enter an amount or uncheck this deduction.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Maximum: ฿{item.maxValue.toLocaleString()} per year
+                    </p>
+                  )}
                 </div>
               )}
             </div>
           );
         })}
       </div>
-
-      <button
-        onClick={nextStep}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600"
-      >
-        Continue
-      </button>
     </div>
   );
 };

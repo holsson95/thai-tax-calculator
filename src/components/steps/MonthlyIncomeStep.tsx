@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MonthlyStepProps, MONTHLY_TAX_CONSTANTS } from '../../types/taxForm';
 
-const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData, nextStep }) => {
+const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData }) => {
   const [salary, setSalary] = useState(formData.monthlySalary ? formData.monthlySalary.toString() : '');
   const [bonus, setBonus] = useState(formData.annualBonus ? formData.annualBonus.toString() : '');
   const [otherIncome, setOtherIncome] = useState(formData.annualOtherIncome ? formData.annualOtherIncome.toString() : '');
@@ -49,11 +49,6 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData, 
     }
   };
 
-  const handleSubmit = () => {
-    if (salary && parseFloat(salary) > 0) {
-      nextStep();
-    }
-  };
 
   const formatDisplayValue = (value: string) => {
     const num = parseInt(value.replace(/,/g, '')) || 0;
@@ -125,7 +120,7 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData, 
       </div>
 
       {/* Social Security Checkbox */}
-      <div className="border border-gray-200 rounded-lg p-4 mb-6">
+      <div className="border border-gray-200 rounded-lg p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -163,14 +158,6 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData, 
           </div>
         )}
       </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={!salary || parseFloat(salary) <= 0}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-      >
-        Continue
-      </button>
     </div>
   );
 };

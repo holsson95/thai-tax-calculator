@@ -10,6 +10,7 @@ interface DeductionItemProps {
   onToggle: (checked: boolean) => void;
   onAmountChange: (amount: number) => void;
   description?: string;
+  showValidationErrors?: boolean;
 }
 
 const DeductionItem: React.FC<DeductionItemProps> = ({
@@ -21,8 +22,10 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
   onToggle,
   onAmountChange,
   description,
+  showValidationErrors,
 }) => {
   const [error, setError] = useState('');
+  const hasValidationError = showValidationErrors && hasDeduction && amount === 0;
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/,/g, '');
@@ -44,7 +47,7 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 mb-3">
+    <div className={`border rounded-lg p-4 mb-3 ${hasValidationError ? 'border-red-500' : 'border-gray-200'}`}>
       <label className="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
@@ -74,16 +77,16 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
               onBlur={handleBlur}
               placeholder="0"
               className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                error
+                error || hasValidationError
                   ? 'border-red-500 focus:ring-red-200'
                   : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500'
               }`}
-              aria-describedby={error ? `${id}-error` : undefined}
+              aria-describedby={error || hasValidationError ? `${id}-error` : undefined}
             />
           </div>
-          {error && (
+          {(error || hasValidationError) && (
             <p id={`${id}-error`} className="mt-1 text-sm text-red-600">
-              {error}
+              {error || 'Please enter an amount or uncheck this deduction.'}
             </p>
           )}
           {amount > 0 && amount <= maxAmount && (
@@ -97,7 +100,7 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
   );
 };
 
-const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) => {
+const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, showValidationErrors }) => {
   const deductions = [
     {
       id: 'lifeInsurance',
@@ -182,6 +185,30 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
         Select the deductions that apply to you. These reduce your taxable income.
       </p>
 
+      {/* Senior Citizen Allowance */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+        <div className="flex items-start gap-3 mb-3">
+          <div className="flex-shrink-0 mt-0.5">
+            <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <p className="text-sm text-amber-700">
+            Taxpayers aged 65 or older are entitled to an additional ฿{TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()} allowance.
+          </p>
+        </div>
+
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={formData.isAge65OrOlder}
+            onChange={(e) => setFormData({ ...formData, isAge65OrOlder: e.target.checked })}
+            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+          />
+          <span className="text-gray-800">I am 65 years or older</span>
+        </label>
+      </div>
+
       <div className="mb-6">
         {deductions.map((d) => (
           <DeductionItem
@@ -194,6 +221,7 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData }) =>
             onToggle={(checked) => handleToggle(d.hasKey, checked)}
             onAmountChange={(amount) => handleAmountChange(d.amountKey, amount)}
             description={d.description}
+            showValidationErrors={showValidationErrors}
           />
         ))}
       </div>

@@ -143,6 +143,12 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
                     <span>{formatThb(result.breakdown.spouseAllowance)}</span>
                   </div>
                 )}
+                {result.breakdown.seniorAllowance > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Senior (65+)</span>
+                    <span>{formatThb(result.breakdown.seniorAllowance)}</span>
+                  </div>
+                )}
                 {result.breakdown.childAllowance > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-600">Children</span>
@@ -167,6 +173,12 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
                     <div className="flex justify-between">
                       <span className="text-gray-600">Expense Deduction (50%)</span>
                       <span>{formatThb(result.breakdown.standardDeduction)}</span>
+                    </div>
+                  )}
+                  {result.breakdown.socialSecurity > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Social Security</span>
+                      <span>{formatThb(result.breakdown.socialSecurity)}</span>
                     </div>
                   )}
                   {result.breakdown.lifeInsurance > 0 && (

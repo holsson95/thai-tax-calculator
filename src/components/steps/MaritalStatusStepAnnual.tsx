@@ -89,6 +89,7 @@ const MaritalStatusStepAnnual: React.FC<StepProps> = ({ formData, setFormData, n
           </label>
         </div>
       )}
+
     </div>
   );
 };

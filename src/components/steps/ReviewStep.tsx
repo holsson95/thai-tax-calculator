@@ -59,6 +59,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
   const totalAllowances =
     TAX_CONSTANTS.PERSONAL_ALLOWANCE +
     (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
+    (formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0) +
     calculateChildAllowance(formData.children) +
     formData.numberOfParents * TAX_CONSTANTS.PARENT_ALLOWANCE;
 
@@ -97,6 +98,11 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
               <p className="text-gray-800 mt-1 text-lg font-semibold">
                 {formatCurrency(formData.annualIncome)}
               </p>
+              {formData.includeSocialSecurity && formData.socialSecurityContribution > 0 && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Social Security: {formatCurrency(Math.min(formData.socialSecurityContribution, TAX_CONSTANTS.MAX_SOCIAL_SECURITY))}
+                </p>
+              )}
             </div>
             <button
               onClick={() => goToStep(1)}
@@ -137,6 +143,12 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
                   <div className="flex justify-between">
                     <span>Spouse allowance:</span>
                     <span>{formatCurrency(TAX_CONSTANTS.SPOUSE_ALLOWANCE)}</span>
+                  </div>
+                )}
+                {formData.isAge65OrOlder && (
+                  <div className="flex justify-between">
+                    <span>Senior allowance (65+):</span>
+                    <span>{formatCurrency(TAX_CONSTANTS.SENIOR_ALLOWANCE)}</span>
                   </div>
                 )}
                 {formData.children.length > 0 && (

@@ -7,8 +7,11 @@ function createBaseFormData(overrides: Partial<TaxFormData> = {}): TaxFormData {
   return {
     employmentType: 'salaried',
     annualIncome: 500000,
+    includeSocialSecurity: false,
+    socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,
@@ -107,8 +110,9 @@ describe('MaritalStatusStepAnnual', () => {
     // Click married to show the spouse question
     fireEvent.click(screen.getByText('Married'));
 
-    const checkbox = screen.getByRole('checkbox');
-    fireEvent.click(checkbox);
+    // Get the spouse income checkbox specifically (the first one in the spouse section)
+    const spouseCheckbox = screen.getByLabelText(/my spouse has no income/i);
+    fireEvent.click(spouseCheckbox);
 
     expect(setFormData).toHaveBeenCalledWith({
       ...formData,

@@ -13,7 +13,7 @@ const createEmptyMonthEntry = (): MonthlyIncomeEntry => ({
   otherIncome: 0,
 });
 
-const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData, nextStep }) => {
+const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData }) => {
   const [monthlyData, setMonthlyData] = useState<MonthlyIncomeEntry[]>(
     formData.variableIncome?.length === 12
       ? formData.variableIncome
@@ -62,12 +62,6 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData,
 
   const getTotalAnnualIncome = () => {
     return monthlyData.reduce((sum, entry) => sum + getMonthTotal(entry), 0);
-  };
-
-  const handleSubmit = () => {
-    if (getTotalAnnualIncome() > 0) {
-      nextStep();
-    }
   };
 
   const formatNumber = (value: number) => {
@@ -178,7 +172,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData,
       </div>
 
       {/* Social Security Checkbox */}
-      <div className="border border-gray-200 rounded-lg p-4 mb-6">
+      <div className="border border-gray-200 rounded-lg p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -215,14 +209,6 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData,
           </div>
         )}
       </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={getTotalAnnualIncome() <= 0}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
-      >
-        Continue
-      </button>
     </div>
   );
 };

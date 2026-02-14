@@ -30,11 +30,15 @@ function getInitialFormData(): TaxFormData {
   return {
     employmentType: '',
     annualIncome: 0,
+    includeSocialSecurity: false,
+    socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,
+    parentsEligibilityConfirmed: false,
     hasLifeInsurance: false,
     lifeInsurance: 0,
     hasHealthInsurance: false,
@@ -55,6 +59,7 @@ function getInitialFormData(): TaxFormData {
 
 const AnnualTaxWizard: React.FC = () => {
   const navigate = useNavigate();
+  const [showValidationErrors, setShowValidationErrors] = useState(false);
 
   // Initialize from sessionStorage if available
   const [currentStep, setCurrentStep] = useState<number>(() => {
@@ -66,7 +71,9 @@ const AnnualTaxWizard: React.FC = () => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsedData = JSON.parse(saved);
+        // Merge with defaults to handle any missing fields from older saved data
+        return { ...getInitialFormData(), ...parsedData };
       } catch (error) {
         console.error('Failed to parse saved form data:', error);
         return getInitialFormData();
@@ -87,13 +94,19 @@ const AnnualTaxWizard: React.FC = () => {
 
   // Navigation handlers
   const handleNextStep = () => {
-    if (currentStep < TOTAL_STEPS - 1) {
-      setCurrentStep(currentStep + 1);
+    if (isStepValid()) {
+      setShowValidationErrors(false);
+      if (currentStep < TOTAL_STEPS - 1) {
+        setCurrentStep(currentStep + 1);
+      }
+    } else {
+      setShowValidationErrors(true);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 0) {
+      setShowValidationErrors(false);
       setCurrentStep(currentStep - 1);
     }
   };
@@ -121,6 +134,7 @@ const AnnualTaxWizard: React.FC = () => {
       formData,
       setFormData,
       nextStep: handleNextStep,
+      showValidationErrors,
     };
 
     switch (currentStep) {
@@ -160,10 +174,21 @@ const AnnualTaxWizard: React.FC = () => {
         return formData.annualIncome > 0;
       case 2: // Marital Status - must select status
         return formData.maritalStatus !== '';
-      case 3: // Dependents - if children added, must confirm eligibility
-        return formData.children.length === 0 || formData.childrenEligibilityConfirmed;
-      case 4: // Deductions - all optional
-        return true;
+      case 3: // Dependents - if checkbox checked, must add at least one
+        const childrenValid = !formData.childrenEligibilityConfirmed || formData.children.length > 0;
+        const parentsValid = !formData.parentsEligibilityConfirmed || formData.numberOfParents > 0;
+        return childrenValid && parentsValid;
+      case 4: // Deductions - if checkbox checked, must enter amount > 0
+        const deductionChecks = [
+          { has: formData.hasLifeInsurance, amount: formData.lifeInsurance },
+          { has: formData.hasHealthInsurance, amount: formData.healthInsurance },
+          { has: formData.hasPensionFund, amount: formData.pensionFund },
+          { has: formData.hasProvidentFund, amount: formData.providentFund },
+          { has: formData.hasRMF, amount: formData.rmf },
+          { has: formData.hasSSF, amount: formData.ssf },
+          { has: formData.hasDonations, amount: formData.donations },
+        ];
+        return deductionChecks.every(d => !d.has || d.amount > 0);
       case 5: // Withholding - 0 is valid
         return true;
       default:
@@ -281,12 +306,7 @@ const AnnualTaxWizard: React.FC = () => {
             {!isReviewStep && (
               <button
                 onClick={handleNextStep}
-                disabled={!isStepValid()}
-                className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  isStepValid()
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
+                className="px-6 py-2 rounded-lg transition-colors flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
                 aria-label="Go to next step"
               >
                 Next

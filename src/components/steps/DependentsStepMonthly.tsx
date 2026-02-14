@@ -3,9 +3,9 @@ import { MonthlyStepProps, ChildData, MONTHLY_TAX_CONSTANTS } from '../../types/
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormData, nextStep }) => {
-  const [hasEligibleChildren, setHasEligibleChildren] = useState(formData.children.length > 0);
-  const [hasEligibleParents, setHasEligibleParents] = useState(formData.numberOfParents > 0);
+const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormData, showValidationErrors = false }) => {
+  const [hasEligibleChildren, setHasEligibleChildren] = useState(formData.childrenEligibilityConfirmed || formData.children.length > 0);
+  const [hasEligibleParents, setHasEligibleParents] = useState(formData.parentsEligibilityConfirmed || formData.numberOfParents > 0);
 
   const calculateAge = (birthYear: number): number => {
     return CURRENT_YEAR - birthYear;
@@ -67,8 +67,10 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
   const totalAllowance =
     MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE +
     (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
+    (formData.isAge65OrOlder ? MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE : 0) +
     getTotalChildAllowance() +
     formData.numberOfParents * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE;
+
 
   return (
     <div>
@@ -89,13 +91,19 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className="flex items-center gap-3 cursor-pointer p-3 border border-gray-200 rounded-lg bg-white">
+          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
+            showValidationErrors && hasEligibleChildren && formData.children.length === 0
+              ? 'border-red-500'
+              : 'border-gray-200'
+          }`}>
             <input
               type="checkbox"
               checked={hasEligibleChildren}
               onChange={(e) => {
                 setHasEligibleChildren(e.target.checked);
-                if (!e.target.checked) {
+                if (e.target.checked) {
+                  setFormData({ ...formData, childrenEligibilityConfirmed: true });
+                } else {
                   setFormData({ ...formData, children: [], childrenEligibilityConfirmed: false });
                 }
               }}
@@ -103,6 +111,13 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
             />
             <span className="text-gray-800">I have children who meet these criteria</span>
           </label>
+
+          {/* Validation Error */}
+          {showValidationErrors && hasEligibleChildren && formData.children.length === 0 && (
+            <p className="mt-2 text-sm text-red-600">
+              Please add at least one child or uncheck the box above.
+            </p>
+          )}
 
           {/* Number of Children - only shown when checkbox is checked */}
           {hasEligibleChildren && (
@@ -202,20 +217,33 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className="flex items-center gap-3 cursor-pointer p-3 border border-gray-200 rounded-lg bg-white">
+          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
+            showValidationErrors && hasEligibleParents && formData.numberOfParents === 0
+              ? 'border-red-500'
+              : 'border-gray-200'
+          }`}>
             <input
               type="checkbox"
               checked={hasEligibleParents}
               onChange={(e) => {
                 setHasEligibleParents(e.target.checked);
-                if (!e.target.checked) {
-                  setFormData({ ...formData, numberOfParents: 0 });
+                if (e.target.checked) {
+                  setFormData({ ...formData, parentsEligibilityConfirmed: true });
+                } else {
+                  setFormData({ ...formData, numberOfParents: 0, parentsEligibilityConfirmed: false });
                 }
               }}
               className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
             />
             <span className="text-gray-800">I have parents who meet these criteria</span>
           </label>
+
+          {/* Validation Error */}
+          {showValidationErrors && hasEligibleParents && formData.numberOfParents === 0 && (
+            <p className="mt-2 text-sm text-red-600">
+              Please add at least one parent or uncheck the box above.
+            </p>
+          )}
 
           {/* Number of Parents - only shown when checkbox is checked */}
           {hasEligibleParents && (
@@ -251,7 +279,7 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
       </div>
 
       {/* Allowance Summary */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <h3 className="font-semibold text-green-800 mb-2">Total Allowances</h3>
         <div className="text-sm text-green-700 space-y-1">
           <div className="flex justify-between">
@@ -262,6 +290,12 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
             <div className="flex justify-between">
               <span>Spouse:</span>
               <span>฿{MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE.toLocaleString()}</span>
+            </div>
+          )}
+          {formData.isAge65OrOlder && (
+            <div className="flex justify-between">
+              <span>Senior (65+):</span>
+              <span>฿{MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()}</span>
             </div>
           )}
           {formData.children.length > 0 && (
@@ -282,13 +316,6 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           </div>
         </div>
       </div>
-
-      <button
-        onClick={nextStep}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600"
-      >
-        Continue
-      </button>
     </div>
   );
 };

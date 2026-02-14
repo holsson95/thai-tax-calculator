@@ -180,7 +180,7 @@ describe('MonthlyWithholding', () => {
       // Step 3: Assessable Income - enter a value and continue
       const salaryInputs = screen.getAllByPlaceholderText('0');
       fireEvent.change(salaryInputs[0], { target: { value: '50000' } });
-      fireEvent.click(screen.getByText('Continue'));
+      fireEvent.click(screen.getByText('Next'));
 
       // Step 4: Should be Marital Status for detailed estimate
       expect(screen.getByText('Marital Status')).toBeInTheDocument();

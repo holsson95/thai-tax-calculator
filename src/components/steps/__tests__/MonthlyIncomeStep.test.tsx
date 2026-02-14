@@ -15,6 +15,7 @@ function createBaseFormData(overrides: Partial<MonthlyFormData> = {}): MonthlyFo
     socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,
@@ -105,7 +106,7 @@ describe('MonthlyIncomeStep', () => {
     expect(screen.queryByText('Estimated annual contribution (THB)')).not.toBeInTheDocument();
   });
 
-  it('disables Continue button when no salary entered', () => {
+  it('does not render Continue button (navigation handled by wizard)', () => {
     const formData = createBaseFormData({ monthlySalary: 0 });
     const setFormData = vi.fn();
     const nextStep = vi.fn();
@@ -118,31 +119,7 @@ describe('MonthlyIncomeStep', () => {
       />
     );
 
-    const continueButton = screen.getByText('Continue');
-    expect(continueButton).toBeDisabled();
-  });
-
-  it('calls nextStep when Continue is clicked with valid salary', () => {
-    const formData = createBaseFormData({ monthlySalary: 50000 });
-    const setFormData = vi.fn();
-    const nextStep = vi.fn();
-
-    render(
-      <MonthlyIncomeStep
-        formData={formData}
-        setFormData={setFormData}
-        nextStep={nextStep}
-      />
-    );
-
-    // Enter salary - use the first input (salary per month)
-    const inputs = screen.getAllByPlaceholderText('0');
-    fireEvent.change(inputs[0], { target: { value: '50000' } });
-
-    const continueButton = screen.getByText('Continue');
-    fireEvent.click(continueButton);
-
-    expect(nextStep).toHaveBeenCalled();
+    expect(screen.queryByText('Continue')).not.toBeInTheDocument();
   });
 
   it('updates formData when salary is entered', () => {

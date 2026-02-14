@@ -22,6 +22,7 @@ function createBaseFormData(overrides: Partial<MonthlyFormData> = {}): MonthlyFo
     socialSecurityContribution: 0,
     maritalStatus: '',
     spouseHasNoIncome: false,
+    isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
     numberOfParents: 0,
@@ -134,7 +135,7 @@ describe('VariableIncomeStep', () => {
     expect(screen.getByText('Include Social Security Contributions')).toBeInTheDocument();
   });
 
-  it('disables Continue button when no income entered', () => {
+  it('does not render Continue button (navigation handled by wizard)', () => {
     const formData = createBaseFormData();
     const setFormData = vi.fn();
     const nextStep = vi.fn();
@@ -147,8 +148,7 @@ describe('VariableIncomeStep', () => {
       />
     );
 
-    const continueButton = screen.getByText('Continue');
-    expect(continueButton).toBeDisabled();
+    expect(screen.queryByText('Continue')).not.toBeInTheDocument();
   });
 
   it('displays explanation about taxable income', () => {
