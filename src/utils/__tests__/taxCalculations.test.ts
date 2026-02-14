@@ -20,6 +20,7 @@ function createBaseFormData(overrides: Partial<TaxFormData> = {}): TaxFormData {
     isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
+    parentsEligibilityConfirmed: false,
     numberOfParents: 0,
     hasLifeInsurance: false,
     lifeInsurance: 0,
