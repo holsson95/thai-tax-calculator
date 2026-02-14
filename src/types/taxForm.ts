@@ -192,7 +192,7 @@ export interface TaxBreakdown {
 export interface StepProps {
   formData: TaxFormData;
   setFormData: (data: TaxFormData) => void;
-  nextStep: () => void;
+  nextStep: (updatedFormData?: TaxFormData) => void;
   showValidationErrors?: boolean;
 }
 

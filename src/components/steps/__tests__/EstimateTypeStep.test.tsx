@@ -13,6 +13,7 @@ function createBaseFormData(overrides: Partial<MonthlyFormData> = {}): MonthlyFo
     variableIncome: [],
     includeSocialSecurity: false,
     socialSecurityContribution: 0,
+    parentsEligibilityConfirmed: false,
     maritalStatus: '',
     spouseHasNoIncome: false,
     isAge65OrOlder: false,

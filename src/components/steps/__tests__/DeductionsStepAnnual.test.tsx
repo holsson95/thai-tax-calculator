@@ -14,6 +14,7 @@ function createBaseFormData(overrides: Partial<TaxFormData> = {}): TaxFormData {
     isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
+    parentsEligibilityConfirmed: false,
     numberOfParents: 0,
     hasLifeInsurance: false,
     lifeInsurance: 0,
@@ -73,9 +74,9 @@ describe('DeductionsStepAnnual', () => {
     // Initially no input fields should be visible (they're hidden by default)
     expect(screen.queryByRole('textbox', { name: /lifeInsurance/i })).not.toBeInTheDocument();
 
-    // Check the life insurance checkbox
+    // Check the life insurance checkbox (index 1, since index 0 is the Age 65+ checkbox)
     const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]); // Life insurance is first
+    fireEvent.click(checkboxes[1]); // Life insurance is second after Age 65+ checkbox
 
     expect(setFormData).toHaveBeenCalledWith({
       ...formData,
@@ -229,9 +230,9 @@ describe('DeductionsStepAnnual', () => {
     // Initially input should be visible
     expect(screen.getByRole('textbox')).toBeInTheDocument();
 
-    // Uncheck the checkbox
+    // Uncheck the checkbox (index 1, since index 0 is the Age 65+ checkbox)
     const checkboxes = screen.getAllByRole('checkbox');
-    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[1]);
 
     expect(setFormData).toHaveBeenCalledWith({
       ...formData,

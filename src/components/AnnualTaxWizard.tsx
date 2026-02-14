@@ -73,7 +73,7 @@ const AnnualTaxWizard: React.FC = () => {
       try {
         const parsedData = JSON.parse(saved);
         // Merge with defaults to handle any missing fields from older saved data
-        return { ...getInitialFormData(), ...parsedData };
+        return { ...getInitialFormData(), ...parsedData,};
       } catch (error) {
         console.error('Failed to parse saved form data:', error);
         return getInitialFormData();
@@ -93,8 +93,9 @@ const AnnualTaxWizard: React.FC = () => {
   }, [currentStep]);
 
   // Navigation handlers
-  const handleNextStep = () => {
-    if (isStepValid()) {
+  const handleNextStep = (updatedFormData?: TaxFormData) => {
+    const dataToValidate = updatedFormData || formData;
+    if (isStepValid(dataToValidate)) {
       setShowValidationErrors(false);
       if (currentStep < TOTAL_STEPS - 1) {
         setCurrentStep(currentStep + 1);
@@ -166,27 +167,27 @@ const AnnualTaxWizard: React.FC = () => {
   const isResultsStep = currentStep === 7;
 
   // Validate current step to enable/disable Next button
-  const isStepValid = (): boolean => {
+  const isStepValid = (dataToValidate: TaxFormData = formData): boolean => {
     switch (currentStep) {
       case 0: // Employment - must select a type
-        return formData.employmentType !== '';
+        return dataToValidate.employmentType !== '';
       case 1: // Income - must enter positive income
-        return formData.annualIncome > 0;
+        return dataToValidate.annualIncome > 0;
       case 2: // Marital Status - must select status
-        return formData.maritalStatus !== '';
-      case 3: // Dependents - if checkbox checked, must add at least one
-        const childrenValid = !formData.childrenEligibilityConfirmed || formData.children.length > 0;
-        const parentsValid = !formData.parentsEligibilityConfirmed || formData.numberOfParents > 0;
+        return dataToValidate.maritalStatus !== '';
+      case 3: // Dependents - if children exist, eligibility must be confirmed
+        const childrenValid = dataToValidate.children.length === 0 || dataToValidate.childrenEligibilityConfirmed;
+        const parentsValid = dataToValidate.numberOfParents === 0 || dataToValidate.parentsEligibilityConfirmed;
         return childrenValid && parentsValid;
       case 4: // Deductions - if checkbox checked, must enter amount > 0
         const deductionChecks = [
-          { has: formData.hasLifeInsurance, amount: formData.lifeInsurance },
-          { has: formData.hasHealthInsurance, amount: formData.healthInsurance },
-          { has: formData.hasPensionFund, amount: formData.pensionFund },
-          { has: formData.hasProvidentFund, amount: formData.providentFund },
-          { has: formData.hasRMF, amount: formData.rmf },
-          { has: formData.hasSSF, amount: formData.ssf },
-          { has: formData.hasDonations, amount: formData.donations },
+          { has: dataToValidate.hasLifeInsurance, amount: dataToValidate.lifeInsurance },
+          { has: dataToValidate.hasHealthInsurance, amount: dataToValidate.healthInsurance },
+          { has: dataToValidate.hasPensionFund, amount: dataToValidate.pensionFund },
+          { has: dataToValidate.hasProvidentFund, amount: dataToValidate.providentFund },
+          { has: dataToValidate.hasRMF, amount: dataToValidate.rmf },
+          { has: dataToValidate.hasSSF, amount: dataToValidate.ssf },
+          { has: dataToValidate.hasDonations, amount: dataToValidate.donations },
         ];
         return deductionChecks.every(d => !d.has || d.amount > 0);
       case 5: // Withholding - 0 is valid
@@ -305,8 +306,13 @@ const AnnualTaxWizard: React.FC = () => {
             </button>
             {!isReviewStep && (
               <button
-                onClick={handleNextStep}
-                className="px-6 py-2 rounded-lg transition-colors flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
+                onClick={() => handleNextStep()}
+                disabled={!isStepValid()}
+                className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  isStepValid()
+                    ? 'bg-blue-500 text-white hover:bg-blue-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
                 aria-label="Go to next step"
               >
                 Next

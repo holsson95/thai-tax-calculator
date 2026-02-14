@@ -25,6 +25,7 @@ function createBaseFormData(overrides: Partial<MonthlyFormData> = {}): MonthlyFo
     isAge65OrOlder: false,
     children: [],
     childrenEligibilityConfirmed: false,
+    parentsEligibilityConfirmed: false,
     numberOfParents: 0,
     hasLifeInsurance: false,
     lifeInsurance: 0,

@@ -23,8 +23,9 @@ const EMPLOYMENT_TYPES = [
 
 const EmploymentTypeStep: React.FC<StepProps> = ({ formData, setFormData, nextStep }) => {
   const handleSelect = (type: 'salaried' | 'self-employed' | 'business') => {
-    setFormData({ ...formData, employmentType: type });
-    nextStep();
+    const updatedFormData = { ...formData, employmentType: type };
+    setFormData(updatedFormData);
+    nextStep(updatedFormData);
   };
 
   return (
