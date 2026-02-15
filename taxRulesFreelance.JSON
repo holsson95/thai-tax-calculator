@@ -1,0 +1,269 @@
+{
+  "meta": {
+    "title": "Thailand 2024 PIT — Freelancers & Business Owners Decision Tree",
+    "version": "1.0",
+    "notes": "Nodes include questions (inputs), branching logic, computed nodes (formulas). Date format: YYYY-MM-DD. Tax year = Jan 1–Dec 31. All amounts in THB."
+  },
+  "variables": {
+    "tax_year_start": "2024-01-01",
+    "personal_allowance": 60000,
+    "spouse_allowance": 60000,
+    "child_allowance_per_child": 30000,
+    "parent_allowance_per_parent": 30000,
+    "social_security_cap": 9000,
+    "investment_deductions_cap": 500000,
+    "vat_registration_threshold": 1800000,
+    "pnd94_halfyear_income_threshold_single": 60000,
+    "pnd94_halfyear_income_threshold_married": 120000
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "question",
+      "var": "user_profile_type",
+      "prompt": "Which describes you today?",
+      "input_type": "single_choice",
+      "options": [
+        {"value": "freelancer", "label": "Freelance / self-employed (individual)"},
+        {"value": "sole_proprietor", "label": "Sole proprietor (business operated by individual)"},
+        {"value": "company_owner", "label": "Owner of Thai-registered company / partner"},
+        {"value": "salaried_plus_side_income", "label": "Salaried employee with additional freelance/business income"}
+      ],
+      "next": "n2"
+    },
+    {
+      "id": "n2",
+      "type": "question",
+      "var": "days_in_thailand",
+      "prompt": "How many days did you stay in Thailand in the tax year (Jan 1–Dec 31)?",
+      "input_type": "integer",
+      "validation": {"min": 0, "max": 366},
+      "next": "compute_residency"
+    },
+    {
+      "id": "compute_residency",
+      "type": "compute",
+      "var": "is_thai_resident",
+      "formula": "days_in_thailand >= 180 ? true : false",
+      "next": "n3"
+    },
+    {
+      "id": "n3",
+      "type": "question",
+      "var": "has_foreign_income",
+      "prompt": "Do you have income earned from outside Thailand in the tax year?",
+      "input_type": "boolean",
+      "next": {
+        "true": "n4_foreign_income_list",
+        "false": "n5_thai_income_list"
+      }
+    },
+    {
+      "id": "n4_foreign_income_list",
+      "type": "question",
+      "var": "foreign_income_entries",
+      "prompt": "Enter foreign income entries (repeatable): amount, date_earned (YYYY-MM-DD), date_remitted_to_thailand (optional, YYYY-MM-DD), foreign_tax_paid (optional)",
+      "input_type": "list_of_objects",
+      "item_schema": {
+        "amount": {"type": "number"},
+        "date_earned": {"type": "date"},
+        "date_remitted": {"type": "date", "optional": true},
+        "foreign_tax_paid": {"type": "number", "optional": true}
+      },
+      "next": "n5_thai_income_list"
+    },
+    {
+      "id": "n5_thai_income_list",
+      "type": "question",
+      "var": "thai_income_entries",
+      "prompt": "Enter Thai-sourced income entries (repeatable): gross_amount, income_type, payer_withholding (optional), month_received (optional)",
+      "input_type": "list_of_objects",
+      "item_schema": {
+        "gross_amount": {"type": "number"},
+        "income_type": {
+          "type": "enum",
+          "choices": [
+            "salary_40_1",
+            "liberal_profession_40_6",
+            "contractor_40_7",
+            "business_sales_40_8",
+            "rental_40_5",
+            "dividend",
+            "other"
+          ]
+        },
+        "withholding_amount": {"type": "number", "optional": true},
+        "month_received": {"type": "integer", "min": 1, "max": 12, "optional": true}
+      },
+      "next": "n6_company_owner_details"
+    },
+    {
+      "id": "n6_company_owner_details",
+      "type": "question",
+      "var": "company_owner_details",
+      "prompt": "If company owner: enter company profit (profit_after_corporate_tax), salary_from_company, dividends_received (else leave blank)",
+      "input_type": "object",
+      "optional": true,
+      "schema": {
+        "company_profit_after_tax": {"type": "number", "optional": true},
+        "salary_from_company": {"type": "number", "optional": true},
+        "dividends_received": {"type": "number", "optional": true}
+      },
+      "next": "n7_expense_method_choice"
+    },
+    {
+      "id": "n7_expense_method_choice",
+      "type": "question",
+      "var": "expense_method_choice",
+      "prompt": "For each Thai income entry, would you like to use actual expenses or a flat/standard deduction? (app will compute both and show the lower-tax outcome)",
+      "input_type": "single_choice",
+      "options": [
+        {"value": "auto_compare", "label": "Auto compare actual vs flat and choose cheaper"},
+        {"value": "force_actual", "label": "Use Actual Expenses"},
+        {"value": "force_flat", "label": "Use Flat/Standard Percentages"}
+      ],
+      "next": "n8_expenses"
+    },
+    {
+      "id": "n8_expenses",
+      "type": "question",
+      "var": "actual_expenses_entries",
+      "prompt": "If using actual expenses: enter expense items (repeatable): category, amount, have_receipt (true/false). If not using actual expenses you may skip.",
+      "input_type": "list_of_objects",
+      "item_schema": {
+        "category": {"type": "string"},
+        "amount": {"type": "number"},
+        "have_receipt": {"type": "boolean"}
+      },
+      "next": "n9_standard_percentages"
+    },
+    {
+      "id": "n9_standard_percentages",
+      "type": "compute",
+      "var": "flat_rates_lookup",
+      "formula": "map income_type to permitted flat deduction % per Revenue Code (examples: business_sales_40_8 -> 60, liberal_profession_40_6 -> 30 or 60 depending on profession, contractor_40_7 -> 40 etc.). Implement list lookup in app backend.",
+      "note": "This node only provides the percentage mapping; actual mapping must be kept updated from RD guidance.",
+      "next": "n10_allowances"
+    },
+    {
+      "id": "n10_allowances",
+      "type": "question",
+      "var": "allowances_inputs",
+      "prompt": "Enter personal allowances and deductions you claim: married (yes/no), spouse_has_income (yes/no), number_of_children, number_of_parents_supported, social_security_paid, life_insurance_paid, provident_pension_rmf_ssf_paid, mortgage_interest_paid, other_deductions (list)",
+      "input_type": "object",
+      "schema": {
+        "married": {"type": "boolean"},
+        "spouse_has_income": {"type": "boolean"},
+        "number_of_children": {"type": "integer", "min": 0},
+        "number_of_parents_supported": {"type": "integer", "min": 0},
+        "social_security_paid": {"type": "number"},
+        "life_insurance_paid": {"type": "number"},
+        "pension_rmf_ssf_paid": {"type": "number"},
+        "mortgage_interest_paid": {"type": "number"},
+        "other_deductions": {"type": "list", "items": {"type": "object", "schema": {"label": {"type": "string"}, "amount": {"type": "number"}}}}
+      },
+      "next": "compute_taxable_income"
+    },
+    {
+      "id": "compute_taxable_income",
+      "type": "compute",
+      "var": "computed_taxable_income",
+      "formula": "1) For each thai_income_entries.item compute: if expense_method_choice == 'force_actual' OR 'auto_compare' then actual_net = gross_amount - proportional_actual_expenses (proportional allocation from actual_expenses_entries). 2) flat_net = gross_amount * (1 - flat_rate_for_income_type/100). 3) selected_net_per_entry = (expense_method_choice == 'force_actual') ? actual_net : (expense_method_choice == 'force_flat') ? flat_net : min(actual_net, flat_net). 4) Sum_selected_net_thai = sum(selected_net_per_entry for Thai entries). 5) foreign_taxable_sum = sum of foreign_income_entries where (is_thai_resident == true AND date_earned >= tax_year_start AND date_remitted is not null AND date_remitted occurs in this tax year) OR (special rules: if date_earned < tax_year_start and user provides evidence treat as exempt) — include only amounts meeting remittance rules. 6) dividends_received (if any) included per RD rules (note: some dividends may have separate credits). 7) total_gross_taxable = Sum_selected_net_thai + foreign_taxable_sum + salary_from_company + dividends_received_if_taxable. 8) Apply personal allowances & deductions: taxable_after_allowances = total_gross_taxable - personal_allowance - (married ? spouse_allowance_if_spouse_has_no_income : 0) - (number_of_children * child_allowance_per_child) - (number_of_parents_supported * parent_allowance_per_parent) - min(social_security_paid, social_security_cap) - min(pension_rmf_ssf_paid, investment_deductions_cap) - mortgage_interest_paid - sum(other_deductions). 9) If taxable_after_allowances < 0 then taxable_after_allowances = 0.",
+      "next": "compute_progressive_tax"
+    },
+    {
+      "id": "compute_progressive_tax",
+      "type": "compute",
+      "var": "gross_tax_before_credits",
+      "formula": "Apply Thailand progressive tax rates for the tax year (example brackets for 2024): 0% up to 150,000; 5% on next 150,001–300,000; 10% on 300,001–500,000; 15% on 500,001–750,000; 20% on 750,001–1,000,000; 25% on 1,000,001–2,000,000; 30% on 2,000,001–5,000,000; 35% over 5,000,000. Compute tax by applying each bracket to portions of taxable_after_allowances.",
+      "note": "Keep bracket values in app config to update when RD changes.",
+      "next": "compute_credits_and_final"
+    },
+    {
+      "id": "compute_credits_and_final",
+      "type": "compute",
+      "var": "final_tax_result",
+      "formula": "1) total_withholding_credits = sum(withholding_amount from thai_income_entries) + sum(foreign_tax_paid for included foreign_income_entries if foreign tax credit applicable). 2) pnd94_paid = compute_pnd94_payment_credit (see pnd94_check node). 3) net_tax_payable = gross_tax_before_credits - total_withholding_credits - pnd94_paid. 4) if net_tax_payable < 0 then net_tax_payable = 0 (tax refund scenario track separately). 5) effective_tax_rate = (gross_tax_before_credits / total_gross_taxable) * 100 (if total_gross_taxable > 0).",
+      "next": "pnd94_check"
+    },
+    {
+      "id": "pnd94_check",
+      "type": "compute",
+      "var": "pnd94_obligation",
+      "formula": "Applicable only for income types under Sections 40(5)-40(8). 1) Compute income_received_Jan_Jun = sum of thai_income_entries with month_received in 1..6 and income_type in [liberal_profession_40_6, contractor_40_7, business_sales_40_8, rental_40_5]. 2) threshold = (allowances_inputs.married && !allowances_inputs.spouse_has_income) ? pnd94_halfyear_income_threshold_married : pnd94_halfyear_income_threshold_single. 3) if income_received_Jan_Jun > threshold then pnd94_required = true else false. 4) If pnd94_required compute provisional_tax_halfyear using same deduction method pro-rated for Jan-Jun (i.e., compute selected_net_per_entry for entries in Jan-Jun, apply allowances pro-rata or take standard rule: compute provisional as income_received_Jan_Jun * estimated_effective_rate; better: compute full deduction prorated—app to implement accurate prorating). 5) pnd94_due_date = 'YYYY-09-30' (of the tax year).",
+      "next": "vat_check"
+    },
+    {
+      "id": "vat_check",
+      "type": "compute",
+      "var": "vat_obligation",
+      "formula": "1) projected_annual_taxable_turnover = sum of thai_income_entries.gross_amount (project or historical year). 2) if projected_annual_taxable_turnover >= vat_registration_threshold then vat_registration_required = true else false. 3) if vat_registration_required include: monthly_vat_rate = 7%, must_register_within_days = 30 from exceeding threshold.",
+      "next": "output_summary"
+    },
+    {
+      "id": "output_summary",
+      "type": "output",
+      "var": "summary",
+      "contents": {
+        "is_thai_resident": "is_thai_resident",
+        "total_gross_taxable": "computed_taxable_income -> total_gross_taxable",
+        "taxable_after_allowances": "computed_taxable_income -> taxable_after_allowances",
+        "gross_tax_before_credits": "gross_tax_before_credits",
+        "withholding_credits": "final_tax_result -> total_withholding_credits",
+        "pnd94_required": "pnd94_obligation -> pnd94_required",
+        "pnd94_provisional_due": "pnd94_obligation -> provisional_tax_halfyear (if computed)",
+        "pnd94_due_date": "pnd94_obligation -> pnd94_due_date",
+        "vat_registration_required": "vat_obligation -> vat_registration_required",
+        "vat_threshold": "vat_registration_threshold",
+        "net_tax_payable": "final_tax_result -> net_tax_payable",
+        "effective_tax_rate_percent": "final_tax_result -> effective_tax_rate",
+        "documents_checklist": [
+          "bank_statements_for_remittances (required to prove date_earned vs date_remitted for foreign income)",
+          "invoices_and_receipts_for_actual_expenses",
+          "withholding_tax_certificates",
+          "social_security_receipts",
+          "proof_of_rmf_ssf_or_pension_payments",
+          "mortgage_interest_statements_if_claimed",
+          "VAT_invoices_if_VAT_registered"
+        ],
+        "next_actions": [
+          "If pnd94_required: prepare and file PND94 by pnd94_due_date and pay provisional tax",
+          "If vat_registration_required: register for VAT within 30 days after exceeding threshold",
+          "If net_tax_payable > 0: pay by annual filing deadline (PND90/PND91 rules) or follow RD online guidance",
+          "If foreign income included and date_earned < tax_year_start: upload evidence to rely on exemption"
+        ],
+        "caveats": [
+          "Foreign tax credits and DTAs require specialist handling — consult a tax professional for complex cross-border cases",
+          "Company profits and corporate tax are computed at company level; dividends and salary have separate PIT treatment"
+        ]
+      }
+    }
+  ],
+  "formulas_reference": {
+    "flat_rate_examples": {
+      "business_sales_40_8": 60,
+      "liberal_profession_40_6": "30_or_60 (depends on profession classification; app must present specific percent options)",
+      "contractor_40_7": 40,
+      "rental_40_5": 30
+    },
+    "progressive_rate_table": [
+      {"up_to": 150000, "rate": 0},
+      {"up_to": 300000, "rate": 0.05},
+      {"up_to": 500000, "rate": 0.10},
+      {"up_to": 750000, "rate": 0.15},
+      {"up_to": 1000000, "rate": 0.20},
+      {"up_to": 2000000, "rate": 0.25},
+      {"up_to": 5000000, "rate": 0.30},
+      {"over": 5000000, "rate": 0.35}
+    ],
+    "foreign_income_remittance_rule_summary": "For tax years beginning 2024-01-01 onward: foreign-sourced income earned on or after 2024-01-01 is assessable in Thailand when remitted into Thailand in the same or a later tax year if taxpayer is a Thai tax resident. Foreign income earned prior to 2024-01-01 can be treated as exempt when remitted later if taxpayer can evidence the date earned.",
+    "withholding_credit_rule": "Withholding tax amounts provided by payers are credits against PIT liability. Foreign tax credits or DTA relief require proof and specialist rules."
+  },
+  "implementation_notes": {
+    "evidence_upload": "For foreign income remitted, capture bank statement uploads, contracts, payslips; flag entries where date_earned < tax_year_start for automatic exemption flow if evidence uploaded.",
+    "auto_compare": "When expense_method_choice == 'auto_compare' calculate tax under both actual and flat and present both values and recommended (lower-tax) choice. Keep UI toggle to select override.",
+    "pnd94_prorating": "Accurate PND94 provisional calculation requires pro-rating allowances/deductions to Jan–Jun or using RD guidance; implement proration or conservative estimation and warn user if approximation used.",
+    "update_points": "Store progressive rates, flat-rate mappings, allowance caps and thresholds in external config (RD-sourced) so they can be updated without changing decision tree structure."
+  }
+}
+

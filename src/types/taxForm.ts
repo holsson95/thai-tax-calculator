@@ -104,9 +104,22 @@ export interface MonthlyStepProps {
   showValidationErrors?: boolean;
 }
 
+/**
+ * Employment types supported by the tax wizard
+ * Includes legacy values (self-employed, business) for backward compatibility
+ */
+export type EmploymentType =
+  | 'salaried'
+  | 'freelancer'
+  | 'sole_proprietor'
+  | 'company_owner'
+  | 'self-employed'  // Legacy - maps to freelancer
+  | 'business'       // Legacy - maps to sole_proprietor
+  | '';
+
 export interface TaxFormData {
   // Step 1: Employment Status
-  employmentType: 'salaried' | 'self-employed' | 'business' | '';
+  employmentType: EmploymentType;
 
   // Step 2: Annual Income
   annualIncome: number;
@@ -243,3 +256,6 @@ export const TAX_BRACKETS: TaxBracket[] = [
   { upTo: 5000000, rate: 0.30, label: '2M-5M' },
   { upTo: Infinity, rate: 0.35, label: '5M+' },
 ];
+
+// Re-export freelancer types for convenience
+export * from './freelancerForm';

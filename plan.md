@@ -31,6 +31,115 @@
 
 ---
 
+## 🆕 Phase 2: Freelancers & Business Owners (2024 PIT)
+
+**Date Added:** 2026-02-15
+
+**Priority Order:** Freelancer → Sole Proprietor → Company Owner
+
+### Architecture Decision
+
+Extend existing `AnnualTaxWizard.tsx` with conditional step flows based on employment type. Reuses shared infrastructure (session storage, navigation, progress indicators) and common steps (allowances, deductions).
+
+### Implementation Phases
+
+#### Phase 1: Foundation & Type System
+**New Files:**
+- `/src/types/freelancerForm.ts` - Extended interfaces for freelancer data
+- `/src/config/taxConfig.ts` - Flat-rate deductions, thresholds, constants
+- `/src/data/incomeTypes.ts` - Income type metadata with descriptions
+
+**Key Types:**
+```typescript
+interface FreelancerFormData extends TaxFormData {
+  daysInThailand: number;
+  isThaiResident: boolean;
+  hasForeignIncome: boolean;
+  foreignIncomeEntries: ForeignIncomeEntry[];
+  thaiIncomeEntries: ThaiIncomeEntry[];
+  expenseMethod: 'auto_compare' | 'force_actual' | 'force_flat';
+  actualExpenses: ExpenseEntry[];
+}
+```
+
+**Flat Rate Deductions (Revenue Code):**
+| Income Type | Section | Rate |
+|-------------|---------|------|
+| Liberal Profession | 40(6) | 30% or 60% |
+| Contractor | 40(7) | 40% |
+| Business/Sales | 40(8) | 60% |
+| Rental | 40(5) | 30% |
+
+#### Phase 2: Residency & Foreign Income
+**New Files:**
+- `/src/components/steps/ResidencyStep.tsx` - Days in Thailand (180+ = resident)
+- `/src/components/steps/ForeignIncomeStep.tsx` - Foreign income with remittance dates
+- `/src/utils/foreignIncomeCalculations.ts` - Remittance logic
+
+**Foreign Income Rule (2024+):** Taxable if Thai resident AND earned on/after 2024-01-01 AND remitted to Thailand.
+
+#### Phase 3: Thai Income Sources
+**New Files:**
+- `/src/components/steps/ThaiIncomeStep.tsx` - Multi-source income entry
+- `/src/components/common/IncomeEntryCard.tsx` - Reusable card component
+
+**Features:** Multiple income sources, income type dropdown, withholding tracking, month received (for PND94).
+
+#### Phase 4: Expense Comparison Logic
+**New Files:**
+- `/src/components/steps/ExpenseMethodStep.tsx` - Method selection
+- `/src/components/steps/ActualExpensesStep.tsx` - Expense entries
+- `/src/utils/expenseCalculations.ts` - Comparison engine
+- `/src/components/ExpenseComparisonCard.tsx` - Visual comparison
+
+**Auto-Compare:** Calculate both flat-rate and actual expenses, show user the lower-tax option.
+
+#### Phase 5: PND94 & VAT Obligations
+**New Files:**
+- `/src/utils/obligationChecks.ts` - Obligation check functions
+- `/src/components/ObligationAlerts.tsx` - Alert display
+
+**Thresholds:**
+| Obligation | Threshold |
+|------------|-----------|
+| PND94 (single) | Jan-Jun income > ฿60,000 |
+| PND94 (married) | Jan-Jun income > ฿120,000 |
+| VAT Registration | Turnover >= ฿1,800,000 |
+
+#### Phase 6: Wizard Integration
+**Modify:**
+- `/src/components/AnnualTaxWizard.tsx` - Conditional step flow
+- `/src/components/steps/EmploymentTypeStep.tsx` - Enable freelancer
+- `/src/utils/taxCalculations.ts` - Add `calculateFreelancerTax()`
+
+**New Files:**
+- `/src/components/steps/FreelancerReviewStep.tsx`
+- `/src/components/steps/FreelancerResultsStep.tsx`
+
+**Freelancer Step Flow (11 steps):**
+1. Employment Type → 2. Residency → 3. Foreign Income → 4. Thai Income → 5. Expense Method → 6. Actual Expenses (conditional) → 7. Allowances → 8. Deductions → 9. Withholding → 10. Review → 11. Results
+
+#### Phase 7: Sole Proprietor Support
+- `/src/types/soleProprietorForm.ts`
+- `/src/components/steps/BusinessProfileStep.tsx`
+- Reuses freelancer flow with business categorization
+
+#### Phase 8: Company Owner Support
+- `/src/types/companyOwnerForm.ts`
+- `/src/components/steps/CompanyIncomeStep.tsx`
+- Fields: `salaryFromCompany`, `dividendsReceived`, `companyProfitAfterTax`
+
+### File Summary
+**New Files (22):** Types (3), Config (2), Steps (10), Utils (3), Components (4)
+**Files to Modify (6):** `taxForm.ts`, `AnnualTaxWizard.tsx`, `EmploymentTypeStep.tsx`, `taxCalculations.ts`, `faq.ts`, `articles.ts`
+
+### Verification
+- Unit tests: >80% coverage on calculation utilities
+- Manual: End-to-end wizard, foreign income dates, expense comparison, PND94/VAT alerts
+- Integration: `npm run build && npm run preview`
+
+---
+
 ## User Decisions Summary
 
 After detailed interview and requirements gathering, the following key decisions were made:
