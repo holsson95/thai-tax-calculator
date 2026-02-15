@@ -6,18 +6,21 @@ const EMPLOYMENT_TYPES = [
     label: 'Salaried Employee',
     description: 'I receive a regular salary from an employer',
     icon: '💼',
+    comingSoon: false,
   },
   {
     value: 'self-employed' as const,
     label: 'Self-Employed / Freelancer',
     description: 'I work independently or as a contractor',
     icon: '👨‍💻',
+    comingSoon: true,
   },
   {
     value: 'business' as const,
     label: 'Business Owner',
     description: 'I own and operate a business',
     icon: '🏢',
+    comingSoon: true,
   },
 ];
 
@@ -37,21 +40,29 @@ const EmploymentTypeStep: React.FC<StepProps> = ({ formData, setFormData, nextSt
         {EMPLOYMENT_TYPES.map((type) => (
           <button
             key={type.value}
-            onClick={() => handleSelect(type.value)}
-            className={`w-full p-4 border-2 rounded-lg text-left transition-all hover:border-blue-500 hover:bg-blue-50 ${
-              formData.employmentType === type.value
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200'
+            onClick={() => !type.comingSoon && handleSelect(type.value)}
+            disabled={type.comingSoon}
+            className={`w-full p-4 border-2 rounded-lg text-left transition-all relative ${
+              type.comingSoon
+                ? 'border-gray-200 cursor-not-allowed'
+                : formData.employmentType === type.value
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'
             }`}
             aria-pressed={formData.employmentType === type.value}
           >
-            <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-4 ${type.comingSoon ? 'blur-[2px] opacity-50' : ''}`}>
               <span className="text-3xl">{type.icon}</span>
               <div>
                 <h3 className="font-semibold text-gray-800">{type.label}</h3>
                 <p className="text-sm text-gray-500">{type.description}</p>
               </div>
             </div>
+            {type.comingSoon && (
+              <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white text-sm font-medium px-3 py-1 rounded-full">
+                Coming Soon
+              </span>
+            )}
           </button>
         ))}
       </div>
