@@ -61,7 +61,6 @@ const parseNumber = (value: string): number => {
 const CompanyIncomeStep: React.FC<CompanyOwnerStepProps> = ({
   formData,
   setFormData,
-  nextStep,
   showValidationErrors,
 }) => {
   const [touched, setTouched] = useState({
@@ -174,27 +173,24 @@ const CompanyIncomeStep: React.FC<CompanyOwnerStepProps> = ({
     });
   };
 
-  const handleContinue = () => {
-    const isValid =
-      companyInfo.companyName.trim().length > 0 &&
-      formData.salaryFromCompany > 0;
-
-    if (isValid) {
-      // Auto-calculate withholding tax for dividends (10%)
-      const updatedEntries = formData.dividendEntries.map((entry) => ({
-        ...entry,
-        withholdingTax: entry.amount * 0.1,
-      }));
-
-      // Calculate total withholding from salary (estimated based on income)
-      // This will be editable in the withholding step
-
-      nextStep({
-        ...formData,
-        dividendEntries: updatedEntries,
-      });
+  // Auto-calculate withholding tax for dividends (10%) when entries change
+  useEffect(() => {
+    if (formData.dividendEntries.length > 0) {
+      const needsUpdate = formData.dividendEntries.some(
+        (entry) => entry.withholdingTax !== entry.amount * 0.1
+      );
+      if (needsUpdate) {
+        const updatedEntries = formData.dividendEntries.map((entry) => ({
+          ...entry,
+          withholdingTax: entry.amount * 0.1,
+        }));
+        setFormData({
+          ...formData,
+          dividendEntries: updatedEntries,
+        });
+      }
     }
-  };
+  }, [formData.dividendEntries]);
 
   // Calculate totals
   const totalEmploymentIncome =
@@ -210,15 +206,29 @@ const CompanyIncomeStep: React.FC<CompanyOwnerStepProps> = ({
   const showSalaryError =
     (touched.salaryFromCompany || showValidationErrors) && formData.salaryFromCompany <= 0;
 
-  const isFormValid =
-    companyInfo.companyName.trim().length > 0 && formData.salaryFromCompany > 0;
-
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2">Company Owner Income</h2>
       <p className="text-gray-600 mb-6">
         Enter your income from the company you own, including salary and dividends.
       </p>
+
+      {/* Thai Company Note */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6">
+        <div className="flex items-start gap-2">
+          <svg className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          <div className="text-sm text-amber-700">
+            <p className="font-medium">For Thai Companies</p>
+            <p>
+              This section is for income from Thai registered companies. If you receive
+              salary or dividends from a foreign company, please use the
+              "Self-Employed / Freelancer" option which handles foreign income reporting.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Company Information Section */}
       <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -655,18 +665,6 @@ const CompanyIncomeStep: React.FC<CompanyOwnerStepProps> = ({
         </div>
       )}
 
-      {/* Continue Button */}
-      <button
-        onClick={handleContinue}
-        disabled={!isFormValid}
-        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-          isFormValid
-            ? 'bg-blue-500 text-white hover:bg-blue-600'
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-        }`}
-      >
-        Continue
-      </button>
     </div>
   );
 };

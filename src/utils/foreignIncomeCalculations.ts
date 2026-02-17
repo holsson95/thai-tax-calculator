@@ -2,8 +2,32 @@ import {
   ForeignIncomeEntry,
   ForeignIncomeTaxability,
   FreelancerFormData,
+  VisaType,
 } from '../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../config/taxConfig';
+
+/**
+ * LTR visa types that grant foreign income tax exemption
+ */
+const LTR_FOREIGN_INCOME_EXEMPT_VISAS: VisaType[] = [
+  'ltr_wealthy_global',
+  'ltr_wealthy_pensioner',
+  'ltr_work_from_thailand',
+];
+
+/**
+ * Check if a visa type grants foreign income tax exemption
+ */
+export function hasLTRForeignIncomeExemption(visaType: VisaType): boolean {
+  return LTR_FOREIGN_INCOME_EXEMPT_VISAS.includes(visaType);
+}
+
+/**
+ * Check if a visa type qualifies for 17% flat rate on Thai employment income
+ */
+export function hasLTRFlatRateBenefit(visaType: VisaType): boolean {
+  return visaType === 'ltr_highly_skilled';
+}
 
 /**
  * Check if a single foreign income entry is taxable under 2024+ rules
@@ -12,10 +36,14 @@ import { TAX_THRESHOLDS } from '../config/taxConfig';
  * 1. Thai tax resident (180+ days in Thailand)
  * 2. Income earned on or after January 1, 2024
  * 3. Income remitted to Thailand
+ *
+ * Exception: LTR visa holders (Wealthy Global Citizen, Wealthy Pensioner,
+ * Work-from-Thailand Professional) are exempt from foreign income tax.
  */
 export function isForeignIncomeTaxable(
   entry: ForeignIncomeEntry,
-  isThaiResident: boolean
+  isThaiResident: boolean,
+  visaType: VisaType = 'regular'
 ): ForeignIncomeTaxability {
   // Not a Thai resident - foreign income not taxable
   if (!isThaiResident) {
@@ -23,6 +51,17 @@ export function isForeignIncomeTaxable(
       entry,
       isTaxable: false,
       reason: 'Not a Thai tax resident (less than 180 days in Thailand)',
+      taxableAmount: 0,
+      foreignTaxCredit: 0,
+    };
+  }
+
+  // LTR visa exemption - check before other conditions
+  if (hasLTRForeignIncomeExemption(visaType)) {
+    return {
+      entry,
+      isTaxable: false,
+      reason: 'LTR visa holder - foreign income is tax exempt',
       taxableAmount: 0,
       foreignTaxCredit: 0,
     };
@@ -107,9 +146,12 @@ export function analyzeForeignIncome(
   taxableForeignIncome: number;
   totalForeignTaxPaid: number;
   totalForeignTaxCredit: number;
+  ltrExemptionApplied: boolean;
 } {
+  const ltrExemptionApplied = hasLTRForeignIncomeExemption(formData.visaType);
+
   const entries = formData.foreignIncomeEntries.map(entry =>
-    isForeignIncomeTaxable(entry, formData.isThaiResident)
+    isForeignIncomeTaxable(entry, formData.isThaiResident, formData.visaType)
   );
 
   const totalForeignIncome = entries.reduce(
@@ -138,6 +180,7 @@ export function analyzeForeignIncome(
     taxableForeignIncome,
     totalForeignTaxPaid,
     totalForeignTaxCredit,
+    ltrExemptionApplied,
   };
 }
 
@@ -242,7 +285,8 @@ export function validateForeignIncomeEntry(entry: ForeignIncomeEntry): {
  */
 export function calculateForeignIncomeSummary(
   entries: ForeignIncomeEntry[],
-  isThaiResident: boolean
+  isThaiResident: boolean,
+  visaType: VisaType = 'regular'
 ): {
   totalEntries: number;
   taxableEntries: number;
@@ -252,9 +296,11 @@ export function calculateForeignIncomeSummary(
   nonTaxableIncome: number;
   totalForeignTax: number;
   effectiveForeignTaxRate: number;
+  ltrExemptionApplied: boolean;
 } {
+  const ltrExemptionApplied = hasLTRForeignIncomeExemption(visaType);
   const analysis = entries.map(entry =>
-    isForeignIncomeTaxable(entry, isThaiResident)
+    isForeignIncomeTaxable(entry, isThaiResident, visaType)
   );
 
   const taxableEntries = analysis.filter(a => a.isTaxable);
@@ -284,5 +330,6 @@ export function calculateForeignIncomeSummary(
     nonTaxableIncome,
     totalForeignTax,
     effectiveForeignTaxRate,
+    ltrExemptionApplied,
   };
 }

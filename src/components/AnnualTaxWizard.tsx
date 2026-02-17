@@ -594,36 +594,96 @@ const AnnualTaxWizard: React.FC = () => {
               aria-valuemax={totalSteps}
             />
           </div>
-          {/* Step Dots */}
-          <div className="flex justify-between mt-3">
-            {stepLabels.map((label: string, index: number) => (
-              <button
-                key={`${label}-${index}`}
-                onClick={() => index < currentStep && goToStep(index)}
-                disabled={index >= currentStep}
-                className={`flex flex-col items-center group ${
-                  index < currentStep ? 'cursor-pointer' : 'cursor-default'
-                }`}
-                aria-label={`${index < currentStep ? 'Go to ' : ''}Step ${index + 1}: ${label}`}
-              >
-                <div
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index < currentStep
-                      ? 'bg-blue-500 group-hover:bg-blue-600'
-                      : index === currentStep
-                      ? 'bg-blue-500 ring-2 ring-blue-200'
-                      : 'bg-gray-300'
-                  }`}
-                />
-                <span
-                  className={`text-xs mt-1 hidden md:block ${
-                    index === currentStep ? 'text-blue-600 font-medium' : 'text-gray-400'
-                  }`}
-                >
-                  {label}
-                </span>
-              </button>
-            ))}
+          {/* Step Dots - Sliding Window */}
+          <div className="flex justify-center items-center gap-2 mt-3">
+            {(() => {
+              const windowSize = 2; // Show current ± 2 steps
+              const showStart = currentStep > windowSize;
+              const showEnd = currentStep < totalSteps - 1 - windowSize;
+
+              // Calculate visible range
+              let startIndex = Math.max(0, currentStep - windowSize);
+              let endIndex = Math.min(totalSteps - 1, currentStep + windowSize);
+
+              // Adjust range to always show at least 5 items when possible
+              if (endIndex - startIndex < windowSize * 2 && totalSteps > windowSize * 2) {
+                if (startIndex === 0) {
+                  endIndex = Math.min(totalSteps - 1, windowSize * 2);
+                } else if (endIndex === totalSteps - 1) {
+                  startIndex = Math.max(0, totalSteps - 1 - windowSize * 2);
+                }
+              }
+
+              const visibleSteps = stepLabels.slice(startIndex, endIndex + 1);
+
+              return (
+                <>
+                  {/* First step + ellipsis if needed */}
+                  {showStart && (
+                    <>
+                      <button
+                        onClick={() => goToStep(0)}
+                        className="flex flex-col items-center group cursor-pointer"
+                        aria-label={`Go to Step 1: ${stepLabels[0]}`}
+                      >
+                        <div className="w-3 h-3 rounded-full bg-blue-500 group-hover:bg-blue-600 transition-all" />
+                        <span className="text-xs mt-1 text-gray-400 hidden md:block">{stepLabels[0]}</span>
+                      </button>
+                      <span className="text-gray-400 text-sm px-1">...</span>
+                    </>
+                  )}
+
+                  {/* Visible steps in window */}
+                  {visibleSteps.map((label: string, i: number) => {
+                    const index = startIndex + i;
+                    return (
+                      <button
+                        key={`${label}-${index}`}
+                        onClick={() => index < currentStep && goToStep(index)}
+                        disabled={index >= currentStep}
+                        className={`flex flex-col items-center group ${
+                          index < currentStep ? 'cursor-pointer' : 'cursor-default'
+                        }`}
+                        aria-label={`${index < currentStep ? 'Go to ' : ''}Step ${index + 1}: ${label}`}
+                      >
+                        <div
+                          className={`w-3 h-3 rounded-full transition-all ${
+                            index < currentStep
+                              ? 'bg-blue-500 group-hover:bg-blue-600'
+                              : index === currentStep
+                              ? 'bg-blue-500 ring-2 ring-blue-200'
+                              : 'bg-gray-300'
+                          }`}
+                        />
+                        <span
+                          className={`text-xs mt-1 hidden md:block whitespace-nowrap ${
+                            index === currentStep ? 'text-blue-600 font-medium' : 'text-gray-400'
+                          }`}
+                        >
+                          {label}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  {/* Ellipsis + last step if needed */}
+                  {showEnd && (
+                    <>
+                      <span className="text-gray-400 text-sm px-1">...</span>
+                      <button
+                        onClick={() => {}}
+                        disabled
+                        className="flex flex-col items-center group cursor-default"
+                        aria-label={`Step ${totalSteps}: ${stepLabels[totalSteps - 1]}`}
+                      >
+                        <div className="w-3 h-3 rounded-full bg-gray-300 transition-all" />
+                        <span className="text-xs mt-1 text-gray-400 hidden md:block">{stepLabels[totalSteps - 1]}</span>
+                      </button>
+                    </>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
 

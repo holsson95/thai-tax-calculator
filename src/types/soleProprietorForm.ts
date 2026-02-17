@@ -108,6 +108,7 @@ export function createDefaultSoleProprietorFormData(): SoleProprietorFormData {
     // Residency
     daysInThailand: 0,
     isThaiResident: false,
+    visaType: 'regular',
 
     // Foreign income
     hasForeignIncome: false,

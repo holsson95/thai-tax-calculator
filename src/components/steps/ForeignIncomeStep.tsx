@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FreelancerStepProps,
   ForeignIncomeEntry,
@@ -9,7 +9,6 @@ import { COMMON_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
 const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
   formData,
   setFormData,
-  nextStep,
   showValidationErrors
 }) => {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
@@ -125,25 +124,19 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     0
   );
 
-  // Handle continue
-  const handleContinue = () => {
-    // If no foreign income checkbox was unchecked or no entries, skip validation
-    if (!formData.hasForeignIncome || formData.foreignIncomeEntries.length === 0) {
-      nextStep(formData);
-      return;
+  // Validate entries when showValidationErrors becomes true
+  useEffect(() => {
+    if (showValidationErrors && formData.hasForeignIncome && formData.foreignIncomeEntries.length > 0) {
+      validateEntries();
     }
-
-    if (validateEntries()) {
-      nextStep(formData);
-    }
-  };
+  }, [showValidationErrors]);
 
   // Skip this step if no foreign income
   if (!formData.hasForeignIncome) {
     return (
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Foreign Income</h2>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-center">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
@@ -151,15 +144,9 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
             You indicated that you don't have foreign income remitted to Thailand.
           </p>
           <p className="text-sm text-gray-500 mt-2">
-            Click continue to proceed to the next step.
+            Click Next to proceed to the next step.
           </p>
         </div>
-        <button
-          onClick={() => nextStep(formData)}
-          className="w-full py-3 px-6 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-        >
-          Continue
-        </button>
       </div>
     );
   }
@@ -426,7 +413,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
       {/* Summary */}
       {formData.foreignIncomeEntries.length > 0 && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
           <h3 className="font-semibold text-gray-800 mb-3">Summary</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
@@ -456,14 +443,6 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
           </div>
         </div>
       )}
-
-      {/* Continue Button */}
-      <button
-        onClick={handleContinue}
-        className="w-full py-3 px-6 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-      >
-        Continue
-      </button>
     </div>
   );
 };

@@ -13,8 +13,6 @@ interface ExpenseMethodOption {
 const ExpenseMethodStep: React.FC<FreelancerStepProps> = ({
   formData,
   setFormData,
-  nextStep,
-  prevStep,
 }) => {
   // Calculate flat-rate deduction preview
   const flatRateResult = calculateTotalFlatRateDeductions(formData.thaiIncomeEntries);
@@ -58,10 +56,6 @@ const ExpenseMethodStep: React.FC<FreelancerStepProps> = ({
       ...formData,
       expenseMethod: method,
     });
-  };
-
-  const handleContinue = () => {
-    nextStep(formData);
   };
 
   return (
@@ -198,7 +192,7 @@ const ExpenseMethodStep: React.FC<FreelancerStepProps> = ({
       )}
 
       {formData.expenseMethod === 'auto_compare' && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <svg className="h-5 w-5 text-green-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -212,24 +206,6 @@ const ExpenseMethodStep: React.FC<FreelancerStepProps> = ({
           </div>
         </div>
       )}
-
-      {/* Navigation Buttons */}
-      <div className="flex gap-3">
-        {prevStep && (
-          <button
-            onClick={prevStep}
-            className="flex-1 py-3 px-6 rounded-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            Back
-          </button>
-        )}
-        <button
-          onClick={handleContinue}
-          className="flex-1 py-3 px-6 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-        >
-          {formData.expenseMethod === 'force_flat' ? 'Continue' : 'Next: Enter Expenses'}
-        </button>
-      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FreelancerStepProps,
   ExpenseEntry,
@@ -15,8 +15,6 @@ import {
 const ActualExpensesStep: React.FC<FreelancerStepProps> = ({
   formData,
   setFormData,
-  nextStep,
-  prevStep,
   showValidationErrors,
 }) => {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
@@ -100,31 +98,19 @@ const ActualExpensesStep: React.FC<FreelancerStepProps> = ({
     label,
   }));
 
-  // Handle continue
-  const handleContinue = () => {
-    // For force_flat, expenses are optional
-    if (formData.expenseMethod === 'force_flat') {
-      nextStep(formData);
-      return;
+  // Validate expenses when showValidationErrors becomes true
+  useEffect(() => {
+    if (showValidationErrors && formData.expenseMethod !== 'force_flat' && formData.actualExpenses.length > 0) {
+      validateExpenses();
     }
-
-    // For auto_compare, expenses are optional but we validate if any exist
-    if (formData.actualExpenses.length === 0) {
-      nextStep(formData);
-      return;
-    }
-
-    if (validateExpenses()) {
-      nextStep(formData);
-    }
-  };
+  }, [showValidationErrors]);
 
   // Skip this step if using flat-rate only method
   if (formData.expenseMethod === 'force_flat') {
     return (
       <div>
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Expense Tracking</h2>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-center">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -134,22 +120,6 @@ const ActualExpensesStep: React.FC<FreelancerStepProps> = ({
           <p className="text-sm text-gray-500">
             Your deduction of <span className="font-semibold text-green-600">฿{flatRateDeductions.total.toLocaleString()}</span> will be calculated automatically based on your income types.
           </p>
-        </div>
-        <div className="flex gap-3">
-          {prevStep && (
-            <button
-              onClick={prevStep}
-              className="flex-1 py-3 px-6 rounded-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              Back
-            </button>
-          )}
-          <button
-            onClick={() => nextStep(formData)}
-            className="flex-1 py-3 px-6 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-          >
-            Continue
-          </button>
         </div>
       </div>
     );
@@ -420,37 +390,19 @@ const ActualExpensesStep: React.FC<FreelancerStepProps> = ({
 
       {/* No expenses message */}
       {formData.actualExpenses.length === 0 && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-center">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
           <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z" />
           </svg>
           <p className="text-gray-600 mb-2">No expenses added yet</p>
           <p className="text-sm text-gray-500">
             {formData.expenseMethod === 'auto_compare'
-              ? 'Add your expenses to compare with the flat-rate deduction, or continue to use flat-rate only.'
+              ? 'Add your expenses to compare with the flat-rate deduction, or click Next to use flat-rate only.'
               : 'Click "Add Expense" to enter your business expenses.'
             }
           </p>
         </div>
       )}
-
-      {/* Navigation Buttons */}
-      <div className="flex gap-3">
-        {prevStep && (
-          <button
-            onClick={prevStep}
-            className="flex-1 py-3 px-6 rounded-lg font-medium border-2 border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-          >
-            Back
-          </button>
-        )}
-        <button
-          onClick={handleContinue}
-          className="flex-1 py-3 px-6 rounded-lg font-medium bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-        >
-          Continue
-        </button>
-      </div>
     </div>
   );
 };

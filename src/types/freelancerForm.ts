@@ -18,6 +18,21 @@ export type IncomeType =
 export type ExpenseMethod = 'auto_compare' | 'force_actual' | 'force_flat';
 
 /**
+ * Visa type for tax treatment determination
+ * LTR visa holders have special tax benefits:
+ * - wealthy_global, wealthy_pensioner, work_from_thailand: Foreign income exempt
+ * - highly_skilled: 17% flat rate on Thai employment income
+ */
+export type VisaType =
+  | 'regular'
+  | 'ltr_wealthy_global'
+  | 'ltr_wealthy_pensioner'
+  | 'ltr_work_from_thailand'
+  | 'ltr_highly_skilled'
+  | 'thailand_privilege'
+  | 'other';
+
+/**
  * Foreign income entry with remittance tracking
  * Per 2024+ rules: foreign income taxable if earned on/after 2024-01-01 and remitted to Thailand
  */
@@ -82,6 +97,7 @@ export interface FreelancerFormData extends Omit<TaxFormData, 'annualIncome'> {
   // Residency determination
   daysInThailand: number;
   isThaiResident: boolean; // Computed: daysInThailand >= 180
+  visaType: VisaType; // Visa type for LTR tax benefits
 
   // Foreign income tracking
   hasForeignIncome: boolean;
@@ -197,6 +213,11 @@ export interface FreelancerTaxResult {
   expenseComparison?: ExpenseComparisonResult;
   foreignIncomeTaxability: ForeignIncomeTaxability[];
   incomeByType: Map<IncomeType, number>;
+
+  // LTR visa benefits
+  ltrBenefitApplied: boolean;
+  ltrFlatRateTax?: number; // Tax calculated at 17% flat rate for LTR Highly Skilled
+  ltrForeignIncomeExempt: boolean; // True if foreign income is exempt due to LTR visa
 }
 
 /**
@@ -221,6 +242,7 @@ export function createDefaultFreelancerFormData(): FreelancerFormData {
     // Residency
     daysInThailand: 0,
     isThaiResident: false,
+    visaType: 'regular',
 
     // Foreign income
     hasForeignIncome: false,

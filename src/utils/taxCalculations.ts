@@ -12,8 +12,17 @@ import {
   getIncomeByType,
   estimateTaxBracketRate,
 } from './expenseCalculations';
-import { analyzeForeignIncome } from './foreignIncomeCalculations';
+import {
+  analyzeForeignIncome,
+  hasLTRFlatRateBenefit,
+  hasLTRForeignIncomeExemption,
+} from './foreignIncomeCalculations';
 import { checkPND94Obligation, checkVATRegistration } from './obligationChecks';
+
+/**
+ * LTR Highly Skilled Professional flat tax rate (17%)
+ */
+const LTR_HIGHLY_SKILLED_FLAT_RATE = 0.17;
 
 /**
  * Calculate child allowance based on birth year
@@ -271,13 +280,21 @@ export function calculateFreelancerDeductions(
 
 /**
  * Calculate complete annual tax for freelancers/self-employed
- * Handles foreign income, expense deductions, and tax obligations
+ * Handles foreign income, expense deductions, tax obligations, and LTR visa benefits
  */
 export function calculateFreelancerTax(formData: FreelancerFormData): FreelancerTaxResult {
+  // Check LTR visa benefits
+  const isLTRHighlySkilled = hasLTRFlatRateBenefit(formData.visaType);
+  const isLTRForeignExempt = hasLTRForeignIncomeExemption(formData.visaType);
+
   // Step 1: Calculate Thai income
   const thaiIncomeTotal = getTotalGrossIncome(formData.thaiIncomeEntries);
   const withholdingCredits = getTotalWithholding(formData.thaiIncomeEntries);
   const incomeByType = getIncomeByType(formData.thaiIncomeEntries);
+
+  // For LTR Highly Skilled: Calculate salary income separately for 17% flat rate
+  const salaryIncome = incomeByType.get('salary_40_1') || 0;
+  const nonSalaryThaiIncome = thaiIncomeTotal - salaryIncome;
 
   // Step 2: Analyze foreign income
   const foreignAnalysis = analyzeForeignIncome(formData);
@@ -286,9 +303,13 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   const foreignTaxCredits = foreignAnalysis.totalForeignTaxCredit;
 
   // Step 3: Calculate total gross income
+  // For LTR Highly Skilled: salary income taxed at flat rate, so exclude from progressive calculation
+  const grossIncomeForProgressiveTax = isLTRHighlySkilled
+    ? nonSalaryThaiIncome + taxableForeignIncome
+    : thaiIncomeTotal + taxableForeignIncome;
   const grossIncome = thaiIncomeTotal + taxableForeignIncome;
 
-  // Step 4: Calculate expense deduction
+  // Step 4: Calculate expense deduction (only for non-salary income if LTR Highly Skilled)
   const expenseDeduction = getEffectiveDeduction(
     formData.thaiIncomeEntries,
     formData.actualExpenses,
@@ -300,7 +321,7 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
     ? compareExpenseDeductions(
         formData.thaiIncomeEntries,
         formData.actualExpenses,
-        estimateTaxBracketRate(grossIncome - expenseDeduction)
+        estimateTaxBracketRate(grossIncomeForProgressiveTax - expenseDeduction)
       )
     : undefined;
 
@@ -308,16 +329,27 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   const totalAllowances = calculateFreelancerAllowances(formData);
 
   // Step 7: Income after expense deduction and allowances
-  const incomeAfterDeductions = Math.max(0, grossIncome - expenseDeduction - totalAllowances);
+  const incomeAfterDeductions = Math.max(0, grossIncomeForProgressiveTax - expenseDeduction - totalAllowances);
 
   // Step 8: Calculate additional deductions (insurance, funds, donations)
   const totalDeductions = calculateFreelancerDeductions(formData, incomeAfterDeductions);
 
-  // Step 9: Calculate final taxable income
+  // Step 9: Calculate final taxable income (for progressive brackets)
   const taxableIncome = Math.max(0, incomeAfterDeductions - totalDeductions);
 
-  // Step 10: Calculate gross tax using progressive brackets
-  const grossTaxBeforeCredits = calculateThaiTax(taxableIncome);
+  // Step 10: Calculate tax
+  let grossTaxBeforeCredits: number;
+  let ltrFlatRateTax = 0;
+
+  if (isLTRHighlySkilled && salaryIncome > 0) {
+    // LTR Highly Skilled: 17% flat rate on salary income + progressive on rest
+    ltrFlatRateTax = salaryIncome * LTR_HIGHLY_SKILLED_FLAT_RATE;
+    const progressiveTax = calculateThaiTax(taxableIncome);
+    grossTaxBeforeCredits = ltrFlatRateTax + progressiveTax;
+  } else {
+    // Standard progressive tax calculation
+    grossTaxBeforeCredits = calculateThaiTax(taxableIncome);
+  }
 
   // Step 11: Apply credits (withholding and foreign tax credits)
   // Foreign tax credit is limited to Thai tax on that foreign income
@@ -358,5 +390,9 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
     expenseComparison,
     foreignIncomeTaxability: foreignAnalysis.entries,
     incomeByType,
+    // LTR-specific fields
+    ltrBenefitApplied: isLTRHighlySkilled || isLTRForeignExempt,
+    ltrFlatRateTax: isLTRHighlySkilled ? ltrFlatRateTax : undefined,
+    ltrForeignIncomeExempt: isLTRForeignExempt,
   };
 }

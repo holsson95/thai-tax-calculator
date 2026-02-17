@@ -33,7 +33,6 @@ const REGISTRATION_TYPES: { value: BusinessRegistrationType; label: string; desc
 const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
   formData,
   setFormData,
-  nextStep,
   showValidationErrors,
 }) => {
   const [touched, setTouched] = useState({
@@ -86,16 +85,6 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
     setTouched({ ...touched, registrationType: true });
   };
 
-  const handleContinue = () => {
-    const isValid =
-      businessProfile.businessName.trim().length > 0 &&
-      businessProfile.businessCategory !== undefined;
-
-    if (isValid) {
-      nextStep(formData);
-    }
-  };
-
   // Validation states
   const showNameError =
     (touched.businessName || showValidationErrors) &&
@@ -104,10 +93,6 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
   const showCategoryError =
     (touched.businessCategory || showValidationErrors) &&
     !businessProfile.businessCategory;
-
-  const isFormValid =
-    businessProfile.businessName.trim().length > 0 &&
-    businessProfile.businessCategory !== undefined;
 
   return (
     <div>
@@ -274,19 +259,6 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Continue Button */}
-      <button
-        onClick={handleContinue}
-        disabled={!isFormValid}
-        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-          isFormValid
-            ? 'bg-blue-500 text-white hover:bg-blue-600'
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-        }`}
-      >
-        Continue
-      </button>
     </div>
   );
 };

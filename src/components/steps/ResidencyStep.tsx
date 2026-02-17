@@ -1,11 +1,21 @@
 import { useState, useEffect } from 'react';
-import { FreelancerStepProps } from '../../types/freelancerForm';
+import { FreelancerStepProps, VisaType } from '../../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../../config/taxConfig';
+
+// Visa type options for LTR tax benefits
+const VISA_OPTIONS: { value: VisaType; label: string; description: string }[] = [
+  { value: 'regular', label: 'Regular visa / no special status', description: 'Standard tax treatment' },
+  { value: 'ltr_wealthy_global', label: 'LTR: Wealthy Global Citizen', description: 'Foreign income tax exempt' },
+  { value: 'ltr_wealthy_pensioner', label: 'LTR: Wealthy Pensioner', description: 'Foreign income tax exempt' },
+  { value: 'ltr_work_from_thailand', label: 'LTR: Work-from-Thailand Professional', description: 'Foreign income tax exempt' },
+  { value: 'ltr_highly_skilled', label: 'LTR: Highly Skilled Professional', description: '17% flat rate on Thai employment income' },
+  { value: 'thailand_privilege', label: 'Thailand Privilege / Elite', description: 'Standard tax treatment (no special benefits)' },
+  { value: 'other', label: 'Other', description: 'Standard tax treatment' },
+];
 
 const ResidencyStep: React.FC<FreelancerStepProps> = ({
   formData,
   setFormData,
-  nextStep,
   showValidationErrors
 }) => {
   const [localDays, setLocalDays] = useState<string>(
@@ -49,17 +59,13 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
     setFormData({ ...formData, hasForeignIncome });
   };
 
-  const handleContinue = () => {
-    if (isValidDays && daysNumber > 0) {
-      const updatedData = {
-        ...formData,
-        daysInThailand: daysNumber,
-        isThaiResident: isResident,
-      };
-      setFormData(updatedData);
-      nextStep(updatedData);
-    }
+  const handleVisaTypeChange = (visaType: VisaType) => {
+    setFormData({ ...formData, visaType });
   };
+
+  // Check if selected visa grants foreign income exemption
+  const hasForeignIncomeExemption = ['ltr_wealthy_global', 'ltr_wealthy_pensioner', 'ltr_work_from_thailand'].includes(formData.visaType);
+  const selectedVisaOption = VISA_OPTIONS.find(v => v.value === formData.visaType);
 
   const showError = (touched || showValidationErrors) && (!isValidDays || daysNumber === 0);
 
@@ -143,8 +149,54 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
         </div>
       )}
 
-      {/* Foreign Income Question - Only shown for residents */}
+      {/* Visa Type Selection - Only shown for residents */}
       {isResident && daysNumber > 0 && (
+        <div className="mb-6 animate-fadeIn">
+          <label htmlFor="visaType" className="block text-sm font-medium text-gray-700 mb-2">
+            What type of visa or residency status do you have?
+          </label>
+          <select
+            id="visaType"
+            value={formData.visaType}
+            onChange={(e) => handleVisaTypeChange(e.target.value as VisaType)}
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+          >
+            {VISA_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          {selectedVisaOption && (
+            <p className="mt-2 text-sm text-gray-600">
+              {selectedVisaOption.description}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* LTR Foreign Income Exemption Notice */}
+      {isResident && hasForeignIncomeExemption && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6 animate-fadeIn">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-purple-100">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-purple-800">LTR Tax Benefit Applied</h3>
+              <p className="text-sm text-purple-700">
+                As an LTR visa holder ({selectedVisaOption?.label}), your foreign income remitted to Thailand is <strong>tax exempt</strong>.
+                You can still track foreign income for your records, but it will not be included in your taxable income calculation.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Foreign Income Question - Only shown for residents without LTR exemption */}
+      {isResident && daysNumber > 0 && !hasForeignIncomeExemption && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-fadeIn">
           <div className="flex items-start gap-3 mb-4">
             <div className="flex-shrink-0 mt-0.5">
@@ -174,6 +226,21 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
         </div>
       )}
 
+      {/* Foreign Income Tracking for LTR holders - Optional */}
+      {isResident && hasForeignIncomeExemption && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.hasForeignIncome}
+              onChange={(e) => handleForeignIncomeChange(e.target.checked)}
+              className="w-5 h-5 rounded border-gray-300 text-gray-500 focus:ring-gray-500"
+            />
+            <span className="text-gray-700">I want to track my foreign income (optional, for records only)</span>
+          </label>
+        </div>
+      )}
+
       {/* Info box for non-residents */}
       {!isResident && daysNumber > 0 && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
@@ -182,19 +249,6 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
           </p>
         </div>
       )}
-
-      {/* Continue Button */}
-      <button
-        onClick={handleContinue}
-        disabled={!isValidDays || daysNumber === 0}
-        className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
-          isValidDays && daysNumber > 0
-            ? 'bg-blue-500 text-white hover:bg-blue-600'
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-        }`}
-      >
-        Continue
-      </button>
     </div>
   );
 };

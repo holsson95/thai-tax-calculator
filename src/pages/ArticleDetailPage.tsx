@@ -111,15 +111,12 @@ const ArticleDetailPage: React.FC = () => {
 
 // Simple markdown-like formatting
 function formatContent(content: string): string {
-  return content
+  let result = content
     // Headers
     .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h2>')
     .replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">$1</h3>')
     // Bold
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Lists
-    .replace(/^- (.+)$/gm, '<li class="ml-4">$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm, '<li class="ml-4"><span class="font-medium">$1.</span> $2</li>')
     // Tables (simple)
     .replace(/\|(.+)\|/g, (match) => {
       const cells = match.split('|').filter(c => c.trim());
@@ -130,7 +127,27 @@ function formatContent(content: string): string {
       const tag = isHeader ? 'th' : 'td';
       const cellsHtml = cells.map(c => `<${tag} class="border border-gray-200 px-4 py-2">${c.trim()}</${tag}>`).join('');
       return `<tr>${cellsHtml}</tr>`;
-    })
+    });
+
+  // Process unordered lists (bullet points)
+  result = result.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line => {
+      const text = line.replace(/^- /, '');
+      return `<li class="ml-4">${text}</li>`;
+    }).join('');
+    return `<ul class="list-disc list-inside mb-4 text-gray-600">${items}</ul>`;
+  });
+
+  // Process ordered lists (numbered)
+  result = result.replace(/(^\d+\. .+$(\n\d+\. .+$)*)/gm, (match) => {
+    const items = match.split('\n').map(line => {
+      const text = line.replace(/^\d+\. /, '');
+      return `<li class="ml-4">${text}</li>`;
+    }).join('');
+    return `<ol class="list-decimal list-inside mb-4 text-gray-600">${items}</ol>`;
+  });
+
+  result = result
     // Paragraphs
     .replace(/\n\n/g, '</p><p class="mb-4 text-gray-600 leading-relaxed">')
     // Wrap in paragraph
@@ -138,6 +155,8 @@ function formatContent(content: string): string {
     .replace(/$/, '</p>')
     // Clean up empty paragraphs
     .replace(/<p class="mb-4 text-gray-600 leading-relaxed"><\/p>/g, '');
+
+  return result;
 }
 
 export default ArticleDetailPage;

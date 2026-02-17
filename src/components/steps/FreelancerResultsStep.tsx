@@ -85,6 +85,30 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
         Based on your freelance/self-employment income
       </p>
 
+      {/* LTR Visa Benefit Notice */}
+      {result.ltrBenefitApplied && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-purple-100">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-purple-800">LTR Visa Tax Benefits Applied</h3>
+              <ul className="text-sm text-purple-700 mt-1 space-y-1">
+                {result.ltrForeignIncomeExempt && (
+                  <li>• Foreign income is tax exempt under your LTR visa status</li>
+                )}
+                {result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0 && (
+                  <li>• 17% flat tax rate applied to employment income ({formatThb(result.ltrFlatRateTax)} tax)</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Result Card */}
       <div className={`${refundOrOwedBg} border-2 rounded-xl p-6 mb-6 text-center`}>
         <p className="text-sm text-gray-600 mb-1">{refundOrOwedLabel}</p>
@@ -260,6 +284,13 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
             {result.foreignIncomeTaxability.length > 0 && (
               <div className="mb-4">
                 <h4 className="font-medium text-gray-700 mb-2">Foreign Income Analysis</h4>
+                {result.ltrForeignIncomeExempt && (
+                  <div className="bg-purple-50 border border-purple-100 rounded p-2 mb-2">
+                    <p className="text-xs text-purple-700">
+                      <strong>LTR Visa Exemption:</strong> All foreign income is tax exempt under your visa status.
+                    </p>
+                  </div>
+                )}
                 <div className="text-sm space-y-2">
                   {result.foreignIncomeTaxability.map((item, idx) => (
                     <div key={idx} className="p-2 bg-gray-50 rounded">
@@ -268,7 +299,7 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                           {item.entry.country} - {item.entry.description || 'Foreign Income'}
                         </span>
                         <span className={item.isTaxable ? 'text-red-600' : 'text-green-600'}>
-                          {item.isTaxable ? 'Taxable' : 'Not Taxable'}
+                          {item.isTaxable ? 'Taxable' : 'Exempt'}
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{item.reason}</p>
@@ -286,16 +317,33 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
             {/* Tax Bracket Breakdown */}
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Tax by Bracket</h4>
+              <h4 className="font-medium text-gray-700 mb-2">Tax Calculation</h4>
               <div className="text-sm space-y-1">
-                {taxBrackets.map((bracket) => (
-                  <div key={bracket.label} className="flex justify-between">
-                    <span className="text-gray-600">
-                      {bracket.label} ({bracket.rate}%)
-                    </span>
-                    <span>{formatThb(bracket.tax)}</span>
+                {/* LTR Flat Rate Tax (if applicable) */}
+                {result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0 && (
+                  <div className="flex justify-between text-purple-700 bg-purple-50 p-2 rounded mb-2">
+                    <span>Employment Income (LTR 17% flat rate)</span>
+                    <span>{formatThb(result.ltrFlatRateTax)}</span>
                   </div>
-                ))}
+                )}
+
+                {/* Progressive Tax Brackets */}
+                {taxBrackets.length > 0 && (
+                  <>
+                    {result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0 && (
+                      <p className="text-xs text-gray-500 mb-1">Other income (progressive rates):</p>
+                    )}
+                    {taxBrackets.map((bracket) => (
+                      <div key={bracket.label} className="flex justify-between">
+                        <span className="text-gray-600">
+                          {bracket.label} ({bracket.rate}%)
+                        </span>
+                        <span>{formatThb(bracket.tax)}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
+
                 <div className="flex justify-between font-medium border-t border-gray-200 pt-1 mt-2">
                   <span>Total Tax</span>
                   <span>{formatThb(result.grossTaxBeforeCredits)}</span>
