@@ -1,4 +1,5 @@
 import { IncomeType, ExpenseCategory } from '../types/freelancerForm';
+import { BusinessCategory } from '../types/soleProprietorForm';
 
 /**
  * Flat-rate deduction percentages per income type (Revenue Code sections)
@@ -168,3 +169,51 @@ export function getPND94Threshold(
   }
   return TAX_THRESHOLDS.PND94_SINGLE;
 }
+
+/**
+ * Business category labels for UI display
+ */
+export const BUSINESS_CATEGORY_LABELS: Record<BusinessCategory, string> = {
+  retail_trade: 'Retail / Wholesale Trade',
+  manufacturing: 'Manufacturing',
+  service_business: 'Service Business',
+  restaurant_food: 'Restaurant / Food Service',
+  transportation: 'Transportation',
+  construction: 'Construction',
+  professional_service: 'Professional Services',
+  rental_property: 'Property Rental',
+  agriculture: 'Agriculture',
+  other_business: 'Other Business',
+};
+
+/**
+ * Business category descriptions for UI display
+ */
+export const BUSINESS_CATEGORY_DESCRIPTIONS: Record<BusinessCategory, string> = {
+  retail_trade: 'Selling goods - 60% flat-rate deduction',
+  manufacturing: 'Producing goods for sale - 60% flat-rate deduction',
+  service_business: 'General services - 40% flat-rate deduction',
+  restaurant_food: 'Food and beverage business - 60% flat-rate deduction',
+  transportation: 'Delivery and logistics - 40% flat-rate deduction',
+  construction: 'Building and contracting - 40% flat-rate deduction',
+  professional_service: 'Legal, accounting, consulting - 30% flat-rate deduction',
+  rental_property: 'Renting property - 30% flat-rate deduction',
+  agriculture: 'Farming and agricultural - 60% flat-rate deduction',
+  other_business: 'Other business activities - varies',
+};
+
+/**
+ * Flat-rate deduction percentages by business category
+ */
+export const BUSINESS_FLAT_RATE_DEDUCTIONS: Record<BusinessCategory, number> = {
+  retail_trade: 0.60,
+  manufacturing: 0.60,
+  service_business: 0.40,
+  restaurant_food: 0.60,
+  transportation: 0.40,
+  construction: 0.40,
+  professional_service: 0.30,
+  rental_property: 0.30,
+  agriculture: 0.60,
+  other_business: 0.40,
+};

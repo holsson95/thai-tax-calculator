@@ -4,10 +4,18 @@ import {
   calculateDeductions,
   calculateAnnualTax,
   calculateChildAllowance,
+  calculateFreelancerTax,
   formatThb,
   formatPercent,
 } from '../taxCalculations';
 import { TaxFormData, TAX_CONSTANTS } from '../../types/taxForm';
+import {
+  FreelancerFormData,
+  ThaiIncomeEntry,
+  ForeignIncomeEntry,
+  createDefaultFreelancerFormData,
+  generateEntryId,
+} from '../../types/freelancerForm';
 
 function createBaseFormData(overrides: Partial<TaxFormData> = {}): TaxFormData {
   return {
@@ -326,5 +334,477 @@ describe('formatPercent', () => {
     expect(formatPercent(4.3)).toBe('4.30%');
     expect(formatPercent(10)).toBe('10.00%');
     expect(formatPercent(0.5)).toBe('0.50%');
+  });
+});
+
+// Helper function to create freelancer form data
+function createFreelancerFormData(overrides: Partial<FreelancerFormData> = {}): FreelancerFormData {
+  return {
+    ...createDefaultFreelancerFormData(),
+    ...overrides,
+  };
+}
+
+// Helper to create a Thai income entry
+function createThaiIncomeEntry(
+  grossAmount: number,
+  incomeType: ThaiIncomeEntry['incomeType'] = 'business_sales_40_8',
+  monthReceived: number = 1,
+  withholdingAmount: number = 0
+): ThaiIncomeEntry {
+  return {
+    id: generateEntryId(),
+    grossAmount,
+    incomeType,
+    withholdingAmount,
+    monthReceived,
+    payerName: 'Test Client',
+    description: 'Test income',
+  };
+}
+
+// Helper to create a foreign income entry
+function createForeignIncomeEntry(
+  amountThb: number,
+  dateEarned: string,
+  dateRemitted: string | null = null,
+  foreignTaxPaid: number = 0
+): ForeignIncomeEntry {
+  return {
+    id: generateEntryId(),
+    amount: amountThb / 35, // Rough USD conversion
+    currency: 'USD',
+    amountThb,
+    dateEarned,
+    dateRemitted,
+    foreignTaxPaid,
+    description: 'Foreign work',
+    country: 'USA',
+  };
+}
+
+describe('calculateFreelancerTax', () => {
+  describe('basic Thai income calculations', () => {
+    it('calculates tax for freelancer with single business income source', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Income: 500,000
+      // Flat-rate deduction for business (40(8)): 60% = 300,000
+      // Personal allowance: 60,000
+      // Taxable: 500,000 - 300,000 - 60,000 = 140,000
+      // Tax: 0 (first 150k is exempt)
+      expect(result.grossIncome).toBe(500000);
+      expect(result.expenseDeduction).toBe(300000);
+      expect(result.totalAllowances).toBe(60000);
+      expect(result.taxableIncome).toBe(140000);
+      expect(result.grossTaxBeforeCredits).toBe(0);
+    });
+
+    it('calculates tax for liberal profession income (40(6)) at 30%', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(1000000, 'liberal_profession_40_6'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Income: 1,000,000
+      // Flat-rate deduction for liberal profession (40(6)): 30% = 300,000
+      // Personal allowance: 60,000
+      // Taxable: 1,000,000 - 300,000 - 60,000 = 640,000
+      expect(result.expenseDeduction).toBe(300000);
+      expect(result.taxableIncome).toBe(640000);
+      // Tax: 0 (150k) + 7,500 (150k at 5%) + 20,000 (200k at 10%) + 21,000 (140k at 15%) = 48,500
+      expect(result.grossTaxBeforeCredits).toBe(48500);
+    });
+
+    it('calculates tax for contractor income (40(7)) at 40%', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(800000, 'contractor_40_7'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Income: 800,000
+      // Flat-rate deduction for contractor (40(7)): 40% = 320,000
+      // Personal allowance: 60,000
+      // Taxable: 800,000 - 320,000 - 60,000 = 420,000
+      expect(result.expenseDeduction).toBe(320000);
+      expect(result.taxableIncome).toBe(420000);
+    });
+
+    it('handles multiple income types correctly', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(300000, 'business_sales_40_8'), // 60% = 180,000
+          createThaiIncomeEntry(200000, 'liberal_profession_40_6'), // 30% = 60,000
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.grossIncome).toBe(500000);
+      expect(result.expenseDeduction).toBe(240000); // 180,000 + 60,000
+      expect(result.incomeByType.size).toBe(2);
+    });
+  });
+
+  describe('withholding tax credits', () => {
+    it('applies withholding tax credits from income entries', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8', 1, 15000),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.withholdingCredits).toBe(15000);
+      // Tax: 0, withheld: 15,000 -> refund expected
+      expect(result.netTaxPayable).toBe(0);
+    });
+
+    it('correctly calculates refund when withholding exceeds tax', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(1000000, 'business_sales_40_8', 1, 50000),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // With withholding of 50,000, net tax should be reduced
+      expect(result.withholdingCredits).toBe(50000);
+    });
+  });
+
+  describe('foreign income calculations', () => {
+    it('includes taxable foreign income for Thai residents', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(350000, '2024-03-01', '2024-04-15', 10000),
+        ],
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Foreign income earned 2024+ and remitted = taxable
+      expect(result.foreignIncomeTotal).toBe(350000);
+      expect(result.taxableForeignIncome).toBe(350000);
+      expect(result.grossIncome).toBe(850000); // Thai + Foreign
+      expect(result.foreignTaxCredits).toBeGreaterThan(0);
+    });
+
+    it('excludes foreign income not remitted to Thailand', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(350000, '2024-03-01', null), // Not remitted
+        ],
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.foreignIncomeTotal).toBe(350000);
+      expect(result.taxableForeignIncome).toBe(0);
+      expect(result.grossIncome).toBe(500000); // Only Thai income
+    });
+
+    it('excludes foreign income for non-residents', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 150, // Less than 180
+        isThaiResident: false,
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(350000, '2024-03-01', '2024-04-15'),
+        ],
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.taxableForeignIncome).toBe(0);
+      expect(result.grossIncome).toBe(500000);
+    });
+
+    it('excludes foreign income earned before 2024', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(350000, '2023-06-01', '2024-04-15'), // Earned before 2024
+        ],
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.taxableForeignIncome).toBe(0);
+      expect(result.foreignIncomeTaxability[0].isTaxable).toBe(false);
+    });
+  });
+
+  describe('expense comparison (auto_compare)', () => {
+    it('generates expense comparison when using auto_compare', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'auto_compare',
+        actualExpenses: [
+          {
+            id: generateEntryId(),
+            category: 'equipment',
+            amount: 200000,
+            hasReceipt: true,
+            description: 'Computer',
+          },
+        ],
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.expenseComparison).toBeDefined();
+      expect(result.expenseComparison?.flatRateDeduction).toBe(300000); // 60%
+      expect(result.expenseComparison?.actualDeduction).toBe(200000);
+      expect(result.expenseComparison?.recommended).toBe('flat');
+    });
+
+    it('uses higher deduction in auto_compare mode', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'auto_compare',
+        actualExpenses: [
+          {
+            id: generateEntryId(),
+            category: 'equipment',
+            amount: 350000, // Higher than flat-rate
+            hasReceipt: true,
+            description: 'Equipment',
+          },
+        ],
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Actual expenses (350k) > flat-rate (300k), should use actual
+      expect(result.expenseDeduction).toBe(350000);
+      expect(result.expenseComparison?.recommended).toBe('actual');
+    });
+  });
+
+  describe('PND94 and VAT obligations', () => {
+    it('detects PND94 obligation for high Jan-Jun income', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(100000, 'business_sales_40_8', 3), // March - in first half
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Income in Jan-Jun > 60,000 threshold
+      expect(result.pnd94.required).toBe(true);
+      expect(result.pnd94.halfYearIncome).toBe(100000);
+    });
+
+    it('no PND94 obligation for low Jan-Jun income', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(50000, 'business_sales_40_8', 3),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.pnd94.required).toBe(false);
+    });
+
+    it('detects VAT registration requirement for high turnover', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(2000000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Turnover >= 1,800,000 requires VAT registration
+      expect(result.vat.required).toBe(true);
+      expect(result.vat.turnover).toBe(2000000);
+    });
+
+    it('no VAT obligation for turnover below threshold', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(1500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.vat.required).toBe(false);
+    });
+  });
+
+  describe('allowances and deductions', () => {
+    it('applies spouse allowance for married freelancer with no-income spouse', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(1000000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'married',
+        spouseHasNoIncome: true,
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Personal + spouse = 120,000
+      expect(result.totalAllowances).toBe(120000);
+    });
+
+    it('applies additional deductions (insurance, RMF, etc.)', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(1000000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+        hasLifeInsurance: true,
+        lifeInsurance: 100000,
+        hasRMF: true,
+        rmf: 200000,
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Total deductions should include expense + additional
+      expect(result.totalDeductions).toBeGreaterThan(result.expenseDeduction);
+    });
+  });
+
+  describe('edge cases', () => {
+    it('handles zero income gracefully', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        thaiIncomeEntries: [],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.grossIncome).toBe(0);
+      expect(result.taxableIncome).toBe(0);
+      expect(result.grossTaxBeforeCredits).toBe(0);
+      expect(result.effectiveRate).toBe(0);
+    });
+
+    it('handles only foreign income (no Thai income)', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 200,
+        isThaiResident: true,
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(500000, '2024-03-01', '2024-04-15'),
+        ],
+        thaiIncomeEntries: [],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.thaiIncomeTotal).toBe(0);
+      expect(result.taxableForeignIncome).toBe(500000);
+      expect(result.grossIncome).toBe(500000);
+    });
   });
 });

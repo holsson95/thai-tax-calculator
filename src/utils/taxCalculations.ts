@@ -1,5 +1,19 @@
 import { TaxFormData, TaxCalculationResult, TaxBreakdown, TAX_CONSTANTS } from '../types/taxForm';
+import {
+  FreelancerFormData,
+  FreelancerTaxResult,
+} from '../types/freelancerForm';
 import { calculateThaiTax } from './tax';
+import {
+  getEffectiveDeduction,
+  compareExpenseDeductions,
+  getTotalGrossIncome,
+  getTotalWithholding,
+  getIncomeByType,
+  estimateTaxBracketRate,
+} from './expenseCalculations';
+import { analyzeForeignIncome } from './foreignIncomeCalculations';
+import { checkPND94Obligation, checkVATRegistration } from './obligationChecks';
 
 /**
  * Calculate child allowance based on birth year
@@ -184,4 +198,165 @@ export function formatThb(amount: number): string {
  */
 export function formatPercent(value: number): string {
   return `${value.toFixed(2)}%`;
+}
+
+/**
+ * Calculate allowances for freelancer (similar to salaried but uses FreelancerFormData)
+ */
+export function calculateFreelancerAllowances(formData: FreelancerFormData): number {
+  let total = TAX_CONSTANTS.PERSONAL_ALLOWANCE;
+
+  if (formData.maritalStatus === 'married' && formData.spouseHasNoIncome) {
+    total += TAX_CONSTANTS.SPOUSE_ALLOWANCE;
+  }
+
+  if (formData.isAge65OrOlder) {
+    total += TAX_CONSTANTS.SENIOR_ALLOWANCE;
+  }
+
+  total += calculateChildAllowance(formData.children);
+
+  const eligibleParents = Math.min(formData.numberOfParents, TAX_CONSTANTS.MAX_PARENTS);
+  total += eligibleParents * TAX_CONSTANTS.PARENT_ALLOWANCE;
+
+  return total;
+}
+
+/**
+ * Calculate additional deductions for freelancer (insurance, funds, donations)
+ */
+export function calculateFreelancerDeductions(
+  formData: FreelancerFormData,
+  taxableIncomeBeforeDeductions: number
+): number {
+  let total = 0;
+
+  // Social security
+  if (formData.includeSocialSecurity) {
+    total += Math.min(formData.socialSecurityContribution, TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
+  }
+
+  // Insurance
+  if (formData.hasLifeInsurance) {
+    total += Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE);
+  }
+  if (formData.hasHealthInsurance) {
+    total += Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
+  }
+
+  // Retirement funds
+  if (formData.hasPensionFund) {
+    total += Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND);
+  }
+  if (formData.hasProvidentFund) {
+    total += Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND);
+  }
+  if (formData.hasRMF) {
+    total += Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF);
+  }
+  if (formData.hasSSF) {
+    total += Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF);
+  }
+
+  // Donations (limited to 10% of taxable income before donations)
+  if (formData.hasDonations) {
+    total += Math.min(
+      formData.donations,
+      taxableIncomeBeforeDeductions * TAX_CONSTANTS.MAX_DONATION_PERCENT
+    );
+  }
+
+  return total;
+}
+
+/**
+ * Calculate complete annual tax for freelancers/self-employed
+ * Handles foreign income, expense deductions, and tax obligations
+ */
+export function calculateFreelancerTax(formData: FreelancerFormData): FreelancerTaxResult {
+  // Step 1: Calculate Thai income
+  const thaiIncomeTotal = getTotalGrossIncome(formData.thaiIncomeEntries);
+  const withholdingCredits = getTotalWithholding(formData.thaiIncomeEntries);
+  const incomeByType = getIncomeByType(formData.thaiIncomeEntries);
+
+  // Step 2: Analyze foreign income
+  const foreignAnalysis = analyzeForeignIncome(formData);
+  const foreignIncomeTotal = foreignAnalysis.totalForeignIncome;
+  const taxableForeignIncome = foreignAnalysis.taxableForeignIncome;
+  const foreignTaxCredits = foreignAnalysis.totalForeignTaxCredit;
+
+  // Step 3: Calculate total gross income
+  const grossIncome = thaiIncomeTotal + taxableForeignIncome;
+
+  // Step 4: Calculate expense deduction
+  const expenseDeduction = getEffectiveDeduction(
+    formData.thaiIncomeEntries,
+    formData.actualExpenses,
+    formData.expenseMethod
+  );
+
+  // Step 5: Generate expense comparison if using auto_compare
+  const expenseComparison = formData.expenseMethod === 'auto_compare' || formData.expenseMethod === 'force_actual'
+    ? compareExpenseDeductions(
+        formData.thaiIncomeEntries,
+        formData.actualExpenses,
+        estimateTaxBracketRate(grossIncome - expenseDeduction)
+      )
+    : undefined;
+
+  // Step 6: Calculate allowances
+  const totalAllowances = calculateFreelancerAllowances(formData);
+
+  // Step 7: Income after expense deduction and allowances
+  const incomeAfterDeductions = Math.max(0, grossIncome - expenseDeduction - totalAllowances);
+
+  // Step 8: Calculate additional deductions (insurance, funds, donations)
+  const totalDeductions = calculateFreelancerDeductions(formData, incomeAfterDeductions);
+
+  // Step 9: Calculate final taxable income
+  const taxableIncome = Math.max(0, incomeAfterDeductions - totalDeductions);
+
+  // Step 10: Calculate gross tax using progressive brackets
+  const grossTaxBeforeCredits = calculateThaiTax(taxableIncome);
+
+  // Step 11: Apply credits (withholding and foreign tax credits)
+  // Foreign tax credit is limited to Thai tax on that foreign income
+  const maxForeignTaxCredit = taxableForeignIncome > 0 && grossIncome > 0
+    ? (taxableForeignIncome / grossIncome) * grossTaxBeforeCredits
+    : 0;
+  const effectiveForeignTaxCredit = Math.min(foreignTaxCredits, maxForeignTaxCredit);
+
+  const totalCredits = withholdingCredits + effectiveForeignTaxCredit;
+  const netTaxPayable = Math.max(0, grossTaxBeforeCredits - totalCredits);
+
+  // Step 12: Calculate effective rate
+  const effectiveRate = grossIncome > 0
+    ? (grossTaxBeforeCredits / grossIncome) * 100
+    : 0;
+
+  // Step 13: Check tax obligations
+  const pnd94 = checkPND94Obligation(formData);
+  const vat = checkVATRegistration(formData);
+
+  return {
+    grossIncome,
+    thaiIncomeTotal,
+    foreignIncomeTotal,
+    taxableForeignIncome,
+    expenseDeduction,
+    expenseMethod: formData.expenseMethod,
+    totalAllowances,
+    totalDeductions: expenseDeduction + totalDeductions, // Include expense deduction in total
+    taxableIncome,
+    grossTaxBeforeCredits,
+    withholdingCredits,
+    foreignTaxCredits: effectiveForeignTaxCredit,
+    netTaxPayable,
+    effectiveRate,
+    pnd94,
+    vat,
+    expenseComparison,
+    foreignIncomeTaxability: foreignAnalysis.entries,
+    incomeByType,
+  };
 }

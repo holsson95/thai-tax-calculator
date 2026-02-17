@@ -259,3 +259,9 @@ export const TAX_BRACKETS: TaxBracket[] = [
 
 // Re-export freelancer types for convenience
 export * from './freelancerForm';
+
+// Re-export sole proprietor types for convenience
+export * from './soleProprietorForm';
+
+// Re-export company owner types for convenience
+export * from './companyOwnerForm';

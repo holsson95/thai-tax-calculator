@@ -51,7 +51,7 @@ describe('EmploymentTypeStep', () => {
 
     expect(screen.getByText('Salaried Employee')).toBeInTheDocument();
     expect(screen.getByText('Self-Employed / Freelancer')).toBeInTheDocument();
-    expect(screen.getByText('Business Owner')).toBeInTheDocument();
+    expect(screen.getByText('Business Owner (Sole Proprietor)')).toBeInTheDocument();
   });
 
   it('updates formData and advances to next step when salaried is selected', () => {
@@ -98,7 +98,7 @@ describe('EmploymentTypeStep', () => {
     expect(nextStep).toHaveBeenCalled();
   });
 
-  it('updates formData and advances to next step when business owner is selected', () => {
+  it('updates formData and advances to next step when sole proprietor is selected', () => {
     const formData = createBaseFormData();
     const setFormData = vi.fn();
     const nextStep = vi.fn();
@@ -111,11 +111,11 @@ describe('EmploymentTypeStep', () => {
       />
     );
 
-    fireEvent.click(screen.getByText('Business Owner'));
+    fireEvent.click(screen.getByText('Business Owner (Sole Proprietor)'));
 
     expect(setFormData).toHaveBeenCalledWith({
       ...formData,
-      employmentType: 'business',
+      employmentType: 'sole_proprietor',
     });
     expect(nextStep).toHaveBeenCalled();
   });

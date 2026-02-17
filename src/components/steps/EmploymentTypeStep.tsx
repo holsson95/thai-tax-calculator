@@ -13,19 +13,26 @@ const EMPLOYMENT_TYPES = [
     label: 'Self-Employed / Freelancer',
     description: 'I work independently or as a contractor',
     icon: '👨‍💻',
-    comingSoon: true,
+    comingSoon: false,
   },
   {
-    value: 'business' as const,
-    label: 'Business Owner',
-    description: 'I own and operate a business',
+    value: 'sole_proprietor' as const,
+    label: 'Business Owner (Sole Proprietor)',
+    description: 'I own and operate an unincorporated business',
     icon: '🏢',
-    comingSoon: true,
+    comingSoon: false,
+  },
+  {
+    value: 'company_owner' as const,
+    label: 'Company Owner / Director',
+    description: 'I own or direct a limited company and receive salary/dividends',
+    icon: '🏛️',
+    comingSoon: false,
   },
 ];
 
 const EmploymentTypeStep: React.FC<StepProps> = ({ formData, setFormData, nextStep }) => {
-  const handleSelect = (type: 'salaried' | 'self-employed' | 'business') => {
+  const handleSelect = (type: 'salaried' | 'self-employed' | 'sole_proprietor' | 'company_owner') => {
     const updatedFormData = { ...formData, employmentType: type };
     setFormData(updatedFormData);
     nextStep(updatedFormData);
