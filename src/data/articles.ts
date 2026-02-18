@@ -165,11 +165,9 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
    - From your employer (Form 50 Tawi)
    - From banks (interest income)
    - From other payers
-
 2. **Personal Documents**
    - Thai ID or passport
    - Tax ID number
-
 3. **Supporting Documents**
    - Marriage certificate (for spouse allowance)
    - Birth certificates (for child allowance)
@@ -274,11 +272,27 @@ Thailand's social security system provides coverage for employees in companies w
 
 | Party | Contribution Rate | Maximum Monthly Contribution |
 |-------|------------------|------------------------------|
-| Employee | 5% | 750 THB |
-| Employer | 5% | 750 THB |
+| Employee | 5% | 875 THB |
+| Employer | 5% | 875 THB |
 | Government | 2.75% | - |
 
-The maximum wage base for contributions is 15,000 THB per month.
+The maximum wage base for contributions is 17,500 THB per month.
+
+## 2026 Changes
+
+Starting January 2026, the social security contribution ceiling increased significantly:
+
+|  Max   | Before 2026 | From 2026 |
+|--|-------------|-----------|
+| Maximum wage base | 15,000 THB | 17,500 THB |
+| Maximum employee contribution | 750 THB/month | 875 THB/month |
+| Maximum annual deduction | 9,000 THB | 10,500 THB |
+
+### What This Means for You
+
+- **Higher earners pay more:** If you earn over 15,000 THB/month, your contributions increased
+- **Better benefits:** Higher contributions support improved social security coverage
+- **Tax deduction increased:** You can now deduct up to 10,500 THB annually instead of 9,000 THB
 
 ## Coverage Benefits
 
@@ -307,7 +321,7 @@ The maximum wage base for contributions is 15,000 THB per month.
 
 Social security contributions are:
 - Deductible from your taxable income
-- Limited to actual contributions (max 9,000 THB annually)
+- Limited to actual contributions (max 10,500 THB annually from 2025)
 
 ## For Expats
 
@@ -315,8 +329,8 @@ Social security contributions are:
 - Exemptions may apply under bilateral agreements
 - Benefits continue after leaving employment (subject to conditions)
     `,
-    publishedAt: '2024-04-01',
-    readTime: 5,
+    publishedAt: '2025-01-15',
+    readTime: 6,
     category: 'Employment'
   },
   {

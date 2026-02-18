@@ -111,40 +111,94 @@ const ArticleDetailPage: React.FC = () => {
 
 // Simple markdown-like formatting
 function formatContent(content: string): string {
-  let result = content
+  // Process tables first (find consecutive lines starting with |)
+  let result = content.replace(
+    /(^\|.+\|$\n?)+/gm,
+    (tableBlock) => {
+      const lines = tableBlock.trim().split('\n');
+      let html = '<table class="w-full border-collapse mb-4">';
+
+      lines.forEach((line, index) => {
+        const cells = line.split('|').filter(c => c.trim());
+
+        // Skip separator row (contains only dashes)
+        if (cells.every(c => c.trim().match(/^[-:]+$/))) {
+          return;
+        }
+
+        // First row is header
+        const isHeader = index === 0;
+        const tag = isHeader ? 'th' : 'td';
+        const cellClass = isHeader
+          ? 'border border-gray-200 px-4 py-2 bg-gray-50 font-semibold text-left'
+          : 'border border-gray-200 px-4 py-2';
+
+        const cellsHtml = cells.map(c => `<${tag} class="${cellClass}">${c.trim()}</${tag}>`).join('');
+        html += `<tr>${cellsHtml}</tr>`;
+      });
+
+      html += '</table>';
+      return html;
+    }
+  );
+
+  result = result
     // Headers
     .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h2>')
     .replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">$1</h3>')
     // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    // Tables (simple)
-    .replace(/\|(.+)\|/g, (match) => {
-      const cells = match.split('|').filter(c => c.trim());
-      if (cells.every(c => c.trim().match(/^-+$/))) {
-        return ''; // Skip separator row
-      }
-      const isHeader = cells.some(c => c.includes('---'));
-      const tag = isHeader ? 'th' : 'td';
-      const cellsHtml = cells.map(c => `<${tag} class="border border-gray-200 px-4 py-2">${c.trim()}</${tag}>`).join('');
-      return `<tr>${cellsHtml}</tr>`;
-    });
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-  // Process unordered lists (bullet points)
+  // Process nested lists (numbered items with indented sub-bullets)
+  result = result.replace(
+    /(^\d+\. .+$(\n(   - .+$|\d+\. .+$))*)+/gm,
+    (match) => {
+      let html = '<ol class="list-decimal list-outside ml-5 mb-4 text-gray-600 space-y-3">';
+      let currentSubList: string[] = [];
+
+      const lines = match.split('\n');
+      lines.forEach((line, index) => {
+        const isNumbered = /^\d+\. /.test(line);
+        const isSubItem = /^   - /.test(line);
+
+        if (isNumbered) {
+          // Close previous sub-list if exists
+          if (currentSubList.length > 0) {
+            html += '<ul class="list-disc list-outside ml-5 mt-2 text-gray-500 space-y-1">';
+            html += currentSubList.join('');
+            html += '</ul>';
+            currentSubList = [];
+            html += '</li>';
+          } else if (index > 0) {
+            html += '</li>';
+          }
+
+          const text = line.replace(/^\d+\. /, '');
+          html += `<li>${text}`;
+        } else if (isSubItem) {
+          const text = line.replace(/^   - /, '');
+          currentSubList.push(`<li>${text}</li>`);
+        }
+      });
+
+      // Close final item
+      if (currentSubList.length > 0) {
+        html += '<ul class="list-disc list-outside ml-5 mt-2 text-gray-500 space-y-1">';
+        html += currentSubList.join('');
+        html += '</ul>';
+      }
+      html += '</li></ol>';
+      return html;
+    }
+  );
+
+  // Process simple unordered lists (non-indented)
   result = result.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
     const items = match.split('\n').map(line => {
       const text = line.replace(/^- /, '');
-      return `<li class="ml-4">${text}</li>`;
+      return `<li>${text}</li>`;
     }).join('');
-    return `<ul class="list-disc list-inside mb-4 text-gray-600">${items}</ul>`;
-  });
-
-  // Process ordered lists (numbered)
-  result = result.replace(/(^\d+\. .+$(\n\d+\. .+$)*)/gm, (match) => {
-    const items = match.split('\n').map(line => {
-      const text = line.replace(/^\d+\. /, '');
-      return `<li class="ml-4">${text}</li>`;
-    }).join('');
-    return `<ol class="list-decimal list-inside mb-4 text-gray-600">${items}</ol>`;
+    return `<ul class="list-disc list-outside ml-5 mb-4 text-gray-600 space-y-1">${items}</ul>`;
   });
 
   result = result

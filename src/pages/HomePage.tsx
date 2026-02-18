@@ -6,9 +6,9 @@ import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
 
 const HomePage: React.FC = () => {
-  // Get first 3 articles and first 3 FAQ items
+  // Get first 3 articles and 5 FAQ items from across categories
   const featuredArticles = articles.slice(0, 3);
-  const featuredFAQ = faqData[0]?.items.slice(0, 3) || [];
+  const featuredFAQ = faqData.flatMap(category => category.items).slice(0, 5);
 
   return (
     <div className="py-8">
@@ -92,10 +92,10 @@ const HomePage: React.FC = () => {
                 <li key={index}>
                   <Link
                     to="/faq"
-                    className="flex items-start gap-2 text-gray-600 hover:text-blue-500 transition-colors"
+                    className="flex items-start gap-2 text-sm text-gray-600 hover:text-blue-500 transition-colors"
                   >
-                    <span className="text-blue-500 mt-0.5">Q:</span>
-                    <span className="text-sm">{item.question}</span>
+                    <span className="text-blue-500 flex-shrink-0">Q:</span>
+                    <span>{item.question}</span>
                   </Link>
                 </li>
               ))}
