@@ -56,7 +56,7 @@ export function generateChecklist(formData: AnyFormData): ChecklistItem[] {
   // ── Salaried income ───────────────────────────────────────────────────────
   if ('annualIncome' in formData && formData.annualIncome > 0) {
     add(
-      'Withholding tax certificate (50 Thawi / หนังสือรับรองการหักภาษี ณ ที่จ่าย) from each employer',
+      'Withholding tax certificate (50 Thawi) from each employer',
       'Income'
     );
   }

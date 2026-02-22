@@ -40,7 +40,7 @@ const SALARIED_STEP_LABELS = [
   'Results',
 ];
 
-// Freelancer flow (12 steps) - full freelancer journey
+// Freelancer flow (11 steps) - full freelancer journey
 const FREELANCER_STEP_LABELS = [
   'Employment',      // 0
   'Residency',       // 1
@@ -51,12 +51,11 @@ const FREELANCER_STEP_LABELS = [
   'Marital Status',  // 6
   'Dependents',      // 7
   'Deductions',      // 8
-  'Withholding',     // 9
-  'Review',          // 10
-  'Results',         // 11
+  'Review',          // 9
+  'Results',         // 10
 ];
 
-// Sole Proprietor flow (13 steps) - freelancer flow + business profile
+// Sole Proprietor flow (12 steps) - freelancer flow + business profile
 const SOLE_PROPRIETOR_STEP_LABELS = [
   'Employment',      // 0
   'Business',        // 1 - Business profile step
@@ -68,9 +67,8 @@ const SOLE_PROPRIETOR_STEP_LABELS = [
   'Marital Status',  // 7
   'Dependents',      // 8
   'Deductions',      // 9
-  'Withholding',     // 10
-  'Review',          // 11
-  'Results',         // 12
+  'Review',          // 10
+  'Results',         // 11
 ];
 
 // Company Owner flow (9 steps) - similar to salaried but with company income step
@@ -326,7 +324,7 @@ const AnnualTaxWizard: React.FC = () => {
           return <EmploymentTypeStep {...baseStepProps} />;
       }
     } else if (isSoleProprietorFlow) {
-      // Sole Proprietor flow (13 steps) - freelancer flow + business profile
+      // Sole Proprietor flow (12 steps) - freelancer flow + business profile
       switch (currentStep) {
         case 0: // Employment
           return <EmploymentTypeStep {...baseStepProps} />;
@@ -348,17 +346,15 @@ const AnnualTaxWizard: React.FC = () => {
           return <DependentsStepAnnual {...baseStepProps} />;
         case 9: // Deductions
           return <DeductionsStepAnnual {...baseStepProps} />;
-        case 10: // Withholding
-          return <WithholdingStep {...baseStepProps} />;
-        case 11: // Review
+        case 10: // Review
           return <FreelancerReviewStep {...freelancerStepProps} goToStep={goToStep} />;
-        case 12: // Results
+        case 11: // Results
           return <FreelancerResultsStep formData={formData as FreelancerFormData} onStartOver={handleStartOver} />;
         default:
           return <EmploymentTypeStep {...baseStepProps} />;
       }
     } else if (isFreelancerFlow) {
-      // Freelancer flow (12 steps)
+      // Freelancer flow (11 steps)
       switch (currentStep) {
         case 0: // Employment
           return <EmploymentTypeStep {...baseStepProps} />;
@@ -378,11 +374,9 @@ const AnnualTaxWizard: React.FC = () => {
           return <DependentsStepAnnual {...baseStepProps} />;
         case 8: // Deductions
           return <DeductionsStepAnnual {...baseStepProps} />;
-        case 9: // Withholding
-          return <WithholdingStep {...baseStepProps} />;
-        case 10: // Review
+        case 9: // Review
           return <FreelancerReviewStep {...freelancerStepProps} goToStep={goToStep} />;
-        case 11: // Results
+        case 10: // Results
           return <FreelancerResultsStep formData={formData as FreelancerFormData} onStartOver={handleStartOver} />;
         default:
           return <EmploymentTypeStep {...baseStepProps} />;
@@ -465,7 +459,7 @@ const AnnualTaxWizard: React.FC = () => {
       }
     } else if (isSoleProprietorFlow) {
       const spData = dataToValidate as SoleProprietorFormData;
-      // Sole Proprietor flow validation (13 steps)
+      // Sole Proprietor flow validation (12 steps)
       switch (currentStep) {
         case 0: // Employment
           return dataToValidate.employmentType !== '';
@@ -489,16 +483,14 @@ const AnnualTaxWizard: React.FC = () => {
           return validateDependents();
         case 9: // Deductions
           return validateDeductions();
-        case 10: // Withholding
-          return true;
-        case 11: // Review
+        case 10: // Review
           return true;
         default:
           return true;
       }
     } else if (isFreelancerFlow) {
       const freelancerData = dataToValidate as FreelancerFormData;
-      // Freelancer flow validation (12 steps)
+      // Freelancer flow validation (11 steps)
       switch (currentStep) {
         case 0: // Employment
           return dataToValidate.employmentType !== '';
@@ -519,9 +511,7 @@ const AnnualTaxWizard: React.FC = () => {
           return validateDependents();
         case 8: // Deductions
           return validateDeductions();
-        case 9: // Withholding
-          return true;
-        case 10: // Review
+        case 9: // Review
           return true;
         default:
           return true;

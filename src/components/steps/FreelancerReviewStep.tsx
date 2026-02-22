@@ -96,7 +96,7 @@ const FreelancerReviewStep: React.FC<FreelancerReviewStepProps> = ({
   const activeDeductions = getActiveDeductions();
   const totalDeductions = activeDeductions.reduce((sum, d) => sum + d.amount, 0);
 
-  // Step indices for freelancer flow (11 steps total)
+  // Step indices for freelancer flow (10 steps total)
   const STEP_INDICES = {
     EMPLOYMENT: 0,
     RESIDENCY: 1,
@@ -107,7 +107,6 @@ const FreelancerReviewStep: React.FC<FreelancerReviewStepProps> = ({
     MARITAL: 6,
     DEPENDENTS: 7,
     DEDUCTIONS: 8,
-    WITHHOLDING: 9,
   };
 
   return (
@@ -339,36 +338,13 @@ const FreelancerReviewStep: React.FC<FreelancerReviewStepProps> = ({
           </div>
         </div>
 
-        {/* Additional Tax Withheld */}
-        {formData.taxWithheld > 0 && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-medium text-gray-500 text-sm">Additional Tax Withheld</h3>
-                <p className="text-gray-800 mt-1 font-semibold">
-                  {formatCurrency(formData.taxWithheld)}
-                </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  (Beyond income entry withholdings)
-                </p>
-              </div>
-              <button
-                onClick={() => goToStep(STEP_INDICES.WITHHOLDING)}
-                className="text-blue-500 hover:text-blue-700 text-sm font-medium"
-              >
-                Edit
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Total Withholding Summary */}
         <div className="bg-blue-50 rounded-lg p-4">
           <div className="flex justify-between items-center">
             <div>
               <h3 className="font-medium text-blue-700 text-sm">Total Tax Already Withheld</h3>
               <p className="text-blue-800 text-lg font-semibold">
-                {formatCurrency(thaiWithholding + formData.taxWithheld)}
+                {formatCurrency(thaiWithholding)}
               </p>
             </div>
           </div>
