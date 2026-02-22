@@ -974,6 +974,144 @@ If the Revenue Department requests documentation:
     category: 'Freelance'
   },
   {
+    slug: 'double-tax-agreements-thailand',
+    title: 'Double Tax Agreements: How Tax Treaties Protect Expats in Thailand',
+    excerpt: 'Understand how Thailand\'s 61 double tax agreements work, who can claim foreign tax credits, and how to avoid paying tax twice on the same income.',
+    content: `
+## What is a Double Tax Agreement (DTA)?
+
+A Double Tax Agreement (DTA) — also called a tax treaty — is a bilateral agreement between two countries designed to prevent the same income from being taxed twice. Thailand has signed DTAs with 61 countries as of 2025, one of the largest treaty networks in Southeast Asia.
+
+For expats, DTAs are the primary legal tool to reduce or eliminate the risk of paying tax on the same income in both Thailand and your home country.
+
+## Why DTAs Matter More After 2024
+
+Prior to January 1, 2024, Thailand only taxed foreign income remitted in the same year it was earned. You could legally defer bringing money in until the following year and pay no Thai tax. That loophole is now closed.
+
+**Under the new rules (effective January 1, 2024):**
+- Any foreign income brought into Thailand by a Thai tax resident is taxable
+- This applies regardless of when the income was earned
+- DTAs are now the primary tool to avoid double taxation
+
+## How the Foreign Tax Credit Works
+
+Most of Thailand's DTAs use the **credit method**, meaning:
+
+1. You pay tax in the source country (where income was earned)
+2. You declare the income in Thailand
+3. You claim a credit for taxes already paid abroad
+4. The credit reduces (or eliminates) your Thai tax on that income
+
+**Important limits:**
+- The credit cannot exceed the Thai tax on that specific income
+- If foreign tax rate > Thai rate, the excess cannot be refunded
+- Credit only applies to income-type taxes (not VAT, sales tax, etc.)
+
+### Example Calculation
+
+You earn $50,000 (approx. 1.75 million THB) from a US employer.
+
+| Item | Amount |
+|------|--------|
+| US federal income tax paid | 170,000 THB |
+| Thai tax on this income (calculated) | 240,000 THB |
+| Foreign tax credit | 170,000 THB (capped at US tax paid) |
+| **Additional Thai tax owed** | **70,000 THB** |
+
+Without the DTA, you would owe the full 240,000 THB on top of US taxes.
+
+## Thailand's 61 DTA Countries
+
+Thailand has tax treaties with the following countries:
+
+**Asia & Pacific:** Australia, Bangladesh, Cambodia, China, Hong Kong, India, Indonesia, Japan, Laos, Malaysia, Mauritius, Myanmar, Nepal, New Zealand, Pakistan, Philippines, Singapore, South Korea, Sri Lanka, Taiwan, Vietnam
+
+**Europe:** Armenia, Austria, Belarus, Belgium, Bulgaria, Cyprus, Czech Republic, Denmark, Estonia, Finland, France, Germany, Hungary, Ireland, Israel, Italy, Luxembourg, Netherlands, Norway, Poland, Romania, Russia, Seychelles, Slovenia, South Africa, Spain, Sweden, Switzerland, Tajikistan, Turkey, Ukraine, United Kingdom, Uzbekistan
+
+**Americas & Middle East:** Bahrain, Canada, Chile, Kuwait, Oman, United Arab Emirates, United States
+
+## Countries WITHOUT a DTA with Thailand
+
+Notable countries without a Thai tax treaty include:
+- **Brazil, Mexico, Argentina** — Latin America
+- **Saudi Arabia, Qatar** — Gulf states
+- **Nigeria, Kenya, Egypt** — Africa
+
+If you have income from these countries, you cannot claim a foreign tax credit in Thailand and risk true double taxation.
+
+## How to Claim DTA Benefits
+
+DTA relief is **not automatic** — you must actively claim it.
+
+### Steps to Claim:
+1. **Obtain a Certificate of Residence** from your home country's tax authority confirming you paid tax there
+2. **Declare foreign income** on your Thai PND.90 return (Section for foreign income)
+3. **Attach supporting documents:** foreign tax return, payment receipts, Certificate of Residence
+4. **File by March 31** for the previous tax year
+
+### Required Documentation:
+- Certificate of Residence from source country
+- Foreign tax assessment notice or tax return
+- Proof of tax payment (receipt or clearance certificate)
+- Bank statements showing remittance to Thailand
+
+## Special Country Notes
+
+### United States
+The US has a DTA with Thailand, but US citizens face **citizenship-based taxation** — the US taxes its citizens on worldwide income regardless of where they live. US expats should consult a specialist about:
+- Using the Foreign Earned Income Exclusion (FEIE)
+- Using the Foreign Tax Credit (FTC) on their US return
+- The interaction between US and Thai tax obligations
+
+### United Kingdom
+The UK-Thailand DTA is comprehensive, covering employment income, dividends, interest, royalties, and capital gains. UK expats who become Thai tax residents should inform HMRC of their status change.
+
+### Australia
+The Australia-Thailand DTA includes provisions for pensions, government service income, and students. The ATO may still require filing even for non-residents earning Australian income.
+
+## Income Covered vs. Not Covered
+
+**DTAs typically cover:**
+- Employment income (salaries, wages)
+- Business profits
+- Dividends, interest, royalties
+- Capital gains (varies by treaty)
+- Pensions
+
+**DTAs do NOT cover:**
+- VAT / GST
+- Sales taxes
+- Specific Business Tax (Thailand)
+- Property taxes
+- Inheritance taxes
+
+## Common Mistakes to Avoid
+
+1. **Assuming DTA relief is automatic** — You must file the right forms
+2. **Not obtaining a Certificate of Residence** — Required documentation
+3. **Missing the filing deadline** — March 31 for the previous year
+4. **Confusing the credit method with exemption** — You still declare the income
+5. **Not tracking remittances** — The timing of transfers matters for taxability
+
+## Key Takeaways
+
+- **61 countries** have tax treaties with Thailand
+- DTA relief **requires active claiming** with documentation
+- Most treaties use the **credit method** — taxes paid abroad reduce Thai tax
+- **No DTA = double taxation risk** — especially relevant post-2024
+- The **LTR visa** provides a simpler alternative for qualifying expats (full exemption vs. credit method)
+
+## Resources
+
+- Thai Revenue Department DTA list: rd.go.th/english/766.html
+- Certificate of Residence: your home country's tax authority
+- Annual tax return: PND.90 form (rd.go.th)
+    `,
+    publishedAt: '2026-02-17',
+    readTime: 12,
+    category: 'International'
+  },
+  {
     slug: 'ltr-visa-tax-benefits',
     title: 'LTR Visa Tax Benefits: Thailand\'s Tax-Advantaged Residency for Expats',
     excerpt: 'Discover how Thailand\'s Long-Term Resident visa offers significant tax benefits including foreign income exemptions and reduced tax rates.',

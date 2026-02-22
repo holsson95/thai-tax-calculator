@@ -5,6 +5,8 @@ import {
   generateEntryId,
 } from '../../types/freelancerForm';
 import { COMMON_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
+import { searchCountries, hasDTAWithThailand, type DTACountry } from '../../data/dtaCountries';
+import { getExchangeRate, type ExchangeRateResult } from '../../services/exchangeRateService';
 
 const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
   formData,
@@ -13,6 +15,13 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 }) => {
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
+  // Country search query per entry
+  const [countrySearch, setCountrySearch] = useState<Record<string, string>>({});
+  const [showCountryDropdown, setShowCountryDropdown] = useState<Record<string, boolean>>({});
+  // Exchange rate fetch state per entry
+  const [rateLoading, setRateLoading] = useState<Record<string, boolean>>({});
+  const [rateInfo, setRateInfo] = useState<Record<string, ExchangeRateResult | null>>({});
+  const [rateError, setRateError] = useState<Record<string, string | null>>({});
 
   // Create a new empty entry
   const createNewEntry = (): ForeignIncomeEntry => ({
@@ -57,6 +66,54 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
         entry.id === id ? { ...entry, [field]: value } : entry
       ),
     });
+  };
+
+  // Handle country selection from DTA dropdown
+  const handleCountrySelect = (entryId: string, country: DTACountry) => {
+    handleUpdateEntry(entryId, 'country', country.name);
+    setCountrySearch(prev => ({ ...prev, [entryId]: country.name }));
+    setShowCountryDropdown(prev => ({ ...prev, [entryId]: false }));
+  };
+
+  // Fetch BOT exchange rate for an entry and auto-fill THB amount
+  const handleFetchRate = async (entry: ForeignIncomeEntry) => {
+    const rateDate = entry.dateRemitted || entry.dateEarned;
+    if (!rateDate) {
+      setRateError(prev => ({
+        ...prev,
+        [entry.id]: 'Please enter a date earned or date remitted first.',
+      }));
+      return;
+    }
+    if (entry.currency === 'THB') {
+      setRateError(prev => ({ ...prev, [entry.id]: 'Currency is already THB.' }));
+      return;
+    }
+
+    setRateLoading(prev => ({ ...prev, [entry.id]: true }));
+    setRateError(prev => ({ ...prev, [entry.id]: null }));
+    setRateInfo(prev => ({ ...prev, [entry.id]: null }));
+
+    const result = await getExchangeRate(entry.currency, rateDate);
+
+    setRateLoading(prev => ({ ...prev, [entry.id]: false }));
+
+    if (result.ok) {
+      setRateInfo(prev => ({ ...prev, [entry.id]: result.data }));
+      // Auto-fill THB amount
+      if (entry.amount > 0) {
+        const thbAmount = Math.round(entry.amount * result.data.rate * 100) / 100;
+        handleUpdateEntry(entry.id, 'amountThb', thbAmount);
+      }
+    } else {
+      setRateError(prev => ({ ...prev, [entry.id]: result.error.message }));
+    }
+  };
+
+  // Get DTA status for an entry's country
+  const getEntryDTAStatus = (entry: ForeignIncomeEntry): boolean | null => {
+    if (!entry.country.trim()) return null;
+    return hasDTAWithThailand(entry.country);
   };
 
   // Check if entry is taxable under 2024+ rules
@@ -170,6 +227,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
               <li>Income earned on/after January 1, 2024 is taxable if remitted to Thailand</li>
               <li>Foreign tax paid may be credited against Thai tax (limited to Thai tax rate)</li>
               <li>Income earned before 2024 is not taxable even if remitted in 2024+</li>
+              <li><strong>Tax treaty required</strong> to claim foreign tax credits — Thailand has treaties with 61 countries</li>
             </ul>
           </div>
         </div>
@@ -201,9 +259,21 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
                   <div>
-                    <p className="font-medium text-gray-800">
-                      {entry.country || 'New Entry'} - {entry.currency} {entry.amount.toLocaleString() || '0'}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-gray-800">
+                        {entry.country || 'New Entry'} - {entry.currency} {entry.amount.toLocaleString() || '0'}
+                      </p>
+                      {entry.country && (() => {
+                        const dtaStatus = getEntryDTAStatus(entry);
+                        if (dtaStatus === true) return (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 whitespace-nowrap">Tax Treaty</span>
+                        );
+                        if (dtaStatus === false) return (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 whitespace-nowrap">No Treaty</span>
+                        );
+                        return null;
+                      })()}
+                    </div>
                     <p className="text-sm text-gray-500">
                       THB {entry.amountThb.toLocaleString()}
                       {taxability.taxable && (
@@ -253,18 +323,86 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     </div>
                   )}
 
-                  {/* Country */}
-                  <div>
+                  {/* Country - searchable dropdown with DTA status */}
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Country of Income Source *
                     </label>
-                    <input
-                      type="text"
-                      value={entry.country}
-                      onChange={(e) => handleUpdateEntry(entry.id, 'country', e.target.value)}
-                      placeholder="e.g., United States"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={countrySearch[entry.id] ?? entry.country}
+                        onChange={(e) => {
+                          setCountrySearch(prev => ({ ...prev, [entry.id]: e.target.value }));
+                          setShowCountryDropdown(prev => ({ ...prev, [entry.id]: true }));
+                          // Update entry country too for free-text entries
+                          handleUpdateEntry(entry.id, 'country', e.target.value);
+                        }}
+                        onFocus={() => setShowCountryDropdown(prev => ({ ...prev, [entry.id]: true }))}
+                        onBlur={() => setTimeout(() => setShowCountryDropdown(prev => ({ ...prev, [entry.id]: false })), 150)}
+                        placeholder="Type to search countries..."
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      {/* DTA status indicator */}
+                      {entry.country && (() => {
+                        const dtaStatus = getEntryDTAStatus(entry);
+                        if (dtaStatus === true) return (
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                            Tax treaty ✓
+                          </span>
+                        );
+                        if (dtaStatus === false) return (
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                            No treaty ⚠
+                          </span>
+                        );
+                        return null;
+                      })()}
+                    </div>
+
+                    {/* Country dropdown list */}
+                    {showCountryDropdown[entry.id] && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                        {searchCountries(countrySearch[entry.id] ?? '').slice(0, 20).map(country => (
+                          <button
+                            key={country.code}
+                            type="button"
+                            onMouseDown={() => handleCountrySelect(entry.id, country)}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center justify-between"
+                          >
+                            <span className="text-gray-800">{country.name}</span>
+                            {country.hasDTA ? (
+                              <span className="text-xs text-green-600">Tax treaty</span>
+                            ) : (
+                              <span className="text-xs text-amber-600">No treaty</span>
+                            )}
+                          </button>
+                        ))}
+                        {searchCountries(countrySearch[entry.id] ?? '').length === 0 && (
+                          <p className="px-3 py-2 text-sm text-gray-500">No countries found</p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* DTA guidance message */}
+                    {entry.country && (() => {
+                      const dtaStatus = getEntryDTAStatus(entry);
+                      if (dtaStatus === true) return (
+                        <p className="mt-1 text-xs text-green-600">
+                          Thailand has a tax treaty with {entry.country}. Foreign taxes paid may be credited against Thai tax.
+                        </p>
+                      );
+                      if (dtaStatus === false) return (
+                        <p className="mt-1 text-xs text-amber-600">
+                          No tax treaty with {entry.country}. Foreign tax credit may not be available — double taxation risk.
+                        </p>
+                      );
+                      return (
+                        <p className="mt-1 text-xs text-gray-500">
+                          Country not in our database. Check rd.go.th for DTA status.
+                        </p>
+                      );
+                    })()}
                   </div>
 
                   {/* Amount and Currency */}
@@ -300,24 +438,77 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     </div>
                   </div>
 
-                  {/* THB Amount */}
+                  {/* THB Amount with BOT rate fetch */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Amount in Thai Baht (THB) *
                     </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
-                      <input
-                        type="number"
-                        value={entry.amountThb || ''}
-                        onChange={(e) => handleUpdateEntry(entry.id, 'amountThb', parseFloat(e.target.value) || 0)}
-                        placeholder="0"
-                        min="0"
-                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+                        <input
+                          type="number"
+                          value={entry.amountThb || ''}
+                          onChange={(e) => {
+                            handleUpdateEntry(entry.id, 'amountThb', parseFloat(e.target.value) || 0);
+                            // Clear rate info when user manually edits
+                            setRateInfo(prev => ({ ...prev, [entry.id]: null }));
+                          }}
+                          placeholder="0"
+                          min="0"
+                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      {entry.currency !== 'THB' && (
+                        <button
+                          type="button"
+                          onClick={() => handleFetchRate(entry)}
+                          disabled={rateLoading[entry.id]}
+                          title="Fetch official BOT exchange rate"
+                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap transition-colors"
+                        >
+                          {rateLoading[entry.id] ? (
+                            <>
+                              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                              </svg>
+                              Fetching…
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                              Fetch BOT rate
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
+
+                    {/* Rate fetch result */}
+                    {rateInfo[entry.id] && (
+                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700">
+                        <span className="font-medium">BOT rate on {rateInfo[entry.id]!.date}:</span>{' '}
+                        1 {entry.currency} = {rateInfo[entry.id]!.rate.toFixed(4)} THB
+                        {entry.amount > 0 && (
+                          <span className="ml-1">
+                            → {(entry.amount * rateInfo[entry.id]!.rate).toLocaleString('en-US', { maximumFractionDigits: 2 })} THB
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {rateError[entry.id] && (
+                      <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
+                        {rateError[entry.id]}
+                      </div>
+                    )}
+
                     <p className="text-xs text-gray-500 mt-1">
-                      Use the exchange rate on the date the income was received
+                      {rateInfo[entry.id]
+                        ? 'Rate auto-filled from Bank of Thailand — verify at bot.or.th before filing.'
+                        : 'Enter manually or use "Fetch BOT rate" to auto-convert using the official Bank of Thailand rate.'}
                     </p>
                   </div>
 
@@ -363,9 +554,24 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Tax paid in the source country (may be used as a foreign tax credit)
-                    </p>
+                    {(() => {
+                      const dtaStatus = getEntryDTAStatus(entry);
+                      if (dtaStatus === false) return (
+                        <p className="text-xs text-amber-600 mt-1">
+                          No tax treaty with {entry.country} — foreign tax credit may not be available.
+                        </p>
+                      );
+                      if (dtaStatus === null && entry.country) return (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Tax paid in the source country (verify DTA status at rd.go.th before claiming credit)
+                        </p>
+                      );
+                      return (
+                        <p className="text-xs text-gray-500 mt-1">
+                          Tax paid in the source country (may be credited against Thai tax under the tax treaty)
+                        </p>
+                      );
+                    })()}
                   </div>
 
                   {/* Description */}

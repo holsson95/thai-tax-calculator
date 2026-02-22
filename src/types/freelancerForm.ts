@@ -179,6 +179,10 @@ export interface ForeignIncomeTaxability {
   reason: string;
   taxableAmount: number;
   foreignTaxCredit: number;
+  // DTA information
+  hasDTA: boolean | null; // null if country unknown
+  dtaCreditAllowed: boolean; // false if no DTA and credit blocked
+  dtaCreditDisallowed: number; // amount of credit blocked due to no DTA
 }
 
 /**

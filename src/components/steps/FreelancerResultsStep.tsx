@@ -21,6 +21,14 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
   const result = calculateFreelancerTax(formData);
   const obligations = checkAllObligations(formData);
 
+  // Check for missing DTA warnings
+  const missingDTAEntries = result.foreignIncomeTaxability.filter(
+    e => e.isTaxable && e.hasDTA === false && e.entry.foreignTaxPaid > 0
+  );
+  const totalDTACreditDisallowed = missingDTAEntries.reduce(
+    (sum, e) => sum + e.dtaCreditDisallowed, 0
+  );
+
   // Calculate refund/owed
   const totalWithholding = result.withholdingCredits + result.foreignTaxCredits;
   const refundOrOwed = totalWithholding - result.grossTaxBeforeCredits;
@@ -104,6 +112,30 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                   <li>• 17% flat tax rate applied to employment income ({formatThb(result.ltrFlatRateTax)} tax)</li>
                 )}
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DTA Warning - shown when foreign tax paid but no treaty */}
+      {totalDTACreditDisallowed > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <div>
+              <h3 className="font-semibold text-amber-800">Double Taxation Risk</h3>
+              <p className="text-sm text-amber-700 mt-1">
+                {formatThb(totalDTACreditDisallowed)} in foreign taxes paid cannot be credited because{' '}
+                {missingDTAEntries.length === 1
+                  ? `${missingDTAEntries[0].entry.country} has`
+                  : 'some countries have'} no tax treaty with Thailand.
+                You may be taxed on this income in both countries.
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                Consider consulting a tax professional about available relief options.
+              </p>
             </div>
           </div>
         </div>
@@ -294,20 +326,43 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                 <div className="text-sm space-y-2">
                   {result.foreignIncomeTaxability.map((item, idx) => (
                     <div key={idx} className="p-2 bg-gray-50 rounded">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          {item.entry.country} - {item.entry.description || 'Foreign Income'}
-                        </span>
-                        <span className={item.isTaxable ? 'text-red-600' : 'text-green-600'}>
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-gray-600">
+                            {item.entry.country} - {item.entry.description || 'Foreign Income'}
+                          </span>
+                          {/* DTA badge */}
+                          {item.hasDTA === true && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">Tax Treaty</span>
+                          )}
+                          {item.hasDTA === false && (
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">No Treaty</span>
+                          )}
+                        </div>
+                        <span className={`ml-2 shrink-0 ${item.isTaxable ? 'text-red-600' : 'text-green-600'}`}>
                           {item.isTaxable ? 'Taxable' : 'Exempt'}
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 mt-1">{item.reason}</p>
                       {item.isTaxable && (
-                        <p className="text-xs text-gray-600 mt-1">
-                          Taxable amount: {formatThb(item.taxableAmount)}
-                          {item.foreignTaxCredit > 0 && ` | Credit: ${formatThb(item.foreignTaxCredit)}`}
-                        </p>
+                        <div className="text-xs mt-1 space-y-0.5">
+                          <p className="text-gray-600">
+                            Taxable amount: {formatThb(item.taxableAmount)}
+                          </p>
+                          {item.entry.foreignTaxPaid > 0 && (
+                            <>
+                              {item.dtaCreditAllowed ? (
+                                <p className="text-green-600">
+                                  Foreign tax credit: {formatThb(item.foreignTaxCredit)}
+                                </p>
+                              ) : (
+                                <p className="text-amber-600">
+                                  Foreign tax credit blocked: {formatThb(item.dtaCreditDisallowed)} (no tax treaty with {item.entry.country})
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))}

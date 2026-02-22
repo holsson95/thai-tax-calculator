@@ -5,6 +5,7 @@ import {
   VisaType,
 } from '../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../config/taxConfig';
+import { hasDTAWithThailand } from '../data/dtaCountries';
 
 /**
  * LTR visa types that grant foreign income tax exemption
@@ -45,6 +46,8 @@ export function isForeignIncomeTaxable(
   isThaiResident: boolean,
   visaType: VisaType = 'regular'
 ): ForeignIncomeTaxability {
+  const dtaResult = calculateForeignTaxCredit(entry);
+
   // Not a Thai resident - foreign income not taxable
   if (!isThaiResident) {
     return {
@@ -53,6 +56,9 @@ export function isForeignIncomeTaxable(
       reason: 'Not a Thai tax resident (less than 180 days in Thailand)',
       taxableAmount: 0,
       foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
     };
   }
 
@@ -64,6 +70,9 @@ export function isForeignIncomeTaxable(
       reason: 'LTR visa holder - foreign income is tax exempt',
       taxableAmount: 0,
       foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
     };
   }
 
@@ -75,6 +84,9 @@ export function isForeignIncomeTaxable(
       reason: 'Date earned not specified',
       taxableAmount: 0,
       foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
     };
   }
 
@@ -89,6 +101,9 @@ export function isForeignIncomeTaxable(
       reason: 'Income earned before January 1, 2024 - exempt under pre-2024 rules',
       taxableAmount: 0,
       foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
     };
   }
 
@@ -100,18 +115,22 @@ export function isForeignIncomeTaxable(
       reason: 'Income not remitted to Thailand - not taxable until remitted',
       taxableAmount: 0,
       foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
     };
   }
 
   // All conditions met - income is taxable
-  const foreignTaxCredit = calculateForeignTaxCredit(entry);
-
   return {
     entry,
     isTaxable: true,
     reason: 'Income earned in 2024+ and remitted to Thailand - fully taxable',
     taxableAmount: entry.amountThb,
-    foreignTaxCredit,
+    foreignTaxCredit: dtaResult.credit,
+    hasDTA: dtaResult.hasDTA,
+    dtaCreditAllowed: dtaResult.creditAllowed,
+    dtaCreditDisallowed: dtaResult.creditDisallowed,
   };
 }
 
@@ -122,17 +141,38 @@ export function isForeignIncomeTaxable(
  * 1. Actual foreign tax paid
  * 2. Thai tax that would be payable on that income
  *
- * For simplicity, we use a maximum effective rate approach
+ * A DTA (tax treaty) with the source country is required to claim the credit.
+ * Countries without a DTA may result in double taxation.
  */
-export function calculateForeignTaxCredit(entry: ForeignIncomeEntry): number {
+export function calculateForeignTaxCredit(entry: ForeignIncomeEntry): {
+  credit: number;
+  hasDTA: boolean | null;
+  creditAllowed: boolean;
+  creditDisallowed: number;
+} {
   if (entry.foreignTaxPaid <= 0) {
-    return 0;
+    return { credit: 0, hasDTA: hasDTAWithThailand(entry.country), creditAllowed: true, creditDisallowed: 0 };
   }
 
-  // Maximum creditable is the foreign tax paid
-  // The actual credit will be limited when applied against Thai tax
-  // This function returns the maximum potential credit
-  return entry.foreignTaxPaid;
+  const dtaStatus = hasDTAWithThailand(entry.country);
+
+  // If no DTA exists, foreign tax credit is not available
+  if (dtaStatus === false) {
+    return {
+      credit: 0,
+      hasDTA: false,
+      creditAllowed: false,
+      creditDisallowed: entry.foreignTaxPaid,
+    };
+  }
+
+  // DTA exists or unknown - allow the credit (actual cap applied in main calculation)
+  return {
+    credit: entry.foreignTaxPaid,
+    hasDTA: dtaStatus,
+    creditAllowed: true,
+    creditDisallowed: 0,
+  };
 }
 
 /**
@@ -146,7 +186,9 @@ export function analyzeForeignIncome(
   taxableForeignIncome: number;
   totalForeignTaxPaid: number;
   totalForeignTaxCredit: number;
+  totalDTACreditDisallowed: number;
   ltrExemptionApplied: boolean;
+  hasMissingDTA: boolean; // true if any taxable entry has no treaty
 } {
   const ltrExemptionApplied = hasLTRForeignIncomeExemption(formData.visaType);
 
@@ -174,13 +216,24 @@ export function analyzeForeignIncome(
     0
   );
 
+  const totalDTACreditDisallowed = entries.reduce(
+    (sum, e) => sum + e.dtaCreditDisallowed,
+    0
+  );
+
+  const hasMissingDTA = entries.some(
+    e => e.isTaxable && e.hasDTA === false
+  );
+
   return {
     entries,
     totalForeignIncome,
     taxableForeignIncome,
     totalForeignTaxPaid,
     totalForeignTaxCredit,
+    totalDTACreditDisallowed,
     ltrExemptionApplied,
+    hasMissingDTA,
   };
 }
 
