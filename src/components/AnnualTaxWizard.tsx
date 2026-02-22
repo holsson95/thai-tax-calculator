@@ -473,7 +473,7 @@ const AnnualTaxWizard: React.FC = () => {
           return spData.businessProfile?.businessName?.trim().length > 0 &&
             spData.businessProfile?.businessCategory !== undefined;
         case 2: // Residency
-          return spData.daysInThailand > 0 && spData.daysInThailand <= 365;
+          return spData.daysInThailand > 0;
         case 3: // Foreign Income
           return true;
         case 4: // Thai Income
@@ -503,7 +503,7 @@ const AnnualTaxWizard: React.FC = () => {
         case 0: // Employment
           return dataToValidate.employmentType !== '';
         case 1: // Residency
-          return freelancerData.daysInThailand > 0 && freelancerData.daysInThailand <= 365;
+          return freelancerData.daysInThailand > 0;
         case 2: // Foreign Income
           return true;
         case 3: // Thai Income

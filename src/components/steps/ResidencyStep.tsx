@@ -1,6 +1,4 @@
-import { useState, useEffect } from 'react';
 import { FreelancerStepProps, VisaType } from '../../types/freelancerForm';
-import { TAX_THRESHOLDS } from '../../config/taxConfig';
 
 // Visa type options for LTR tax benefits
 const VISA_OPTIONS: { value: VisaType; label: string; description: string }[] = [
@@ -18,41 +16,18 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
   setFormData,
   showValidationErrors
 }) => {
-  const [localDays, setLocalDays] = useState<string>(
-    formData.daysInThailand > 0 ? formData.daysInThailand.toString() : ''
-  );
-  const [touched, setTouched] = useState(false);
+  // daysInThailand === 0 means no answer yet; 181 = yes (resident); 90 = no (non-resident)
+  const hasAnswered = formData.daysInThailand > 0;
+  const isResident = formData.isThaiResident;
 
-  // Compute residency status
-  const daysNumber = parseInt(localDays, 10) || 0;
-  const isResident = daysNumber >= TAX_THRESHOLDS.THAI_RESIDENCY_DAYS;
-  const isValidDays = daysNumber >= 0 && daysNumber <= 365;
-
-  // Update form data when days change
-  useEffect(() => {
-    if (isValidDays) {
-      setFormData({
-        ...formData,
-        daysInThailand: daysNumber,
-        isThaiResident: isResident,
-      });
-    }
-  }, [daysNumber, isResident, isValidDays]);
-
-  const handleDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow empty or numeric input only
-    if (value === '' || /^\d+$/.test(value)) {
-      setLocalDays(value);
-    }
-  };
-
-  const handleBlur = () => {
-    setTouched(true);
-    // Clamp value to valid range
-    if (daysNumber > 365) {
-      setLocalDays('365');
-    }
+  const handleResidencyChoice = (stayed: boolean) => {
+    setFormData({
+      ...formData,
+      daysInThailand: stayed ? 181 : 90,
+      isThaiResident: stayed,
+      // Reset fields that only apply to residents when switching to non-resident
+      ...(stayed ? {} : { hasForeignIncome: false }),
+    });
   };
 
   const handleForeignIncomeChange = (hasForeignIncome: boolean) => {
@@ -67,7 +42,7 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
   const hasForeignIncomeExemption = ['ltr_wealthy_global', 'ltr_wealthy_pensioner', 'ltr_work_from_thailand'].includes(formData.visaType);
   const selectedVisaOption = VISA_OPTIONS.find(v => v.value === formData.visaType);
 
-  const showError = (touched || showValidationErrors) && (!isValidDays || daysNumber === 0);
+  const showError = showValidationErrors && !hasAnswered;
 
   return (
     <div>
@@ -78,43 +53,44 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
         Your tax residency determines how your income is taxed in Thailand.
       </p>
 
-      {/* Days in Thailand Input */}
+      {/* Yes/No Residency Question */}
       <div className="mb-6">
-        <label htmlFor="daysInThailand" className="block text-sm font-medium text-gray-700 mb-2">
-          How many days did you spend in Thailand this tax year?
-        </label>
-        <div className="relative">
-          <input
-            id="daysInThailand"
-            type="text"
-            inputMode="numeric"
-            value={localDays}
-            onChange={handleDaysChange}
-            onBlur={handleBlur}
-            placeholder="e.g., 200"
-            className={`w-full px-4 py-3 border-2 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-              showError
-                ? 'border-red-300 focus:border-red-500'
-                : 'border-gray-200 focus:border-blue-500'
-            }`}
-            aria-describedby="days-help days-error"
-          />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">
-            days
-          </span>
-        </div>
-        <p id="days-help" className="mt-1 text-sm text-gray-500">
-          Enter the number of days from January 1 to December 31 (max 365)
+        <p className="text-sm font-medium text-gray-700 mb-3">
+          Did you stay more than 180 days in Thailand during this tax year?
         </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => handleResidencyChoice(true)}
+            className={`flex-1 py-4 px-6 rounded-lg border-2 text-base font-medium transition-colors ${
+              hasAnswered && isResident
+                ? 'bg-green-50 border-green-500 text-green-800'
+                : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+            }`}
+            aria-pressed={hasAnswered && isResident}
+          >
+            Yes
+          </button>
+          <button
+            type="button"
+            onClick={() => handleResidencyChoice(false)}
+            className={`flex-1 py-4 px-6 rounded-lg border-2 text-base font-medium transition-colors ${
+              hasAnswered && !isResident
+                ? 'bg-yellow-50 border-yellow-500 text-yellow-800'
+                : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+            }`}
+            aria-pressed={hasAnswered && !isResident}
+          >
+            No
+          </button>
+        </div>
         {showError && (
-          <p id="days-error" className="mt-1 text-sm text-red-600">
-            Please enter a valid number of days (1-365)
-          </p>
+          <p className="mt-2 text-sm text-red-600">Please select an answer to continue.</p>
         )}
       </div>
 
       {/* Residency Status Badge */}
-      {daysNumber > 0 && isValidDays && (
+      {hasAnswered && (
         <div className={`p-4 rounded-lg border-2 mb-6 ${
           isResident
             ? 'bg-green-50 border-green-200'
@@ -140,8 +116,8 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
               </h3>
               <p className={`text-sm ${isResident ? 'text-green-700' : 'text-yellow-700'}`}>
                 {isResident
-                  ? `With ${daysNumber} days in Thailand, you are a tax resident (180+ days). Foreign income remitted to Thailand may be taxable.`
-                  : `With ${daysNumber} days in Thailand, you are a non-resident (less than 180 days). Only Thai-sourced income is taxable.`
+                  ? 'You are a tax resident (180+ days). Foreign income remitted to Thailand may be taxable.'
+                  : 'You are a non-resident (less than 180 days). Only Thai-sourced income is taxable.'
                 }
               </p>
             </div>
@@ -150,7 +126,7 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
       )}
 
       {/* Visa Type Selection - Only shown for residents */}
-      {isResident && daysNumber > 0 && (
+      {isResident && hasAnswered && (
         <div className="mb-6 animate-fadeIn">
           <label htmlFor="visaType" className="block text-sm font-medium text-gray-700 mb-2">
             What type of visa or residency status do you have?
@@ -196,7 +172,7 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
       )}
 
       {/* Foreign Income Question - Only shown for residents without LTR exemption */}
-      {isResident && daysNumber > 0 && !hasForeignIncomeExemption && (
+      {isResident && hasAnswered && !hasForeignIncomeExemption && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 animate-fadeIn">
           <div className="flex items-start gap-3 mb-4">
             <div className="flex-shrink-0 mt-0.5">
@@ -242,7 +218,7 @@ const ResidencyStep: React.FC<FreelancerStepProps> = ({
       )}
 
       {/* Info box for non-residents */}
-      {!isResident && daysNumber > 0 && (
+      {!isResident && hasAnswered && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
           <p className="text-sm text-gray-600">
             As a non-resident, you only need to pay tax on income earned in Thailand. Foreign income is not taxable in Thailand for non-residents.
