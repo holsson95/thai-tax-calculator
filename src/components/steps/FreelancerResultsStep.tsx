@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { pdf } from '@react-pdf/renderer';
 import { FreelancerFormData, IncomeType } from '../../types/freelancerForm';
 import { TAX_BRACKETS } from '../../types/taxForm';
 import { calculateFreelancerTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import { ObligationAlerts, ObligationSummary } from '../ObligationAlerts';
 import { checkAllObligations } from '../../utils/obligationChecks';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
+import TaxPacketPDF from '../../pdf/TaxPacketPDF';
+import { generatePdfFilename } from '../../utils/pdfFilename';
 
 interface FreelancerResultsStepProps {
   formData: FreelancerFormData;
@@ -17,9 +20,25 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [showObligations, setShowObligations] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   const result = calculateFreelancerTax(formData);
   const obligations = checkAllObligations(formData);
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const blob = await pdf(<TaxPacketPDF formData={formData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = generatePdfFilename(formData.employmentType);
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   // Check for missing DTA warnings
   const missingDTAEntries = result.foreignIncomeTaxability.filter(
@@ -440,6 +459,18 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Download PDF Button */}
+      <button
+        onClick={handleDownloadPDF}
+        disabled={isGeneratingPDF}
+        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mb-3 disabled:opacity-50"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        {isGeneratingPDF ? 'Generating PDF…' : 'Download Tax Filing Packet'}
+      </button>
 
       {/* Start Over Button */}
       <button

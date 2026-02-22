@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { pdf } from '@react-pdf/renderer';
 import { TaxFormData, TAX_BRACKETS } from '../../types/taxForm';
 import { calculateAnnualTax, formatThb, formatPercent } from '../../utils/taxCalculations';
+import TaxPacketPDF from '../../pdf/TaxPacketPDF';
+import { generatePdfFilename } from '../../utils/pdfFilename';
 
 interface AnnualResultsStepProps {
   formData: TaxFormData;
@@ -9,7 +12,23 @@ interface AnnualResultsStepProps {
 
 const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStartOver }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const result = calculateAnnualTax(formData);
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    try {
+      const blob = await pdf(<TaxPacketPDF formData={formData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = generatePdfFilename(formData.employmentType);
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const isRefund = result.refundOrOwed > 0;
   const refundOrOwedLabel = isRefund ? 'Tax Refund' : 'Additional Tax Owed';
@@ -273,6 +292,18 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
           </div>
         </div>
       </div>
+
+      {/* Download PDF Button */}
+      <button
+        onClick={handleDownloadPDF}
+        disabled={isGeneratingPDF}
+        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mb-3 disabled:opacity-50"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        {isGeneratingPDF ? 'Generating PDF…' : 'Download Tax Filing Packet'}
+      </button>
 
       {/* Start Over Button */}
       <button
