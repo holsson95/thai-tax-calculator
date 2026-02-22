@@ -32,6 +32,8 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     dateEarned: '',
     dateRemitted: null,
     foreignTaxPaid: 0,
+    foreignTaxPaidOriginal: 0,
+    // foreignTaxPaidCurrency left undefined — defaults to entry.currency in UI
     description: '',
     country: '',
   });
@@ -68,6 +70,35 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     });
   };
 
+  // Update foreign tax paid fields, auto-computing foreignTaxPaid (THB) when BOT rate is available
+  const handleUpdateTaxPaid = (id: string, field: 'original' | 'currency', value: string | number) => {
+    setFormData({
+      ...formData,
+      foreignIncomeEntries: formData.foreignIncomeEntries.map(entry => {
+        if (entry.id !== id) return entry;
+
+        const updated: ForeignIncomeEntry = {
+          ...entry,
+          ...(field === 'original'
+            ? { foreignTaxPaidOriginal: value as number }
+            : { foreignTaxPaidCurrency: value as string }),
+        };
+
+        const taxOriginal = field === 'original' ? (value as number) : (entry.foreignTaxPaidOriginal ?? 0);
+        const taxCurrency = field === 'currency' ? (value as string) : (entry.foreignTaxPaidCurrency ?? entry.currency);
+        const rate = rateInfo[id];
+
+        if (taxCurrency === 'THB') {
+          updated.foreignTaxPaid = taxOriginal;
+        } else if (rate) {
+          updated.foreignTaxPaid = Math.round(taxOriginal * rate.rate * 100) / 100;
+        }
+
+        return updated;
+      }),
+    });
+  };
+
   // Handle country selection from DTA dropdown
   const handleCountrySelect = (entryId: string, country: DTACountry) => {
     handleUpdateEntry(entryId, 'country', country.name);
@@ -75,7 +106,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     setShowCountryDropdown(prev => ({ ...prev, [entryId]: false }));
   };
 
-  // Fetch BOT exchange rate for an entry and auto-fill THB amount
+  // Fetch BOT exchange rate for an entry, auto-filling both amountThb and foreignTaxPaid
   const handleFetchRate = async (entry: ForeignIncomeEntry) => {
     const rateDate = entry.dateRemitted || entry.dateEarned;
     if (!rateDate) {
@@ -100,10 +131,25 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
     if (result.ok) {
       setRateInfo(prev => ({ ...prev, [entry.id]: result.data }));
-      // Auto-fill THB amount
+
+      // Build a single update for both income THB and tax THB
+      const updates: Partial<ForeignIncomeEntry> = {};
       if (entry.amount > 0) {
-        const thbAmount = Math.round(entry.amount * result.data.rate * 100) / 100;
-        handleUpdateEntry(entry.id, 'amountThb', thbAmount);
+        updates.amountThb = Math.round(entry.amount * result.data.rate * 100) / 100;
+      }
+      const taxOriginal = entry.foreignTaxPaidOriginal ?? 0;
+      const taxCurrency = entry.foreignTaxPaidCurrency ?? entry.currency;
+      if (taxOriginal > 0 && taxCurrency !== 'THB') {
+        updates.foreignTaxPaid = Math.round(taxOriginal * result.data.rate * 100) / 100;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        setFormData({
+          ...formData,
+          foreignIncomeEntries: formData.foreignIncomeEntries.map(e =>
+            e.id === entry.id ? { ...e, ...updates } : e
+          ),
+        });
       }
     } else {
       setRateError(prev => ({ ...prev, [entry.id]: result.error.message }));
@@ -239,6 +285,8 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
           const taxability = isEntryTaxable(entry);
           const entryErrors = errors[entry.id] || [];
           const isExpanded = expandedEntry === entry.id;
+          const effectiveTaxCurrency = entry.foreignTaxPaidCurrency ?? entry.currency;
+          const rate = rateInfo[entry.id];
 
           return (
             <div
@@ -405,6 +453,32 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     })()}
                   </div>
 
+                  {/* Dates — shown before currency/amount so BOT rate fetch has dates ready */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date Earned *
+                      </label>
+                      <input
+                        type="date"
+                        value={entry.dateEarned}
+                        onChange={(e) => handleUpdateEntry(entry.id, 'dateEarned', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date Remitted to Thailand
+                      </label>
+                      <input
+                        type="date"
+                        value={entry.dateRemitted || ''}
+                        onChange={(e) => handleUpdateEntry(entry.id, 'dateRemitted', e.target.value || null)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
                   {/* Amount and Currency */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -488,13 +562,13 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     </div>
 
                     {/* Rate fetch result */}
-                    {rateInfo[entry.id] && (
+                    {rate && (
                       <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700">
-                        <span className="font-medium">BOT rate on {rateInfo[entry.id]!.date}:</span>{' '}
-                        1 {entry.currency} = {rateInfo[entry.id]!.rate.toFixed(4)} THB
+                        <span className="font-medium">BOT rate on {rate.date}:</span>{' '}
+                        1 {entry.currency} = {rate.rate.toFixed(4)} THB
                         {entry.amount > 0 && (
                           <span className="ml-1">
-                            → {(entry.amount * rateInfo[entry.id]!.rate).toLocaleString('en-US', { maximumFractionDigits: 2 })} THB
+                            → {(entry.amount * rate.rate).toLocaleString('en-US', { maximumFractionDigits: 2 })} THB
                           </span>
                         )}
                       </div>
@@ -506,54 +580,55 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     )}
 
                     <p className="text-xs text-gray-500 mt-1">
-                      {rateInfo[entry.id]
+                      {rate
                         ? 'Rate auto-filled from Bank of Thailand — verify at bot.or.th before filing.'
                         : 'Enter manually or use "Fetch BOT rate" to auto-convert using the official Bank of Thailand rate.'}
                     </p>
                   </div>
 
-                  {/* Dates */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Date Earned *
-                      </label>
-                      <input
-                        type="date"
-                        value={entry.dateEarned}
-                        onChange={(e) => handleUpdateEntry(entry.id, 'dateEarned', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Date Remitted to Thailand
-                      </label>
-                      <input
-                        type="date"
-                        value={entry.dateRemitted || ''}
-                        onChange={(e) => handleUpdateEntry(entry.id, 'dateRemitted', e.target.value || null)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Foreign Tax Paid */}
+                  {/* Foreign Tax Paid — currency selector with auto-conversion using same BOT rate */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Foreign Tax Already Paid (THB)
+                      Foreign Tax Already Paid
                     </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+                    <div className="grid grid-cols-2 gap-3">
+                      <select
+                        value={effectiveTaxCurrency}
+                        onChange={(e) => handleUpdateTaxPaid(entry.id, 'currency', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {COMMON_CURRENCIES.map(curr => (
+                          <option key={curr.code} value={curr.code}>
+                            {curr.code} - {curr.name}
+                          </option>
+                        ))}
+                      </select>
                       <input
                         type="number"
-                        value={entry.foreignTaxPaid || ''}
-                        onChange={(e) => handleUpdateEntry(entry.id, 'foreignTaxPaid', parseFloat(e.target.value) || 0)}
+                        value={entry.foreignTaxPaidOriginal || ''}
+                        onChange={(e) => handleUpdateTaxPaid(entry.id, 'original', parseFloat(e.target.value) || 0)}
                         placeholder="0"
                         min="0"
-                        className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
+
+                    {/* THB equivalent — shown when a non-THB tax amount is entered */}
+                    {effectiveTaxCurrency !== 'THB' && (entry.foreignTaxPaidOriginal ?? 0) > 0 && (
+                      <div className="mt-2">
+                        {rate ? (
+                          <p className="text-xs text-green-600">
+                            = {entry.foreignTaxPaid.toLocaleString('en-US', { maximumFractionDigits: 2 })} THB
+                            (same BOT rate on {rate.date})
+                          </p>
+                        ) : (
+                          <p className="text-xs text-amber-600">
+                            Fetch BOT rate above to auto-convert to THB
+                          </p>
+                        )}
+                      </div>
+                    )}
+
                     {(() => {
                       const dtaStatus = getEntryDTAStatus(entry);
                       if (dtaStatus === false) return (

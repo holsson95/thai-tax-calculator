@@ -43,7 +43,9 @@ export interface ForeignIncomeEntry {
   amountThb: number; // Converted to THB
   dateEarned: string; // YYYY-MM-DD
   dateRemitted: string | null; // YYYY-MM-DD, null if not remitted
-  foreignTaxPaid: number; // For foreign tax credit
+  foreignTaxPaid: number; // In THB — used in credit calculations
+  foreignTaxPaidOriginal?: number; // Amount in original currency (for display/input)
+  foreignTaxPaidCurrency?: string; // Currency of tax paid (defaults to entry.currency)
   description: string;
   country: string;
 }
