@@ -10,6 +10,122 @@ export interface Article {
 
 export const articles: Article[] = [
   {
+    slug: 'how-to-use-the-thai-tax-calculator',
+    title: 'How to Use the Thai Tax Calculator: Features, Downloads, and Filing Records',
+    excerpt: 'A complete guide to using this tool — from calculating your annual tax or monthly withholding, to downloading a personal filing packet you can keep for your records.',
+    content: `
+## What This Calculator Does
+
+The Thai Tax Calculator is a free tool designed to help individuals living and working in Thailand estimate their personal income tax liability and understand what they owe — or may get back — at the end of the tax year.
+
+It supports four employment types commonly found among expats, freelancers, and local residents:
+
+- **Salaried employees** — employed full-time under a Thai employment contract
+- **Freelancers and self-employed individuals** — earning income from multiple clients or sources
+- **Sole proprietors** — running a registered business under their own name
+- **Company owners and directors** — drawing a salary and/or dividends from a Thai company
+
+---
+
+## The Two Calculators
+
+### Annual Tax Calculator
+
+This is the main tool. It walks you through a step-by-step form to calculate your total tax liability for a full calendar year. The questions cover:
+
+- Your employment type and total annual income
+- Marital status and spouse income
+- Dependents (children, parents, elderly relatives)
+- Deductions you're entitled to claim — including life and health insurance premiums, social security contributions, provident fund or RMF/SSF contributions, and charitable donations
+- Tax already withheld from your salary or invoices throughout the year
+- For freelancers and non-residents: foreign income, tax residency, and any applicable double tax agreements
+
+At the end, you'll see a full breakdown of your taxable income, applicable deductions, tax bracket calculations, total tax owed, and whether you're due a refund or have a remaining balance to pay.
+
+### Monthly Withholding Estimator
+
+This lighter tool helps you check whether the right amount of tax is being deducted from your monthly paycheck. It's useful for:
+
+- Verifying your employer's withholding is correct
+- Estimating the impact of a salary change or bonus on your monthly tax
+- Planning your cash flow throughout the year
+
+It supports both fixed monthly salaries and variable income, and accounts for bonuses and other payments.
+
+---
+
+## Deductions and Allowances Covered
+
+Both calculators apply Thailand's standard personal income tax allowances:
+
+| Allowance | Amount |
+|---|---|
+| Personal allowance | 60,000 THB |
+| Spouse allowance (no income) | 60,000 THB |
+| Child allowance | 30,000 THB per child |
+| Child born from 2018 onward | Additional 30,000 THB |
+| Parent allowance | 30,000 THB per parent |
+| Life insurance premiums | Up to 100,000 THB |
+| Health insurance premiums | Up to 25,000 THB |
+| Social Security Fund (SSF) | Up to 30% of income, max 200,000 THB |
+| Retirement Mutual Fund (RMF) | Up to 30% of income, max 500,000 THB |
+| Charitable donations | Up to 10% of net income |
+
+For salaried employees, a standard employment income deduction of 50% (up to 100,000 THB) is applied automatically.
+
+---
+
+## Downloading Your Filing Packet
+
+After completing the Annual Tax Calculator, you can download a **personal filing packet** as a PDF.
+
+This document is designed to support your annual tax filing — either when completing the PND 90 or PND 91 form yourself, or when working with an accountant or tax agent. It is not an official filing document, but a personal summary and reference tool.
+
+### What the PDF Includes
+
+The filing packet is organized into clearly labeled sections:
+
+1. **Cover summary** — A one-page overview showing your employment type, total income, total tax owed or refund amount, and effective tax rate for the year.
+2. **Income breakdown** — A detailed record of all income sources entered, including salary, freelance income, dividends, and any foreign income declared.
+3. **Allowances and deductions** — Every allowance and deduction applied to your calculation, with amounts, so you can verify entries and reference them during filing.
+4. **Tax calculation** — A step-by-step view of how your tax was calculated, including the progression through Thailand's tax brackets and total withholding already paid.
+5. **Supporting documents checklist** — A personalized checklist of the documents you'll likely need to gather before filing — such as employer withholding certificates (50 tawi), insurance receipts, and fund statements. The checklist adjusts based on your specific situation.
+6. **Preparer notes** *(freelancers and sole proprietors only)* — Notes on common considerations for self-employed filers, including expense deduction method choices and quarterly estimated tax obligations.
+
+### How to Use the PDF for Record Keeping
+
+The filing packet is useful beyond just the filing moment:
+
+- **Keep a copy for your records.** Thailand's Revenue Department can audit returns for up to 5 years. Having a clear record of what you declared and why supports your position in the event of any queries.
+- **Share with an accountant.** If you use a tax agent or accountant to file on your behalf, the packet gives them a clear picture of your situation before they prepare the official forms.
+- **Track year-over-year changes.** Saving packets from each year makes it easy to compare your income, deductions, and tax position over time.
+- **Reference during filing.** The checklist page tells you which physical documents to locate before you sit down to file, reducing last-minute scrambling.
+
+---
+
+## Who This Tool Is For
+
+This calculator is intended for:
+
+- **Expats and foreign nationals** living in Thailand who need to understand their filing obligations
+- **Freelancers and digital nomads** who earn income from multiple sources and want to estimate what they owe
+- **Salaried employees** who want to verify their employer's withholding or plan for year-end
+- **Business owners** drawing income from a Thai company
+- **Anyone new to the Thai tax system** who wants a clear, guided explanation of how it applies to their situation
+
+---
+
+## Important Notes
+
+This tool provides estimates based on information you enter and standard Thai personal income tax rules. It is intended for general guidance only and does not constitute professional tax advice. For complex situations — particularly those involving foreign income, double tax agreements, or business structures — consider consulting a licensed Thai tax advisor or accountant.
+
+Tax laws can change. Always verify current rates and thresholds with the Thai Revenue Department or a qualified professional before filing.
+    `,
+    publishedAt: '2026-02-22',
+    readTime: 7,
+    category: 'Guide'
+  },
+  {
     slug: 'understanding-thai-tax-residency',
     title: 'Understanding Thai Tax Residency: The 180-Day Rule',
     excerpt: 'Learn how Thailand determines your tax residency status and what it means for your tax obligations.',
