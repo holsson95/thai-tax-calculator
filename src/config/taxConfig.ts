@@ -93,6 +93,7 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
 /**
  * Common currencies for foreign income
  */
+// Currencies listed first in the dropdown — the most common choices for Thailand expats
 export const COMMON_CURRENCIES = [
   { code: 'USD', name: 'US Dollar', symbol: '$' },
   { code: 'EUR', name: 'Euro', symbol: '€' },
@@ -104,6 +105,43 @@ export const COMMON_CURRENCIES = [
   { code: 'CNY', name: 'Chinese Yuan', symbol: '¥' },
   { code: 'KRW', name: 'Korean Won', symbol: '₩' },
   { code: 'THB', name: 'Thai Baht', symbol: '฿' },
+];
+
+// Additional currencies published in the BOT daily exchange rate.
+// All of these work with "Fetch BOT rate"; sorted alphabetically.
+export const EXTENDED_CURRENCIES = [
+  { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
+  { code: 'BDT', name: 'Bangladeshi Taka', symbol: '৳' },
+  { code: 'BHD', name: 'Bahraini Dinar', symbol: '.د.ب' },
+  { code: 'BND', name: 'Brunei Dollar', symbol: 'B$' },
+  { code: 'BRL', name: 'Brazilian Real', symbol: 'R$' },
+  { code: 'CAD', name: 'Canadian Dollar', symbol: 'C$' },
+  { code: 'CHF', name: 'Swiss Franc', symbol: 'Fr' },
+  { code: 'CZK', name: 'Czech Koruna', symbol: 'Kč' },
+  { code: 'DKK', name: 'Danish Krone', symbol: 'kr' },
+  { code: 'HUF', name: 'Hungarian Forint', symbol: 'Ft' },
+  { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'Rp' },
+  { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+  { code: 'KHR', name: 'Cambodian Riel', symbol: '៛' },
+  { code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'د.ك' },
+  { code: 'LAK', name: 'Lao Kip', symbol: '₭' },
+  { code: 'LKR', name: 'Sri Lankan Rupee', symbol: '₨' },
+  { code: 'MXN', name: 'Mexican Peso', symbol: '$' },
+  { code: 'MYR', name: 'Malaysian Ringgit', symbol: 'RM' },
+  { code: 'MMK', name: 'Myanmar Kyat', symbol: 'K' },
+  { code: 'NOK', name: 'Norwegian Krone', symbol: 'kr' },
+  { code: 'NPR', name: 'Nepalese Rupee', symbol: '₨' },
+  { code: 'NZD', name: 'New Zealand Dollar', symbol: 'NZ$' },
+  { code: 'OMR', name: 'Omani Rial', symbol: 'ر.ع.' },
+  { code: 'PHP', name: 'Philippine Peso', symbol: '₱' },
+  { code: 'PKR', name: 'Pakistani Rupee', symbol: '₨' },
+  { code: 'PLN', name: 'Polish Zloty', symbol: 'zł' },
+  { code: 'QAR', name: 'Qatari Riyal', symbol: 'ر.ق' },
+  { code: 'SAR', name: 'Saudi Riyal', symbol: 'ر.س' },
+  { code: 'SEK', name: 'Swedish Krona', symbol: 'kr' },
+  { code: 'TWD', name: 'Taiwan Dollar', symbol: 'NT$' },
+  { code: 'VND', name: 'Vietnamese Dong', symbol: '₫' },
+  { code: 'ZAR', name: 'South African Rand', symbol: 'R' },
 ];
 
 /**

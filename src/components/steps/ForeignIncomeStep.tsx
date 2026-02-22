@@ -4,7 +4,7 @@ import {
   ForeignIncomeEntry,
   generateEntryId,
 } from '../../types/freelancerForm';
-import { COMMON_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
+import { COMMON_CURRENCIES, EXTENDED_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
 import { searchCountries, hasDTAWithThailand, type DTACountry } from '../../data/dtaCountries';
 import { getExchangeRate, type ExchangeRateResult } from '../../services/exchangeRateService';
 
@@ -490,11 +490,20 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         onChange={(e) => handleUpdateEntry(entry.id, 'currency', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {COMMON_CURRENCIES.map(curr => (
-                          <option key={curr.code} value={curr.code}>
-                            {curr.code} - {curr.name}
-                          </option>
-                        ))}
+                        <optgroup label="Common">
+                          {COMMON_CURRENCIES.map(curr => (
+                            <option key={curr.code} value={curr.code}>
+                              {curr.code} - {curr.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Other">
+                          {EXTENDED_CURRENCIES.map(curr => (
+                            <option key={curr.code} value={curr.code}>
+                              {curr.code} - {curr.name}
+                            </option>
+                          ))}
+                        </optgroup>
                       </select>
                     </div>
                     <div>
@@ -597,11 +606,20 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         onChange={(e) => handleUpdateTaxPaid(entry.id, 'currency', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        {COMMON_CURRENCIES.map(curr => (
-                          <option key={curr.code} value={curr.code}>
-                            {curr.code} - {curr.name}
-                          </option>
-                        ))}
+                        <optgroup label="Common">
+                          {COMMON_CURRENCIES.map(curr => (
+                            <option key={curr.code} value={curr.code}>
+                              {curr.code} - {curr.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Other">
+                          {EXTENDED_CURRENCIES.map(curr => (
+                            <option key={curr.code} value={curr.code}>
+                              {curr.code} - {curr.name}
+                            </option>
+                          ))}
+                        </optgroup>
                       </select>
                       <input
                         type="number"
