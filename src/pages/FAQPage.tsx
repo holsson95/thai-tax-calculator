@@ -1,16 +1,45 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import FAQAccordion from '../components/faq/FAQAccordion';
 import AdSlot from '../components/ads/AdSlot';
 import { faqData, searchFAQ } from '../data/faq';
+
+const SITE_URL = 'https://www.thai-tax-calculator.com';
 
 const FAQPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const searchResults = searchQuery.length >= 2 ? searchFAQ(searchQuery) : [];
   const showSearch = searchQuery.length >= 2;
 
+  const title = 'Thai Tax FAQ | Frequently Asked Questions | Thai Tax Calculator';
+  const description =
+    'Answers to common questions about Thai income tax: tax residency, deductions, filing deadlines, withholding tax, refunds, and more.';
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqData.flatMap((cat) =>
+      cat.items.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      }))
+    ),
+  };
+
   return (
     <div className="py-8">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={`${SITE_URL}/faq`} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={`${SITE_URL}/faq`} />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+      </Helmet>
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8 text-center">

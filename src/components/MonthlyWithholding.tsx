@@ -1,6 +1,7 @@
 // MonthlyWithholding.tsx
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { MonthlyFormData, MonthlyIncomeEntry } from '../types/taxForm';
 import EstimateTypeStep from './steps/EstimateTypeStep';
 import IncomeTypeStep from './steps/IncomeTypeStep';
@@ -217,6 +218,13 @@ const MonthlyWithholding: React.FC = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center py-8 px-4">
+      <Helmet>
+        <title>Monthly Tax Withholding Estimator | Thai Tax Calculator</title>
+        <meta
+          name="description"
+          content="Estimate how much Thai income tax should be withheld from your monthly salary. Free calculator for salaried employees and freelancers in Thailand."
+        />
+      </Helmet>
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
         {/* Header with Home button */}
         <div className="flex justify-between items-center mb-6">

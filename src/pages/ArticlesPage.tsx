@@ -1,16 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
 import { articles } from '../data/articles';
+
+const SITE_URL = 'https://www.thai-tax-calculator.com';
 
 const ArticlesPage: React.FC = () => {
   // Split articles for ad placement
   const firstBatch = articles.slice(0, 3);
   const secondBatch = articles.slice(3);
 
+  const title = 'Thai Tax Articles & Guides | Thai Tax Calculator';
+  const description =
+    'Expert guides on Thai taxation covering freelancer tax, expat filing, deductions, tax residency, double tax agreements, and more.';
+
   return (
     <div className="py-8">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={`${SITE_URL}/articles`} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={`${SITE_URL}/articles`} />
+        <meta property="og:type" content="website" />
+      </Helmet>
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="mb-8">

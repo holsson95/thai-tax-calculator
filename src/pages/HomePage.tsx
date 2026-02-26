@@ -1,17 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
+
+const SITE_URL = 'https://www.thai-tax-calculator.com';
 
 const HomePage: React.FC = () => {
   // Get first 3 articles and 5 FAQ items from across categories
   const featuredArticles = articles.slice(0, 3);
   const featuredFAQ = faqData.flatMap(category => category.items).slice(0, 5);
 
+  const title = 'Thai Tax Calculator | Free Thai Income Tax Calculator';
+  const description =
+    'Calculate your Thai income tax quickly and accurately. Free tool for salaried employees, freelancers, sole proprietors, and company owners in Thailand.';
+
   return (
     <div className="py-8">
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={SITE_URL} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'Thai Tax Calculator',
+          url: SITE_URL,
+          description,
+          applicationCategory: 'FinanceApplication',
+          operatingSystem: 'All',
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'THB' },
+        })}</script>
+      </Helmet>
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto px-4 text-center mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">

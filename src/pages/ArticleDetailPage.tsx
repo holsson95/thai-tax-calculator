@@ -1,8 +1,11 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
 import { getArticleBySlug, getRelatedArticles } from '../data/articles';
+
+const SITE_URL = 'https://www.thai-tax-calculator.com';
 
 const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -13,6 +16,21 @@ const ArticleDetailPage: React.FC = () => {
     return <Navigate to="/articles" replace />;
   }
 
+  const canonicalUrl = `${SITE_URL}/articles/${article.slug}`;
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    url: canonicalUrl,
+    datePublished: article.publishedAt,
+    publisher: {
+      '@type': 'Organization',
+      name: 'Thai Tax Calculator',
+      url: SITE_URL,
+    },
+  };
+
   // Split content for mid-article ad
   const contentParts = article.content.split('\n\n');
   const midPoint = Math.floor(contentParts.length / 2);
@@ -21,6 +39,17 @@ const ArticleDetailPage: React.FC = () => {
 
   return (
     <div className="py-8">
+      <Helmet>
+        <title>{article.title} | Thai Tax Calculator</title>
+        <meta name="description" content={article.excerpt} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={article.excerpt} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={article.publishedAt} />
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+      </Helmet>
       <div className="max-w-3xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="mb-6">
