@@ -5,7 +5,7 @@ import FAQAccordion from '../components/faq/FAQAccordion';
 import AdSlot from '../components/ads/AdSlot';
 import { faqData, searchFAQ } from '../data/faq';
 
-const SITE_URL = 'https://www.thai-tax-calculator.com';
+const SITE_URL = 'https://www.mythaitaxes.com';
 
 const FAQPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

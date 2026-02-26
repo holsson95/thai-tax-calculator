@@ -5,7 +5,7 @@ import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
 import { articles } from '../data/articles';
 
-const SITE_URL = 'https://www.thai-tax-calculator.com';
+const SITE_URL = 'https://www.mythaitaxes.com';
 
 const ArticlesPage: React.FC = () => {
   // Split articles for ad placement

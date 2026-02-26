@@ -6,7 +6,7 @@ import AdSlot from '../components/ads/AdSlot';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
 
-const SITE_URL = 'https://www.thai-tax-calculator.com';
+const SITE_URL = 'https://www.mythaitaxes.com';
 
 const HomePage: React.FC = () => {
   // Get first 3 articles and 5 FAQ items from across categories

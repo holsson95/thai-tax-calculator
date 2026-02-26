@@ -17,7 +17,7 @@ const routes = [
   ...articles.map((a) => `/articles/${a.slug}`),
 ];
 
-const SITE_URL = 'https://www.thai-tax-calculator.com';
+const SITE_URL = 'https://www.mythaitaxes.com';
 
 // --- Prerender pages ---
 for (const route of routes) {
