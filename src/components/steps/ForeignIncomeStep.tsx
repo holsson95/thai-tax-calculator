@@ -2,11 +2,21 @@ import { useState, useEffect } from 'react';
 import {
   FreelancerStepProps,
   ForeignIncomeEntry,
+  PensionType,
   generateEntryId,
 } from '../../types/freelancerForm';
 import { COMMON_CURRENCIES, EXTENDED_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
-import { searchCountries, hasDTAWithThailand, type DTACountry } from '../../data/dtaCountries';
+import { searchCountries, hasDTAWithThailand, getPensionDTAExemption, type DTACountry } from '../../data/dtaCountries';
 import { getExchangeRate, type ExchangeRateResult } from '../../services/exchangeRateService';
+
+const PENSION_TYPE_OPTIONS: { value: PensionType; label: string; description: string }[] = [
+  { value: 'government_service', label: 'Government / Military Service Pension', description: 'Pension paid for service to a government or armed forces (e.g. Australian Defence Force, UK civil service)' },
+  { value: 'social_security', label: 'Social Security Payment', description: 'Government social security or national insurance benefit (e.g. US Social Security)' },
+  { value: 'private_occupational', label: 'Private / Occupational Pension', description: 'Employer-sponsored pension or superannuation fund (e.g. Australian superannuation)' },
+  { value: 'aged_state_pension', label: 'Age / State Pension', description: 'Government welfare pension based on age (e.g. Australian Age Pension, UK State Pension)' },
+  { value: 'annuity', label: 'Annuity', description: 'Regular payments from a private annuity contract' },
+  { value: 'other_pension', label: 'Other Pension', description: 'Other pension or retirement income not listed above' },
+];
 
 const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
   formData,
@@ -61,7 +71,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
   };
 
   // Update entry field
-  const handleUpdateEntry = (id: string, field: keyof ForeignIncomeEntry, value: string | number | null) => {
+  const handleUpdateEntry = (id: string, field: keyof ForeignIncomeEntry, value: string | number | boolean | null) => {
     setFormData({
       ...formData,
       foreignIncomeEntries: formData.foreignIncomeEntries.map(entry =>
@@ -162,8 +172,21 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     return hasDTAWithThailand(entry.country);
   };
 
-  // Check if entry is taxable under 2024+ rules
-  const isEntryTaxable = (entry: ForeignIncomeEntry): { taxable: boolean; reason: string } => {
+  // Check if entry is taxable under 2024+ rules (including pension DTA exemptions)
+  const isEntryTaxable = (entry: ForeignIncomeEntry): { taxable: boolean; reason: string; dtaPensionExempt?: boolean; dtaArticle?: string } => {
+    // DTA pension exemption — fully exempt regardless of dates/remittance
+    if (entry.isPension && entry.pensionType && entry.country) {
+      const pensionExemption = getPensionDTAExemption(entry.country, entry.pensionType as PensionType);
+      if (pensionExemption) {
+        return {
+          taxable: false,
+          reason: `DTA ${pensionExemption.dtaArticle} — exempt from Thai tax`,
+          dtaPensionExempt: true,
+          dtaArticle: pensionExemption.dtaArticle,
+        };
+      }
+    }
+
     if (!entry.dateEarned) {
       return { taxable: false, reason: 'Date earned not specified' };
     }
@@ -324,10 +347,13 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     </div>
                     <p className="text-sm text-gray-500">
                       THB {entry.amountThb.toLocaleString()}
-                      {taxability.taxable && (
-                        <span className="ml-2 text-green-600 font-medium">Taxable</span>
+                      {taxability.dtaPensionExempt && (
+                        <span className="ml-2 text-blue-600 font-medium">DTA Exempt</span>
                       )}
-                      {!taxability.taxable && entry.dateEarned && (
+                      {!taxability.dtaPensionExempt && taxability.taxable && (
+                        <span className="ml-2 text-amber-600 font-medium">Taxable</span>
+                      )}
+                      {!taxability.dtaPensionExempt && !taxability.taxable && entry.dateEarned && (
                         <span className="ml-2 text-gray-400">Not Taxable</span>
                       )}
                     </p>
@@ -451,6 +477,77 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         </p>
                       );
                     })()}
+                  </div>
+
+                  {/* Pension income toggle + type selector */}
+                  <div className="space-y-3">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={entry.isPension ?? false}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setFormData({
+                            ...formData,
+                            foreignIncomeEntries: formData.foreignIncomeEntries.map(e =>
+                              e.id === entry.id
+                                ? { ...e, isPension: checked, pensionType: checked ? e.pensionType : undefined }
+                                : e
+                            ),
+                          });
+                        }}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">This is pension income</span>
+                    </label>
+
+                    {entry.isPension && (
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Pension Type
+                        </label>
+                        <select
+                          value={entry.pensionType ?? ''}
+                          onChange={(e) => handleUpdateEntry(entry.id, 'pensionType', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Select pension type…</option>
+                          {PENSION_TYPE_OPTIONS.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                        {entry.pensionType && (
+                          <p className="text-xs text-gray-500">
+                            {PENSION_TYPE_OPTIONS.find(o => o.value === entry.pensionType)?.description}
+                          </p>
+                        )}
+
+                        {/* DTA pension exemption notice */}
+                        {entry.pensionType && entry.country && (() => {
+                          const exemption = getPensionDTAExemption(entry.country, entry.pensionType as PensionType);
+                          if (exemption) {
+                            return (
+                              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                <p className="text-sm font-medium text-green-800">
+                                  DTA Exempt — {exemption.dtaArticle}
+                                </p>
+                                <p className="text-xs text-green-700 mt-0.5">{exemption.note}</p>
+                              </div>
+                            );
+                          }
+                          if (entry.pensionType !== 'other_pension') {
+                            return (
+                              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                <p className="text-sm text-blue-700">
+                                  This pension type is not DTA-exempt and is subject to Thai tax when remitted to Thailand. Foreign tax paid may be credited against Thai tax if a tax treaty applies.
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                    )}
                   </div>
 
                   {/* Dates — shown before currency/amount so BOT rate fetch has dates ready */}
@@ -683,12 +780,28 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                   {/* Taxability Status */}
                   <div className={`p-3 rounded-lg ${
-                    taxability.taxable ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'
+                    taxability.dtaPensionExempt
+                      ? 'bg-blue-50 border border-blue-200'
+                      : taxability.taxable
+                        ? 'bg-amber-50 border border-amber-200'
+                        : 'bg-gray-50 border border-gray-200'
                   }`}>
-                    <p className={`text-sm font-medium ${taxability.taxable ? 'text-green-700' : 'text-gray-600'}`}>
-                      {taxability.taxable ? 'This income is taxable in Thailand' : 'Not taxable'}
+                    <p className={`text-sm font-medium ${
+                      taxability.dtaPensionExempt
+                        ? 'text-blue-800'
+                        : taxability.taxable
+                          ? 'text-amber-700'
+                          : 'text-gray-600'
+                    }`}>
+                      {taxability.dtaPensionExempt
+                        ? `DTA Exempt (${taxability.dtaArticle})`
+                        : taxability.taxable
+                          ? 'This income is taxable in Thailand'
+                          : 'Not taxable'}
                     </p>
-                    <p className={`text-xs ${taxability.taxable ? 'text-green-600' : 'text-gray-500'}`}>
+                    <p className={`text-xs ${
+                      taxability.dtaPensionExempt ? 'text-blue-700' : taxability.taxable ? 'text-amber-600' : 'text-gray-500'
+                    }`}>
                       {taxability.reason}
                     </p>
                   </div>

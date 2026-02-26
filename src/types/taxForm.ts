@@ -113,6 +113,7 @@ export type EmploymentType =
   | 'freelancer'
   | 'sole_proprietor'
   | 'company_owner'
+  | 'retired'        // Retired/Pensioner — routes to freelancer flow
   | 'self-employed'  // Legacy - maps to freelancer
   | 'business'       // Legacy - maps to sole_proprietor
   | '';

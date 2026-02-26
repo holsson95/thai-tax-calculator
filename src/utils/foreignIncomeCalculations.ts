@@ -5,7 +5,7 @@ import {
   VisaType,
 } from '../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../config/taxConfig';
-import { hasDTAWithThailand } from '../data/dtaCountries';
+import { hasDTAWithThailand, getPensionDTAExemption } from '../data/dtaCountries';
 
 /**
  * LTR visa types that grant foreign income tax exemption
@@ -74,6 +74,25 @@ export function isForeignIncomeTaxable(
       dtaCreditAllowed: dtaResult.creditAllowed,
       dtaCreditDisallowed: 0,
     };
+  }
+
+  // DTA pension article exemption - specific pension types are taxable only in source country
+  if (entry.isPension && entry.pensionType && entry.country) {
+    const pensionExemption = getPensionDTAExemption(entry.country, entry.pensionType);
+    if (pensionExemption) {
+      return {
+        entry,
+        isTaxable: false,
+        reason: `DTA ${pensionExemption.dtaArticle} exemption: ${pensionExemption.note}`,
+        taxableAmount: 0,
+        foreignTaxCredit: 0,
+        hasDTA: true,
+        dtaCreditAllowed: true,
+        dtaCreditDisallowed: 0,
+        dtaPensionExempt: true,
+        dtaExemptionArticle: pensionExemption.dtaArticle,
+      };
+    }
   }
 
   // No date earned specified

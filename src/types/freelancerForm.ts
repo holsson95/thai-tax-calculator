@@ -33,6 +33,18 @@ export type VisaType =
   | 'other';
 
 /**
+ * Pension income type for DTA exemption classification
+ * Some pension types are fully exempt from Thai tax under specific DTA articles
+ */
+export type PensionType =
+  | 'government_service'   // Military / civil service pension (AU Art.19(2), UK Art.19 — exempt)
+  | 'social_security'      // Government social security payment (US Art.20(2) — exempt)
+  | 'private_occupational' // Superannuation / employer pension fund (taxable)
+  | 'aged_state_pension'   // AU Age Pension / UK State Pension (taxable)
+  | 'annuity'              // Private annuity (taxable)
+  | 'other_pension';       // Other pension income (taxable)
+
+/**
  * Foreign income entry with remittance tracking
  * Per 2024+ rules: foreign income taxable if earned on/after 2024-01-01 and remitted to Thailand
  */
@@ -48,6 +60,8 @@ export interface ForeignIncomeEntry {
   foreignTaxPaidCurrency?: string; // Currency of tax paid (defaults to entry.currency)
   description: string;
   country: string;
+  isPension?: boolean;       // True if this is pension income
+  pensionType?: PensionType; // Pension sub-type for DTA exemption determination
 }
 
 /**
@@ -185,6 +199,9 @@ export interface ForeignIncomeTaxability {
   hasDTA: boolean | null; // null if country unknown
   dtaCreditAllowed: boolean; // false if no DTA and credit blocked
   dtaCreditDisallowed: number; // amount of credit blocked due to no DTA
+  // Pension DTA exemption
+  dtaPensionExempt?: boolean;   // true if fully exempt under DTA pension article
+  dtaExemptionArticle?: string; // e.g. "Article 19(2)"
 }
 
 /**

@@ -144,3 +144,60 @@ export function searchCountries(query: string): DTACountry[] {
     c.name.toLowerCase().includes(normalized)
   );
 }
+
+/**
+ * DTA pension exemption rules
+ *
+ * Some DTA articles fully exempt specific pension types from Thai tax — the income
+ * is taxable only in the source country, not in Thailand at all (not just a credit).
+ *
+ * Sources:
+ * - Australia-Thailand DTA (1989), Article 19(2): government/military pensions taxable only in Australia
+ * - US-Thailand DTA (1996), Article 20(2): US Social Security taxable only in USA
+ * - UK-Thailand DTA, Article 19: UK government/military service pensions taxable only in UK
+ */
+export interface PensionDTAExemption {
+  country: string;       // Must match DTACountry.name exactly
+  pensionType: string;   // Matches PensionType values from freelancerForm.ts
+  dtaArticle: string;    // e.g. "Article 19(2)"
+  note: string;          // Human-readable explanation shown in UI
+}
+
+export const PENSION_DTA_EXEMPTIONS: PensionDTAExemption[] = [
+  {
+    country: 'Australia',
+    pensionType: 'government_service',
+    dtaArticle: 'Article 19(2)',
+    note: 'Australian government and military service pensions are taxable only in Australia under the Australia-Thailand DTA. Thai tax does not apply.',
+  },
+  {
+    country: 'United States',
+    pensionType: 'social_security',
+    dtaArticle: 'Article 20(2)',
+    note: 'US Social Security benefits are taxable only in the United States under the US-Thailand DTA. Thai tax does not apply.',
+  },
+  {
+    country: 'United Kingdom',
+    pensionType: 'government_service',
+    dtaArticle: 'Article 19',
+    note: 'UK government and military service pensions are taxable only in the United Kingdom under the UK-Thailand DTA. Thai tax does not apply.',
+  },
+];
+
+/**
+ * Look up a DTA pension exemption for a given country and pension type.
+ * Returns the exemption record if found, or null if no exemption applies.
+ */
+export function getPensionDTAExemption(
+  countryName: string,
+  pensionType: string
+): PensionDTAExemption | null {
+  const normalized = countryName.trim().toLowerCase();
+  return (
+    PENSION_DTA_EXEMPTIONS.find(
+      e =>
+        e.country.toLowerCase() === normalized &&
+        e.pensionType === pensionType
+    ) || null
+  );
+}

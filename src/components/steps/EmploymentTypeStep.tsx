@@ -16,6 +16,13 @@ const EMPLOYMENT_TYPES = [
     comingSoon: false,
   },
   {
+    value: 'retired' as const,
+    label: 'Retired / Pensioner',
+    description: 'I receive a pension or retirement income from abroad or locally',
+    icon: '🏖️',
+    comingSoon: false,
+  },
+  {
     value: 'sole_proprietor' as const,
     label: 'Business Owner (Sole Proprietor)',
     description: 'I own and operate an unincorporated business',
@@ -32,7 +39,7 @@ const EMPLOYMENT_TYPES = [
 ];
 
 const EmploymentTypeStep: React.FC<StepProps> = ({ formData, setFormData, nextStep }) => {
-  const handleSelect = (type: 'salaried' | 'self-employed' | 'sole_proprietor' | 'company_owner') => {
+  const handleSelect = (type: 'salaried' | 'self-employed' | 'retired' | 'sole_proprietor' | 'company_owner') => {
     const updatedFormData = { ...formData, employmentType: type };
     setFormData(updatedFormData);
     nextStep(updatedFormData);

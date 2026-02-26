@@ -88,7 +88,7 @@ type WizardFormData = TaxFormData | FreelancerFormData | SoleProprietorFormData 
 
 // Type guard to check if form data is freelancer type
 function isFreelancerEmployment(employmentType: string): boolean {
-  return employmentType === 'self-employed' || employmentType === 'freelancer';
+  return employmentType === 'self-employed' || employmentType === 'freelancer' || employmentType === 'retired';
 }
 
 // Type guard to check if form data is sole proprietor type
