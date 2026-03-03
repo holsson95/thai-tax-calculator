@@ -9,9 +9,13 @@ import { faqData } from '../data/faq';
 const SITE_URL = 'https://www.mythaitaxes.com';
 
 const HomePage: React.FC = () => {
-  // Get first 3 articles and 5 FAQ items from across categories
+  // Get first 3 articles and curated FAQ items across key categories
   const featuredArticles = articles.slice(0, 3);
-  const featuredFAQ = faqData.flatMap(category => category.items).slice(0, 5);
+  const FEATURED_FAQ_CATEGORIES = ['Pensioners & Retirees', 'Tax Residency', 'Filing & Deadlines'];
+  const featuredFAQCategories = faqData
+    .filter(cat => FEATURED_FAQ_CATEGORIES.includes(cat.name))
+    .sort((a, b) => FEATURED_FAQ_CATEGORIES.indexOf(a.name) - FEATURED_FAQ_CATEGORIES.indexOf(b.name))
+    .map(cat => ({ name: cat.name, items: cat.items.slice(0, 3) }));
 
   const title = 'Thai Tax Calculator | Free Thai Income Tax Calculator';
   const description =
@@ -113,19 +117,28 @@ const HomePage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Popular Questions
             </h2>
-            <ul className="space-y-3">
-              {featuredFAQ.map((item, index) => (
-                <li key={index}>
-                  <Link
-                    to="/faq"
-                    className="flex items-start gap-2 text-sm text-gray-600 hover:text-blue-500 transition-colors"
-                  >
-                    <span className="text-blue-500 flex-shrink-0">Q:</span>
-                    <span>{item.question}</span>
-                  </Link>
-                </li>
+            <div className="space-y-5">
+              {featuredFAQCategories.map(category => (
+                <div key={category.name}>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                    {category.name}
+                  </p>
+                  <ul className="space-y-2">
+                    {category.items.map((item, index) => (
+                      <li key={index}>
+                        <Link
+                          to="/faq"
+                          className="flex items-start gap-2 text-sm text-gray-600 hover:text-blue-500 transition-colors"
+                        >
+                          <span className="text-blue-500 flex-shrink-0 mt-0.5">Q:</span>
+                          <span>{item.question}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
+            </div>
             <Link
               to="/faq"
               className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 mt-4 text-sm font-medium"
