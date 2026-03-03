@@ -10,6 +10,51 @@ export interface FAQCategory {
 
 export const faqData: FAQCategory[] = [
   {
+    name: 'Pensioners & Retirees',
+    items: [
+      {
+        question: 'Do retirees get a special tax exemption in Thailand?',
+        answer: 'Yes. If you are aged 65 or over at the end of the tax year, the first 190,000 THB of your assessable income is completely exempt from personal income tax under Section 42(17) of the Revenue Code. Combined with the standard personal allowance (60,000 THB) and the 0% first tax bracket (150,000 THB), a retiree aged 65+ can receive up to approximately 400,000 THB before paying any Thai income tax.'
+      },
+      {
+        question: 'Is my foreign pension taxable in Thailand?',
+        answer: 'If you are a Thai tax resident (180+ days in Thailand) and you transfer your foreign pension to Thailand, it is assessable income since the 2024 rule change. Tax treaties between Thailand and your home country may allow you to claim a credit for tax already paid abroad, reducing or eliminating double taxation. If you leave pension money in an overseas account without remitting it to Thailand, it is not taxable here.'
+      },
+      {
+        question: 'Is UK State Pension taxable in Thailand?',
+        answer: 'For Thai tax residents, the UK State Pension is generally taxable in Thailand as your country of residence under the UK-Thailand Double Tax Agreement. UK private pensions are also taxable in Thailand. However, UK government service pensions (for civil servants, military, some teachers) are taxable only in the UK, not Thailand. You can claim a foreign tax credit for any UK tax withheld. Many retirees consider applying to HMRC for gross payment of their pension if they are Thai tax residents, to avoid UK withholding tax that then requires claiming back.'
+      },
+      {
+        question: 'Is US Social Security taxable in Thailand?',
+        answer: 'This is complex. Under the US-Thailand DTA, Social Security may be taxable in Thailand as your country of residence. However, the US also taxes its own citizens on worldwide income regardless of where they live, creating a risk of double taxation. US citizens should use the Foreign Tax Credit on their US return to offset US tax with Thai tax paid, and vice versa. Given the complexity, US citizen retirees in Thailand should consult a specialist in US expat taxation.'
+      },
+      {
+        question: 'Do retirees need to file a Thai tax return?',
+        answer: 'Yes, if you are a Thai tax resident (180+ days) and your assessable income exceeds the filing threshold. For pension or salary income, the threshold is 120,000 THB for single individuals or 220,000 THB for married couples. For investment or rental income, it is 60,000 THB (single) or 120,000 THB (married). Note that the 65+ exemption reduces your assessable income by 190,000 THB before the thresholds apply, meaning many retirees with modest income will owe no tax but may still need to file.'
+      },
+      {
+        question: 'What is the LTR Wealthy Pensioner visa and how does it affect tax?',
+        answer: 'The Long-Term Resident (LTR) Wealthy Pensioner visa is a 10-year visa for retirees aged 50+ with USD 80,000 or more in annual pension/passive income (or USD 40,000+ with USD 250,000 in Thai assets). Unlike the standard Non-OA retirement visa, LTR Wealthy Pensioner holders receive a complete exemption from Thai tax on all foreign-sourced income — pensions, investments, rental income from abroad. There is no need to track remittances or claim foreign tax credits. The application fee is 50,000 THB.'
+      },
+      {
+        question: 'Does holding a Thai retirement visa (Non-OA) reduce my tax?',
+        answer: 'No. The Non-Immigrant OA retirement visa provides no tax benefits whatsoever. Your tax obligations are based entirely on how many days you spend in Thailand (the 180-day rule), not on your visa type. If you spend 180+ days in Thailand on a Non-OA visa, you have the same tax obligations as any other Thai tax resident. Only the LTR visa categories provide genuine tax benefits.'
+      },
+      {
+        question: 'How is Thai bank interest taxed for retirees?',
+        answer: 'Interest on Thai bank accounts is subject to 15% withholding tax deducted automatically by the bank. You can treat this withholding as your final tax on the interest (simpler), or include the interest on your annual return and claim the 15% as a credit — which may result in a partial refund if your effective tax rate is lower. For retirees aged 65+ with modest income, your effective rate on the first taxable income after allowances is 5%, making a refund possible if you include bank interest in your return.'
+      },
+      {
+        question: 'Can I claim my parents as dependants on my Thai tax return?',
+        answer: 'Yes. You can claim a 30,000 THB allowance per parent who is aged 60 or over, is a Thai resident, and has their own income of no more than 30,000 THB per year. You can also claim up to 15,000 THB per parent for health insurance premiums you pay on their behalf. These deductions are in addition to your personal allowance and any other deductions you claim.'
+      },
+      {
+        question: 'Are capital gains from selling shares in Thailand taxable for retirees?',
+        answer: 'Capital gains from selling shares listed on the Stock Exchange of Thailand (SET) are exempt from personal income tax for individuals — there is no capital gains tax on Thai listed shares. Capital gains on foreign shares, however, are assessable income if the proceeds are remitted to Thailand.'
+      }
+    ]
+  },
+  {
     name: 'Tax Residency',
     items: [
       {
@@ -23,6 +68,10 @@ export const faqData: FAQCategory[] = [
       {
         question: 'Can I be a tax resident of both Thailand and another country?',
         answer: 'Yes, dual tax residency is possible. In such cases, tax treaties between countries determine which country has primary taxing rights. You may need to claim foreign tax credits to avoid double taxation.'
+      },
+      {
+        question: 'Does my visa type affect my tax residency status?',
+        answer: 'No. Tax residency is determined solely by the number of days you spend in Thailand, not by your visa type. Whether you hold a retirement visa (Non-OA), Thailand Privilege (Elite) visa, tourist visa, or work permit, you become a tax resident after 180 days in a calendar year. Only the LTR visa provides any tax benefit, and that is through a specific income exemption — not a change to residency rules.'
       }
     ]
   },
@@ -82,6 +131,14 @@ export const faqData: FAQCategory[] = [
       {
         question: 'What income is exempt from tax?',
         answer: 'The first 150,000 THB of taxable income is exempt. Other exemptions include certain government payments, inheritance (subject to separate rules), and specific investment returns like those from certain government bonds.'
+      },
+      {
+        question: 'How are dividends from Thai companies taxed?',
+        answer: 'Dividends from Thai companies are subject to 10% withholding tax deducted at source by the paying company. You can either treat this withholding as your final tax obligation (simpler), or include dividends in your annual return and claim the 10% withholding as a tax credit — which may result in a refund if your overall effective tax rate is lower.'
+      },
+      {
+        question: 'Is rental income from property in Thailand taxable?',
+        answer: 'Yes. Rental income from Thai property is assessable income and must be declared on your annual return. You can deduct 30% of gross rental income as a flat-rate expense (no documentation needed), or claim actual rental-related expenses if they are higher and you can document them. Net rental income is then subject to progressive income tax rates.'
       }
     ]
   },

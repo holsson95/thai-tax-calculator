@@ -1228,6 +1228,761 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
     category: 'International'
   },
   {
+    slug: 'pensioner-retiree-tax-guide-thailand',
+    title: 'Retiring in Thailand: A Complete Tax Guide for Pensioners and Retirees',
+    excerpt: 'A comprehensive guide to Thai tax obligations for retirees — including the valuable 65+ income exemption, how foreign pensions are treated, what you must file, and how to legally minimise your tax.',
+    content: `
+## Introduction
+
+Thailand is one of the world's most popular retirement destinations, drawing tens of thousands of retirees each year with its low cost of living, warm climate, and welcoming culture. But retiring here comes with tax obligations that many expat pensioners don't fully understand — including rules that changed significantly in 2024.
+
+The good news: Thailand offers a generous tax exemption specifically for people aged 65 and over, and there are several legal ways to reduce your tax burden further.
+
+---
+
+## Do You Need to File a Thai Tax Return?
+
+The first question most retirees have is whether they need to file at all. The answer depends on:
+
+1. **Whether you are a Thai tax resident** — you become one after spending 180 days or more in Thailand in a calendar year
+2. **Whether your income exceeds the filing thresholds**
+
+If you are a Thai tax resident with assessable income above these thresholds, you must file:
+
+| Filing Status | Income Threshold |
+|---|---|
+| Single, salary/pension income only | 120,000 THB |
+| Single, other income (investments, rental, etc.) | 60,000 THB |
+| Married | 220,000 THB (salary/pension) or 120,000 THB (other income) |
+
+---
+
+## The 65+ Income Exemption: A Major Benefit for Retirees
+
+One of the most important — and most overlooked — tax benefits in Thailand is the **income exemption for taxpayers aged 65 and over**.
+
+Under Section 42(17) of the Revenue Code, if you are **65 years of age or older at the end of the tax year**, the first **190,000 THB of your assessable income is completely exempt** from personal income tax.
+
+This is in addition to the standard personal allowance and tax brackets.
+
+### How the 65+ Exemption Works in Practice
+
+For a single retiree aged 65+ with pension and investment income:
+
+| Item | Amount |
+|---|---|
+| 65+ income exemption | −190,000 THB (not assessable) |
+| Personal allowance | −60,000 THB |
+| First tax bracket (0%) | −150,000 THB |
+| **Total before paying any tax** | **400,000 THB** |
+
+This means a retiree aged 65 or over can receive up to approximately **400,000 THB per year** (about 33,000 THB per month) before paying a single baht in Thai income tax.
+
+For context, 400,000 THB is approximately £9,000, $11,000 USD, or AUD 17,000 at current exchange rates — meaning many pensioners with modest income will owe no Thai tax at all.
+
+---
+
+## What Income Do Retirees Need to Declare?
+
+### Foreign Pension Income
+
+As of **1 January 2024**, any foreign income (including pension income) that you bring into Thailand is taxable, regardless of when it was earned.
+
+This applies to:
+- **UK State Pension** — if you transfer it to Thailand, it's assessable income
+- **US Social Security** — if remitted to Thailand, potentially taxable
+- **Australian Superannuation payments** — if remitted to Thailand
+- **Private or occupational pensions** — same rules apply
+- **Annuity payments** — taxable if remitted
+
+**Important:** If you leave pension money in an overseas account and live off Thai savings or other funds, the overseas pension is not assessable in Thailand. Many retirees structure their finances to minimise remittances.
+
+### Thai Bank Interest
+
+Interest earned on Thai bank accounts is subject to **15% withholding tax** deducted at source by the bank. You can either:
+- Accept the withholding as your final tax on this income, or
+- Declare it on your return and potentially receive a refund if your effective rate is lower (rare for most retirees)
+
+### Thai Investment Income
+
+- **Dividends from Thai companies:** 10% withholding tax at source (can be included in return for possible refund)
+- **Capital gains on Thai shares:** Generally not taxable for individuals
+- **Capital gains on property:** Subject to specific tax rules at point of sale
+
+### Rental Income
+
+If you own and rent out property in Thailand, rental income is assessable. You can deduct 30% as a flat-rate expense or claim actual expenses.
+
+---
+
+## Key Deductions and Allowances for Retirees
+
+Beyond the 65+ exemption, retirees can claim all standard deductions:
+
+| Deduction | Amount |
+|---|---|
+| Personal allowance | 60,000 THB |
+| Spouse allowance (non-earning) | 60,000 THB |
+| Parent allowance | 30,000 THB per parent (age 60+, income under 30,000 THB) |
+| Life insurance premiums | Up to 100,000 THB |
+| Health insurance premiums (own) | Up to 25,000 THB |
+| Parent health insurance premiums | Up to 15,000 THB per parent |
+| Housing loan interest | Up to 100,000 THB |
+| SSF/RMF fund contributions | Up to 30% of income, within limits |
+
+### The Parent Allowance and Health Insurance Deduction
+
+Many retirees have elderly parents either living with them or in care. You can claim:
+- **30,000 THB per qualifying parent** (must be Thai resident, aged 60+, with income under 30,000 THB)
+- **15,000 THB per parent** for health insurance premiums you pay on their behalf
+
+---
+
+## Retirement Visa and Tax Obligations
+
+The standard **Thai retirement visa (Non-Immigrant OA)** does not provide any special tax benefits. If you hold a Non-OA visa and spend 180+ days in Thailand, you have the same tax obligations as any other resident.
+
+For retirees with significant overseas income, the **LTR Wealthy Pensioner visa** offers a much better alternative.
+
+---
+
+## LTR Wealthy Pensioner Visa: The Tax-Free Option
+
+The **Long-Term Resident (LTR) Wealthy Pensioner visa** is specifically designed for retirees and provides complete exemption from Thai tax on all foreign-sourced income.
+
+### Eligibility:
+- Age 50 or older
+- Annual income from pension/passive sources of **USD 80,000 or more** (or USD 40,000+ with USD 250,000 in Thai assets)
+- Health insurance coverage
+
+### Tax Benefit:
+- **Zero Thai tax on foreign income** — pensions, investment returns, rental income from abroad
+- This applies regardless of how much you remit to Thailand
+- You still file a tax return, but your foreign income is exempt
+
+For retirees who qualify, the LTR visa eliminates Thai tax on overseas pension income entirely, making it far superior to the standard retirement visa from a tax perspective.
+
+---
+
+## Filing Your Thai Tax Return as a Retiree
+
+If required to file, retirees use **Form PND.90** (for those with multiple income types) or **Form PND.91** (for salary/pension income only).
+
+### Steps:
+1. Gather all income documentation (pension statements, bank interest certificates, withholding tax certificates)
+2. Calculate assessable income (excluding the 190,000 THB if aged 65+)
+3. Apply allowances and deductions
+4. Calculate tax using progressive brackets
+5. Deduct any withholding tax already paid (bank interest, dividends)
+6. File online via RD Smart Tax or in person by **March 31**
+
+### Online Filing
+Filing through the Revenue Department's **RD Smart Tax** app or website (rd.go.th) extends the deadline by 8 days to approximately April 8. This is the recommended method.
+
+---
+
+## Practical Tax Planning for Retirees
+
+### 1. Manage Your Remittances
+Only transfer what you need to Thailand each month. Money left in an overseas account is not assessable. Consider maintaining a buffer account to limit transfers.
+
+### 2. Use the 65+ Exemption Fully
+If you're under 65, plan for the year you turn 65 — that year's first 190,000 THB becomes exempt, potentially eliminating most or all of your Thai tax.
+
+### 3. Get a Tax Clearance Certificate
+If you leave Thailand permanently, you'll need a tax clearance certificate (Tor Rong Khro) to show you have no outstanding tax liabilities.
+
+### 4. Consider the LTR Visa
+If you have substantial overseas income and qualify, the LTR Wealthy Pensioner visa pays for itself quickly through tax savings.
+
+---
+
+## Common Mistakes Retirees Make
+
+1. **Assuming no filing is required** — even if you owe no tax, you may still need to file
+2. **Forgetting the 65+ exemption** — it must be claimed, it doesn't apply automatically through withholding
+3. **Not tracking remittances** — under 2024 rules, all transfers in matter
+4. **Missing double tax treaty protections** — not claiming credits for tax paid in your home country
+5. **Assuming the retirement visa provides tax benefits** — it does not
+
+---
+
+## Key Takeaways
+
+- **180+ days in Thailand** = Thai tax resident with filing obligations
+- **Age 65+:** First 190,000 THB of income is exempt from tax
+- **Combined with standard allowances:** Up to ~400,000 THB before paying tax
+- **Foreign pension remitted to Thailand:** Taxable since January 2024
+- **LTR Wealthy Pensioner visa:** Eliminates Thai tax on foreign income entirely for those who qualify
+- **Deadline:** File PND.90 or PND.91 by March 31 (or ~April 8 online)
+
+For complex situations — particularly those involving multiple countries, government pensions, or large investment portfolios — consider consulting a Thai tax advisor with experience in expat and retirement matters.
+    `,
+    publishedAt: '2026-03-03',
+    readTime: 10,
+    category: 'Retirement'
+  },
+  {
+    slug: 'foreign-pension-income-thailand-tax',
+    title: 'How Foreign Pensions Are Taxed in Thailand: UK, US, and Australian Pensions Explained',
+    excerpt: 'A country-by-country guide to how UK State Pension, US Social Security, Australian superannuation, and other overseas pensions are treated when you retire in Thailand.',
+    content: `
+## The Core Question for Expat Retirees
+
+If you receive a pension from your home country and live in Thailand, one of your biggest tax questions is: does Thailand tax my pension?
+
+The answer depends on three things:
+1. **Whether you are a Thai tax resident** (180+ days in the year)
+2. **Whether you remit the pension money to Thailand** (transfer it or spend it here)
+3. **What your home country's tax treaty with Thailand says** about pension taxation
+
+---
+
+## The 2024 Rule Change: Why It Matters for Pensioners
+
+Before 2024, Thailand had a useful planning tool: foreign income was only taxable in Thailand if remitted in the same year it was earned. Many retirees used this to shift money from earlier-earned savings without Thai tax.
+
+**From 1 January 2024, this loophole closed.** All foreign income — including pension payments — brought into Thailand by a Thai tax resident is taxable, regardless of when it was earned. This makes understanding your tax treaty much more important.
+
+---
+
+## UK State Pension and Occupational Pensions
+
+### The UK-Thailand Double Tax Agreement
+
+The UK and Thailand have a comprehensive Double Tax Agreement (DTA) that specifically addresses pension taxation.
+
+### UK State Pension
+The UK State Pension is a social security benefit. Under the UK-Thailand DTA:
+- It is generally **taxable in the country where you are resident** — meaning Thailand if you live there 180+ days a year
+- HMRC typically does not withhold tax on State Pension paid to Thai residents (you should apply to receive it gross)
+- The income must be declared on your Thai PND.90 and is subject to Thai personal income tax rates
+
+**Practical note:** For many UK pensioners, the combination of the 65+ exemption (190,000 THB) and personal allowance (60,000 THB) means little or no Thai tax is due on a standard State Pension, which is approximately £11,500 per year (roughly 500,000 THB at current rates) — though you would owe some Thai tax at low rates once allowances are exhausted.
+
+### UK Government Pensions (Civil Service, Teachers, NHS, Military)
+**Key exception:** Pensions paid by the UK government for government service (civil servants, teachers employed by local authorities, NHS employees in certain cases, military) are taxable **only in the UK**, not in Thailand.
+
+If your pension falls into this category:
+- It remains taxable in the UK at UK rates
+- You **do not** pay Thai tax on it
+- You do not need to include it in your Thai return (or include it and claim DTA exemption)
+- Contact HMRC about your non-resident status to potentially reduce UK withholding
+
+### UK Private/Occupational Pensions
+Employer pension schemes (final salary, LGPS, NHS Pension where it's treated as a private scheme, SIPPs, etc.) are generally:
+- **Taxable in Thailand** as your country of residence
+- Any UK tax withheld can be claimed as a foreign tax credit on your Thai return
+- Consider applying to HMRC for a PAYE code NT (no tax) if you can establish Thai tax residence — this prevents double withholding
+
+---
+
+## US Social Security and American Pensions
+
+### The Complexity of US Citizenship
+US citizens face a unique challenge: the United States taxes its citizens on worldwide income **regardless of where they live**. This creates a risk of genuine double taxation that requires careful management.
+
+### US Social Security Benefits
+Under the US-Thailand DTA (Article 20), Social Security benefits:
+- May be taxable in Thailand as the country of residence
+- **The US also taxes its own citizens on Social Security**, creating potential double taxation
+- US citizens can use the **Foreign Tax Credit** on their US return to offset US tax by Thai tax paid, but the interaction is complex
+
+### US 401(k), IRA, and Pension Distributions
+Distributions from US retirement accounts:
+- Are taxable in the US (as ordinary income for traditional accounts)
+- When remitted to Thailand, are potentially also taxable in Thailand as a Thai tax resident
+- The US-Thailand DTA's foreign tax credit provisions help mitigate — but not eliminate — double taxation
+- **US citizens should work with a specialist** in both US expat tax and Thai tax
+
+### Key Warning for US Citizens
+US citizens in Thailand face the most complex pension tax situation of any nationality. The combination of US citizenship-based taxation and Thai residency-based taxation can result in genuine double taxation despite the treaty. Consult a specialist — this is not a DIY situation.
+
+---
+
+## Australian Superannuation and Pensions
+
+### Australian Superannuation
+Superannuation (super) is Australia's compulsory retirement savings system. When you access super as a retiree:
+
+**If you are aged 60 or over:**
+- Lump sum withdrawals from a taxed super fund are **tax-free in Australia**
+- When remitted to Thailand, they may be **taxable in Thailand** as a Thai tax resident
+- The ATO may not withhold tax, but Thailand may still assess it as income
+
+**The Australia-Thailand DTA** — Australia and Thailand have a DTA that covers pensions. Private pensions (including super) are generally taxable in the country of residence (Thailand).
+
+### Australian Age Pension
+The Australian government Age Pension:
+- Paid by the Australian Government's Department of Social Services
+- Treated similarly to a social security payment
+- Generally taxable in the country of residence (Thailand) under the DTA
+- Australia may withhold some tax — this can be claimed as a credit in Thailand
+
+### Practical Approach for Australian Retirees
+Many Australian retirees in Thailand:
+1. Withdraw super as tax-free lump sums in Australia before remitting
+2. Structure ongoing remittances to stay within Thai tax-free thresholds (especially with the 65+ exemption)
+3. Apply for a reduction in Australian withholding using the DTA
+
+---
+
+## European Pensions (Germany, France, Netherlands, Nordic Countries)
+
+Thailand has DTAs with all major European nations. The pension taxation rules follow a general pattern:
+
+### Private/Occupational Pensions from EU Countries
+- Generally **taxable in Thailand** as country of residence
+- Foreign tax credit available for any tax withheld in the source country
+
+### Government Pensions from EU Countries
+- Often taxable only in the **source country** (Germany, France, etc.)
+- The specific treaty article varies — check your country's DTA with Thailand
+
+### State Pensions (Old Age Pensions)
+- The treatment varies by country and treaty
+- Most are treated as taxable in the country of residence (Thailand)
+
+---
+
+## How to Claim Foreign Tax Credits
+
+If your home country withholds tax on your pension, you can claim a credit in Thailand to avoid double taxation.
+
+### Steps:
+1. Obtain a **certificate or statement** showing tax withheld from your pension (e.g., a P60 from HMRC, Social Security tax statement from the SSA, etc.)
+2. Include the gross pension amount in your Thai return
+3. Claim the foreign tax credit in the "Tax Already Paid" section
+4. Attach copies of foreign tax documentation to your return
+
+### Limits on the Credit
+- The credit cannot exceed the Thai tax due on that income
+- If foreign tax paid exceeds Thai tax, you cannot get a refund of the excess
+- Credits apply only to income taxes (not national insurance, Medicare levies, etc.)
+
+---
+
+## Government Pension Checklist by Country
+
+| Country | State/Social Pension | Government Service Pension | Private/Occupational |
+|---------|---------------------|--------------------------|---------------------|
+| UK | Taxable in Thailand | Taxable in UK only | Taxable in Thailand |
+| US | Potentially both (complex) | Taxable in US only | Potentially both |
+| Australia | Taxable in Thailand | Taxable in Australia | Taxable in Thailand |
+| Germany | Taxable in Thailand | Taxable in Germany | Taxable in Thailand |
+| France | Taxable in Thailand | Taxable in France | Taxable in Thailand |
+| Netherlands | Taxable in Thailand | Taxable in Netherlands | Taxable in Thailand |
+
+*This is a general guide. Treaty provisions vary. Always verify the specific article in your country's DTA with Thailand.*
+
+---
+
+## Minimising Tax on Your Pension in Thailand
+
+### Legal Strategies:
+1. **Stay under 180 days** — if your income is high and you qualify, being a non-resident means only Thai-sourced income is taxable
+2. **Claim the 65+ exemption** — first 190,000 THB is not assessable
+3. **Limit remittances** — only transfer what you need; keep excess in your home country
+4. **Consider the LTR Wealthy Pensioner visa** — complete exemption from Thai tax on foreign income if you meet the USD 80,000/year threshold
+5. **Use foreign tax credits** — claim credit for tax already paid abroad
+6. **Time large withdrawals** — if taking lump sums (e.g., from super), consider the year and your total Thai income
+
+### The LTR Visa Shortcut
+For pensioners with significant overseas income (USD 80,000+ per year from pensions/investments), the **LTR Wealthy Pensioner visa** eliminates all of the above complexity. Foreign income brought to Thailand is simply exempt. No credits to claim, no remittance tracking.
+
+---
+
+## Getting Professional Help
+
+Pension taxation across borders is genuinely complex. For most nationalities, you should consider consulting:
+- A Thai tax advisor experienced in expat matters
+- A tax advisor in your home country who understands expatriate taxation
+- For US citizens: a specialist in US expat tax law (there are firms specialising in exactly this combination)
+
+The cost of advice is typically far less than the cost of errors or missed credits.
+    `,
+    publishedAt: '2026-03-03',
+    readTime: 11,
+    category: 'Retirement'
+  },
+  {
+    slug: 'investment-income-retirees-thailand',
+    title: 'Investment Income in Thailand: Tax on Dividends, Interest, and Capital Gains',
+    excerpt: 'How Thai tax applies to bank interest, dividends, and capital gains — from Thai and foreign sources — and what retirees and investors need to know to plan effectively.',
+    content: `
+## Why Investment Income Matters for Retirees
+
+For many retirees, investment income — interest, dividends, capital gains — makes up a significant portion of their income alongside pensions. Understanding how Thailand taxes each type is essential for effective retirement planning.
+
+The good news is that some types of investment income carry lower tax rates than regular income, and in some cases the withholding tax paid at source is your only Thai tax obligation.
+
+---
+
+## Thai Bank Interest
+
+### How It's Taxed
+
+Interest earned on deposits in Thai banks is subject to **15% withholding tax**, deducted automatically by the bank before you receive the interest.
+
+### Your Options
+
+You have two choices for how this is treated for tax purposes:
+
+**Option 1: Treat withholding as final tax**
+- The 15% withheld is your complete tax obligation on this income
+- You do not include bank interest on your tax return
+- Simple, no further action required
+
+**Option 2: Include in annual return**
+- You can choose to include the bank interest in your PND.90 return
+- The 15% already withheld becomes a tax credit
+- If your effective marginal tax rate is lower than 15%, you may receive a refund
+- For retirees with low taxable income, this can sometimes result in a partial refund
+
+### When Option 2 Makes Sense
+If your total taxable income (after allowances and the 65+ exemption) puts you in the 5% or 10% tax bracket, including bank interest in your return and claiming back excess withholding is worthwhile.
+
+---
+
+## Dividends from Thai Companies
+
+### Standard Treatment
+
+Dividends paid by Thai companies are subject to **10% withholding tax** deducted by the company paying the dividend.
+
+As with bank interest, you can:
+- Accept the 10% withholding as final tax (simpler)
+- Include dividends in your annual return and claim the withholding as a credit
+
+### The Dividend Tax Credit
+
+Thai companies pay corporate income tax before distributing dividends. To avoid double taxation of the same profits, you may be eligible for a **dividend tax credit** — an additional credit that partially offsets the tax already paid at the corporate level.
+
+The credit calculation is complex. For most small investors, accepting the 10% withholding as final tax is simpler and often equivalent or better.
+
+### Thai Stock Exchange (SET) Capital Gains
+
+Capital gains from selling shares listed on the **Stock Exchange of Thailand (SET)** are **exempt from personal income tax** for individuals.
+
+This is a significant benefit for retirees who invest in Thai stocks — you can sell shares at a profit with no Thai capital gains tax obligation.
+
+---
+
+## Foreign Investment Income
+
+The 2024 rule change has important implications for expats with foreign investment portfolios.
+
+### Foreign Bank Interest
+
+Interest earned in overseas bank accounts is **not taxable in Thailand unless remitted here**. If you leave foreign interest income in your overseas account, it is not assessed.
+
+Once you transfer it to Thailand, it becomes assessable income (as a Thai tax resident) and is included in your progressive income tax calculation. You can claim a foreign tax credit for any withholding tax paid in the source country.
+
+### Foreign Dividends
+
+Dividends from overseas shares, ETFs, and funds:
+- **Not taxable in Thailand until remitted**
+- Once brought to Thailand, assessable as regular income
+- Foreign withholding tax (e.g., 15% US dividend withholding) can be claimed as a credit
+- Thailand taxes at progressive rates up to 35%; credit reduces the liability
+
+### Example: UK ISA Income Remitted to Thailand
+
+A UK retiree has £20,000 (approx. 900,000 THB) of dividend income from ISA investments. ISAs pay dividends without UK tax. When this money is transferred to Thailand:
+
+| Item | Amount |
+|---|---|
+| Dividend income brought in | 900,000 THB |
+| 65+ exemption | −190,000 THB |
+| Personal allowance | −60,000 THB |
+| Remaining taxable | 650,000 THB |
+| Tax on 650,000 THB | ~67,500 THB |
+
+No UK tax was paid, so no foreign credit is available. Total Thai tax: ~67,500 THB (about 10.4% effective rate).
+
+By contrast, if the retiree only remits 250,000 THB, taxable income after allowances is zero — no Thai tax at all.
+
+---
+
+## Capital Gains on Foreign Assets
+
+### Overseas Shares and Funds
+
+Capital gains from selling foreign shares, funds, or ETFs:
+- **Not taxable in Thailand unless the proceeds are remitted here**
+- If brought into Thailand, the proceeds (entire amount, not just the gain) count as remitted income
+- Thai law does not currently have a capital gains tax concept for individuals — foreign capital gains are treated as regular assessable income if remitted
+
+**Practical note:** This creates an awkward situation where the entire sale proceeds, not just the gain, are assessable. Many financial advisors recommend keeping investment proceeds offshore or timing remittances carefully.
+
+### Property in Thailand
+
+Capital gains from selling property in Thailand are not subject to a separate capital gains tax. Instead, the sale is subject to:
+- **Specific Business Tax (SBT):** 3.3% (including local tax) if owned for less than 5 years
+- **Withholding tax:** Calculated based on appraised value and years of ownership
+- **Stamp duty:** 0.5% (exempt if SBT applies)
+
+The calculation is complex and handled at the time of transfer at the Land Department. For most retirees selling a retirement home, these taxes are modest relative to the property value.
+
+### Overseas Property Sales
+
+Proceeds from selling property abroad:
+- Not taxable if left offshore
+- If remitted to Thailand, assessable as regular income
+- Foreign capital gains tax paid can be claimed as a credit under applicable DTA provisions
+
+---
+
+## Government and Corporate Bonds
+
+### Thai Government Bonds
+
+Interest from Thai government bonds is subject to **15% withholding tax**, same as bank interest. You can include it in your return or treat withholding as final.
+
+### Corporate Bonds
+
+Interest from corporate bonds issued in Thailand: 15% withholding tax.
+
+### Foreign Bonds
+
+Interest from overseas bonds: only taxable if remitted. Foreign withholding tax creditable.
+
+---
+
+## Provident Funds and Retirement Funds (SSF/RMF)
+
+### Contributions
+SSF (Super Savings Fund) and RMF (Retirement Mutual Fund) contributions are **deductible** from your taxable income — this can be a useful tool even in retirement if you continue to make contributions.
+
+### Withdrawals
+When you withdraw from these funds at retirement:
+- Must hold RMF for at least 5 years and be aged 55+ for tax-exempt withdrawal
+- SSF must be held for at least 10 years
+- Withdrawals meeting conditions: **tax exempt**
+- Early withdrawals: the tax deductions previously claimed are reversed and assessed as income
+
+---
+
+## Thai Savings Bonds (Government Savings Bank)
+
+Special savings products from the Government Savings Bank (GSB) sometimes carry interest exemptions or preferential withholding rates. Check the terms of specific products — some are structured to be more tax-efficient than standard deposits.
+
+---
+
+## Tax Planning for Investment Income
+
+### Strategy 1: Keep Foreign Income Offshore
+Only transfer what you need to Thailand. Leave dividends, interest, and capital gains in your home country account.
+
+### Strategy 2: Use Thai Accounts for Tax-Efficient Income
+Thai bank interest at 15% withholding is often more tax-efficient than remitting foreign investment income at progressive rates.
+
+### Strategy 3: Sequence Your Remittances
+In years when your other income is low (e.g., if a pension payment is delayed), bring in more foreign investment income — it will be taxed at lower effective rates.
+
+### Strategy 4: Consider the LTR Visa
+If you have USD 80,000+ in pension/passive income annually, the **LTR Wealthy Pensioner or Wealthy Global Citizen visa** exempts all foreign investment income from Thai tax, regardless of how much you remit. This is the most powerful tool available for high-income retirees.
+
+### Strategy 5: Claim All Withholding Credits
+Don't leave money on the table. Keep records of all Thai withholding tax certificates (bank interest slips, dividend statements) and decide each year whether claiming them on your return is worthwhile.
+
+---
+
+## Summary Table: How Different Investment Income Is Taxed
+
+| Income Type | Thai Source | Foreign Source (Remitted) |
+|-------------|-------------|--------------------------|
+| Bank/bond interest | 15% WHT at source (final or credit) | Progressive rates; credit for foreign WHT |
+| Listed Thai shares (capital gain) | **Exempt** | N/A |
+| Thai company dividends | 10% WHT at source (final or credit) | Progressive rates; credit for foreign WHT |
+| Foreign dividends | N/A | Progressive rates; credit for foreign WHT |
+| Foreign shares (capital gain) | N/A | Assessable if remitted; progressive rates |
+| Thai property sale | SBT + transfer fees (not income tax) | N/A |
+| Foreign property sale | N/A | Assessable if remitted; progressive rates |
+
+WHT = withholding tax
+    `,
+    publishedAt: '2026-03-03',
+    readTime: 9,
+    category: 'Retirement'
+  },
+  {
+    slug: 'thailand-retirement-visa-tax-obligations',
+    title: 'Thai Retirement Visa and Tax: What Non-OA Visa Holders Must Know',
+    excerpt: 'Holding a Thai retirement visa (Non-OA) does not exempt you from tax. Here\'s what retirees on any visa type need to know about their Thai tax obligations — and how the LTR visa is different.',
+    content: `
+## A Common Misconception
+
+Many expats assume that holding a retirement visa — the Non-Immigrant OA — gives them some form of special tax status in Thailand. It does not.
+
+**Your visa type has no bearing on your tax obligations.** Tax residency in Thailand is determined solely by how many days you spend in the country each year.
+
+---
+
+## The Non-Immigrant OA Visa (Retirement Visa)
+
+The Non-OA visa is Thailand's standard long-term visa for retirees aged 50 and over. It is issued for one year and can be renewed annually. Requirements include:
+- Age 50 or over
+- Financial proof: 800,000 THB in a Thai bank account, or 65,000 THB monthly income, or a combination
+- Health insurance
+- No criminal record
+
+### What the Non-OA Visa Does NOT Do
+
+- Does **not** reduce your tax rate
+- Does **not** exempt any income from Thai tax
+- Does **not** change your tax residency status
+- Does **not** waive any filing requirements
+
+---
+
+## Tax Residency is About Days, Not Visa Type
+
+If you hold a Non-OA visa and live in Thailand for 180 or more days in a calendar year, you are a **Thai tax resident** with full filing obligations. This is true regardless of whether you have a Non-OA, tourist visa, Elite visa, or any other status.
+
+### The 180-Day Rule in Practice
+
+The 180 days are counted per calendar year (January 1 to December 31). They do not need to be consecutive. Most retirees living in Thailand full-time will comfortably exceed 180 days.
+
+**If you exceed 180 days:**
+- You are a Thai tax resident
+- All Thai-sourced income is assessable
+- Foreign income remitted to Thailand is assessable (since January 2024)
+- You must file a PND.90 or PND.91 return if income exceeds filing thresholds
+
+**If you stay under 180 days:**
+- You are a non-resident
+- Only Thai-sourced income is taxable
+- Foreign income is not taxable in Thailand regardless of remittance
+- Some retirees deliberately split time between Thailand and another country to remain non-resident
+
+---
+
+## What Income Is Taxable for Non-OA Visa Holders?
+
+### Thai-Sourced Income (Always Taxable if Resident)
+
+- Thai bank interest (though 15% withholding is often treated as final tax)
+- Thai dividends (10% withholding, can be final)
+- Rental income from Thai property
+- Any employment or business income earned in Thailand
+
+### Foreign Income (Taxable Since 2024 if Remitted to Thailand)
+
+- Overseas pension payments transferred to Thailand
+- Overseas investment income transferred to Thailand
+- Overseas property rental income transferred to Thailand
+- Any other overseas income brought into Thailand by any means (wire transfer, ATM withdrawal, credit card usage)
+
+---
+
+## The Financial Proof Requirement vs. Tax Obligations
+
+Holding 800,000 THB in a Thai bank account (the common financial proof method for Non-OA renewal) means that money is in Thailand — but it only becomes assessable income if it was income remitted from overseas. Capital held offshore before you became a Thai resident is not income.
+
+However, **interest earned on that 800,000 THB account** is assessable income in Thailand (subject to 15% withholding by the bank).
+
+---
+
+## Filing Requirements for Non-OA Retirees
+
+If you are a Thai tax resident (180+ days), you must file if assessable income exceeds:
+
+| Situation | Filing Threshold |
+|---|---|
+| Pension/salary income only | 120,000 THB (single), 220,000 THB (married) |
+| Income from investments, rental, or other sources | 60,000 THB (single), 120,000 THB (married) |
+
+### The 65+ Exemption Reduces Your Effective Threshold
+
+If you are aged 65 or over, the first 190,000 THB of your assessable income is **exempt** from Thai personal income tax. This means your assessable income is reduced by 190,000 THB before applying filing thresholds and deductions.
+
+---
+
+## The Thailand Elite Visa and Tax
+
+The **Thailand Privilege (Elite) visa** — previously called Thailand Elite — is a premium membership visa that provides long-term stays. Like the Non-OA, it provides **no tax benefits**. Holders are subject to the same 180-day residency rule and the same tax obligations as any other visa holder.
+
+---
+
+## The LTR Visa: The Only Visa with Real Tax Benefits
+
+The only Thai visa that provides genuine, substantial tax benefits is the **Long-Term Resident (LTR) visa**, specifically the following three categories:
+
+### LTR Wealthy Pensioner
+- Age 50+
+- USD 80,000+/year in pension/passive income (or USD 40,000+ with USD 250,000 in Thai assets)
+- **Tax benefit:** Complete exemption from Thai tax on all foreign-sourced income
+
+### LTR Wealthy Global Citizen
+- USD 1 million+ in assets (including USD 500,000 in Thailand)
+- **Tax benefit:** Complete exemption from Thai tax on all foreign-sourced income
+
+### LTR Work-from-Thailand Professional
+- USD 80,000+/year from a foreign employer (for past 2 years)
+- **Tax benefit:** Complete exemption from Thai tax on all foreign-sourced income
+
+For all three categories, there is no need to manage remittances, track which income was earned when, or claim foreign tax credits for overseas pension payments. Everything brought into Thailand from abroad is simply exempt.
+
+---
+
+## Non-OA vs. LTR: The Tax Comparison
+
+| Feature | Non-OA Retirement Visa | LTR Wealthy Pensioner |
+|---------|------------------------|----------------------|
+| Foreign pension remitted to Thailand | **Taxable** (progressive up to 35%) | **Exempt** |
+| Foreign investment income remitted | **Taxable** | **Exempt** |
+| Thai bank interest | 15% withholding (standard) | 15% withholding (standard) |
+| Need to track remittances | Yes | No |
+| Filing requirement | Yes, if over threshold | Yes, but foreign income exempt |
+| Cost | Free (renewal fees only) | 50,000 THB application fee |
+| Visa validity | 1 year, renewable | 10 years, renewable |
+
+---
+
+## Practical Steps for Non-OA Visa Holders
+
+### 1. Determine Your Tax Residency Status
+Count your days in Thailand for the calendar year. If over 180, you are a tax resident.
+
+### 2. Register for a Tax Identification Number (TIN)
+If you don't already have one, register at your local Revenue Department office with your passport and Non-OA visa. This is required to file.
+
+### 3. Apply the 65+ Exemption
+If you are aged 65 or over, ensure this 190,000 THB exemption is applied when calculating your assessable income. It is not automatically captured by any employer withholding — you claim it on your annual return.
+
+### 4. Track Your Remittances
+Keep a record of every transfer into Thailand — bank wire, ATM, credit card usage. These are all potentially assessable income if sourced from overseas income.
+
+### 5. File Annually
+File PND.90 (or PND.91 for pension/salary income only) by March 31 each year (or approximately April 8 online). Even if you owe no tax, filing is good practice and may be required.
+
+### 6. Evaluate the LTR Visa
+If you have significant overseas income (pension + investments totalling USD 80,000+/year), run the numbers on whether the LTR Wealthy Pensioner visa makes financial sense. The 50,000 THB application fee may be recovered in tax savings very quickly.
+
+---
+
+## Leaving Thailand: Tax Clearance
+
+If you decide to leave Thailand permanently, or if you leave for an extended period, you may need a **tax clearance certificate** (Tor Rong Kro) showing no outstanding Thai tax liabilities. This is typically required when cancelling a retirement visa. Your local Revenue Department office can advise on the process.
+
+---
+
+## Summary
+
+| | Non-OA Visa | LTR Visa |
+|---|---|---|
+| Tax benefits | None | Significant |
+| Foreign income exempt? | No | Yes (for qualifying LTR categories) |
+| Tax driven by | Days in Thailand | Days in Thailand + visa category |
+| Annual filing required? | Yes (if over threshold) | Yes (foreign income still declared, but exempt) |
+| Best for | Simple situation, modest income | High income retirees with significant overseas pension/investments |
+    `,
+    publishedAt: '2026-03-03',
+    readTime: 8,
+    category: 'Retirement'
+  },
+  {
     slug: 'ltr-visa-tax-benefits',
     title: 'LTR Visa Tax Benefits: Thailand\'s Tax-Advantaged Residency for Expats',
     excerpt: 'Discover how Thailand\'s Long-Term Resident visa offers significant tax benefits including foreign income exemptions and reduced tax rates.',
