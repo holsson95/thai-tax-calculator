@@ -80,6 +80,18 @@ const ArticleDetailPage: React.FC = () => {
           </p>
         </header>
 
+        {/* Disclaimer */}
+        <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-8 text-sm text-amber-800">
+          <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>
+            This article is for informational purposes only and is based on publicly available Thai Revenue Department guidance and the Revenue Code. Tax rules change — verify current regulations at{' '}
+            <a href="https://www.rd.go.th/english/" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-900 font-medium">rd.go.th</a>
+            {' '}or consult a licensed Thai tax advisor before making financial decisions.
+          </span>
+        </div>
+
         {/* Article Content - First Half */}
         <article className="prose prose-gray max-w-none mb-8">
           <div
@@ -100,6 +112,29 @@ const ArticleDetailPage: React.FC = () => {
             dangerouslySetInnerHTML={{ __html: formatContent(secondHalf) }}
           />
         </article>
+
+        {/* Sources & References */}
+        {article.sources && article.sources.length > 0 && (
+          <div className="border-t border-gray-200 pt-6 mb-8">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              Sources &amp; Official References
+            </h2>
+            <ul className="space-y-1">
+              {article.sources.map((source, i) => (
+                <li key={i} className="text-sm text-gray-600">
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 hover:underline"
+                  >
+                    {source.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Calculator CTA */}
         <div className="bg-blue-50 rounded-xl p-6 text-center mb-8">

@@ -6,6 +6,7 @@ export interface Article {
   publishedAt: string;
   readTime: number;
   category: string;
+  sources?: { label: string; url: string }[];
 }
 
 export const articles: Article[] = [
@@ -123,7 +124,10 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
     `,
     publishedAt: '2026-02-22',
     readTime: 7,
-    category: 'Guide'
+    category: 'Guide',
+    sources: [
+      { label: 'Thai Revenue Department (rd.go.th)', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'understanding-thai-tax-residency',
@@ -164,7 +168,10 @@ Thailand uses a simple test to determine tax residency: if you spend 180 days or
     `,
     publishedAt: '2024-01-15',
     readTime: 5,
-    category: 'Tax Basics'
+    category: 'Tax Basics',
+    sources: [
+      { label: 'Thai Revenue Department — Tax Residency & Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'maximizing-tax-deductions-thailand',
@@ -208,7 +215,10 @@ Interest on housing loans is deductible up to 100,000 THB annually.
     `,
     publishedAt: '2024-02-01',
     readTime: 7,
-    category: 'Deductions'
+    category: 'Deductions',
+    sources: [
+      { label: 'Thai Revenue Department — Deductions & Allowances', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'thai-tax-brackets-explained',
@@ -255,7 +265,10 @@ For a taxable income of 600,000 THB:
     `,
     publishedAt: '2024-02-15',
     readTime: 4,
-    category: 'Tax Basics'
+    category: 'Tax Basics',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax Rates', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'expat-guide-filing-thai-taxes',
@@ -312,7 +325,10 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
     `,
     publishedAt: '2024-03-01',
     readTime: 6,
-    category: 'Filing'
+    category: 'Filing',
+    sources: [
+      { label: 'Thai Revenue Department — Filing & Forms (PND 90/91)', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'foreign-income-thailand-tax',
@@ -373,7 +389,10 @@ Thailand has tax treaties with many countries that may:
     `,
     publishedAt: '2024-03-15',
     readTime: 8,
-    category: 'International'
+    category: 'International',
+    sources: [
+      { label: 'Thai Revenue Department — Foreign Income & Tax Treaties', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'social-security-contributions-thailand',
@@ -447,7 +466,11 @@ Social security contributions are:
     `,
     publishedAt: '2025-01-15',
     readTime: 6,
-    category: 'Employment'
+    category: 'Employment',
+    sources: [
+      { label: 'Social Security Office of Thailand (sso.go.th)', url: 'https://www.sso.go.th/' },
+      { label: 'Thai Revenue Department — Social Security Deduction', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'freelancer-tax-guide-thailand',
@@ -515,7 +538,10 @@ You have two options for expense deductions:
     `,
     publishedAt: '2024-04-15',
     readTime: 8,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — Revenue Code Section 40', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'flat-rate-vs-actual-expenses',
@@ -606,7 +632,10 @@ Our calculator automatically computes both methods and shows you which option re
     `,
     publishedAt: '2024-05-01',
     readTime: 7,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — Expense Deductions for Self-Employed', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'pnd94-mid-year-tax-filing',
@@ -677,7 +706,10 @@ When you file PND90 (annual return):
     `,
     publishedAt: '2024-05-15',
     readTime: 6,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — PND 94 Form & Mid-Year Filing', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'withholding-tax-freelancers-thailand',
@@ -770,7 +802,10 @@ Foreign clients typically don't withhold Thai tax. You must:
     `,
     publishedAt: '2024-06-01',
     readTime: 7,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — Withholding Tax', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'vat-registration-freelancers',
@@ -863,7 +898,10 @@ Consider hiring an accountant if:
     `,
     publishedAt: '2024-06-15',
     readTime: 8,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — VAT Registration', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'digital-nomad-taxes-thailand',
@@ -958,7 +996,10 @@ Digital nomad taxation is evolving. Thailand is increasing enforcement on foreig
     `,
     publishedAt: '2024-07-01',
     readTime: 9,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — Foreign Income & Remittance Rules', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'freelancer-record-keeping-thailand',
@@ -1087,7 +1128,10 @@ If the Revenue Department requests documentation:
     `,
     publishedAt: '2024-07-15',
     readTime: 8,
-    category: 'Freelance'
+    category: 'Freelance',
+    sources: [
+      { label: 'Thai Revenue Department — Record Keeping Requirements', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'double-tax-agreements-thailand',
@@ -1225,7 +1269,11 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
     `,
     publishedAt: '2026-02-17',
     readTime: 12,
-    category: 'International'
+    category: 'International',
+    sources: [
+      { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
+      { label: 'Thai Revenue Department — Foreign Tax Credits & Treaty Relief', url: 'https://www.rd.go.th/english/' },
+    ]
   },
   {
     slug: 'pensioner-retiree-tax-guide-thailand',
@@ -1420,7 +1468,12 @@ For complex situations — particularly those involving multiple countries, gove
     `,
     publishedAt: '2026-03-03',
     readTime: 10,
-    category: 'Retirement'
+    category: 'Retirement',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/' },
+      { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
+    ]
   },
   {
     slug: 'foreign-pension-income-thailand-tax',
@@ -1603,7 +1656,12 @@ The cost of advice is typically far less than the cost of errors or missed credi
     `,
     publishedAt: '2026-03-03',
     readTime: 11,
-    category: 'Retirement'
+    category: 'Retirement',
+    sources: [
+      { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
+      { label: 'Thai Revenue Department — Foreign Income & Tax Treaty Relief', url: 'https://www.rd.go.th/english/' },
+      { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
+    ]
   },
   {
     slug: 'investment-income-retirees-thailand',
@@ -1804,7 +1862,11 @@ WHT = withholding tax
     `,
     publishedAt: '2026-03-03',
     readTime: 9,
-    category: 'Retirement'
+    category: 'Retirement',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Stock Exchange of Thailand (set.or.th)', url: 'https://www.set.or.th/en/home' },
+    ]
   },
   {
     slug: 'thailand-retirement-visa-tax-obligations',
@@ -1980,7 +2042,11 @@ If you decide to leave Thailand permanently, or if you leave for an extended per
     `,
     publishedAt: '2026-03-03',
     readTime: 8,
-    category: 'Retirement'
+    category: 'Retirement',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'BOI — Long-Term Resident (LTR) Visa', url: 'https://ltr.boi.go.th/' },
+    ]
   },
   {
     slug: 'ltr-visa-tax-benefits',
@@ -2091,7 +2157,11 @@ The LTR visa is particularly valuable for:
     `,
     publishedAt: '2026-02-17',
     readTime: 10,
-    category: 'International'
+    category: 'International',
+    sources: [
+      { label: 'BOI — Long-Term Resident (LTR) Visa Portal', url: 'https://ltr.boi.go.th/' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+    ]
   }
 ];
 
