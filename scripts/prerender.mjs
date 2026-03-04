@@ -14,6 +14,7 @@ const routes = [
   '/',
   '/articles',
   '/faq',
+  '/search',
   ...articles.map((a) => `/articles/${a.slug}`),
 ];
 

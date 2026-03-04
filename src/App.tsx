@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 import FAQPage from './pages/FAQPage';
+import SearchPage from './pages/SearchPage';
 
 const AnnualTaxWizard = React.lazy(() => import('./components/AnnualTaxWizard'));
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/articles/:slug" element={<ArticleDetailPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Routes>
     </Layout>
   );

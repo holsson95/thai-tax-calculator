@@ -2174,3 +2174,13 @@ export function getRelatedArticles(currentSlug: string, limit: number = 3): Arti
     .filter(article => article.slug !== currentSlug)
     .slice(0, limit);
 }
+
+export function searchArticles(query: string): Article[] {
+  const q = query.toLowerCase();
+  return articles.filter(
+    (a) =>
+      a.title.toLowerCase().includes(q) ||
+      a.excerpt.toLowerCase().includes(q) ||
+      a.category.toLowerCase().includes(q)
+  );
+}
