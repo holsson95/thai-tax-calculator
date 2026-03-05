@@ -222,7 +222,7 @@ Interest on housing loans is deductible up to 100,000 THB annually.
   },
   {
     slug: 'thai-tax-brackets-explained',
-    title: 'Thai Tax Brackets Explained: 2024 Guide',
+    title: 'Thai Income Tax Rates and Brackets 2025/2026: Complete Guide',
     excerpt: 'Understand how progressive tax rates work in Thailand and calculate your effective tax rate.',
     content: `
 ## Progressive Tax System
@@ -272,7 +272,7 @@ For a taxable income of 600,000 THB:
   },
   {
     slug: 'expat-guide-filing-thai-taxes',
-    title: 'Expat Guide: Filing Your Thai Tax Return',
+    title: 'How to File a Thai Tax Return as an Expat: Step-by-Step Guide (PND 90/91)',
     excerpt: 'Step-by-step guide for expats on how to file annual tax returns in Thailand.',
     content: `
 ## Who Must File?
@@ -332,7 +332,7 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
   },
   {
     slug: 'foreign-income-thailand-tax',
-    title: 'Foreign Income and Thailand Tax: What You Need to Know',
+    title: 'Is Foreign Income Taxable in Thailand? The 2024 Remittance Rule Explained',
     excerpt: 'Understanding when and how foreign-sourced income is taxed in Thailand.',
     content: `
 ## The Remittance Rule
@@ -2162,7 +2162,790 @@ The LTR visa is particularly valuable for:
       { label: 'BOI — Long-Term Resident (LTR) Visa Portal', url: 'https://ltr.boi.go.th/' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
     ]
-  }
+  },
+  {
+    slug: 'thailand-tax-guide-for-expats',
+    title: 'Thailand Tax for Expats: The Complete Guide (2025)',
+    excerpt: 'Everything foreigners need to know about Thai income tax — who pays, what income is taxed, how to file, and how to avoid double taxation.',
+    content: `
+## Do Foreigners Pay Tax in Thailand?
+
+Yes — if you live in Thailand for 180 or more days in a calendar year, you are a Thai tax resident and are subject to Thai personal income tax. This applies regardless of your nationality, visa type, or where your employer is based.
+
+If you spend fewer than 180 days in Thailand in a given year, you are a non-resident for tax purposes. Non-residents are only taxed on income earned within Thailand, not on foreign income.
+
+---
+
+## The 180-Day Rule Explained
+
+Thailand uses a simple residency test: any person who spends 180 days or more in Thailand during a calendar year is considered a Thai tax resident.
+
+Key points:
+- Days are counted per calendar year (1 January to 31 December)
+- Partial days generally count as full days
+- The days do not need to be consecutive
+- Your visa type has no effect on your residency status
+
+If you are in Thailand from January through July — roughly 180 days — you are a Thai tax resident for that year. A single long stay and multiple short trips are treated the same way.
+
+---
+
+## What Income Is Taxed for Expats?
+
+| Income Type | Non-resident (under 180 days) | Resident (180+ days) |
+|---|---|---|
+| Thai salary or wages | Taxable | Taxable |
+| Thai freelance / business income | Taxable | Taxable |
+| Foreign income remitted to Thailand | Not taxable | Taxable (since 2024) |
+| Foreign income kept abroad | Not taxable | Not taxable |
+
+The key change for residents is the 2024 rule: any foreign income you remit (transfer, withdraw, or spend) in Thailand is now assessable income, regardless of when it was originally earned. Income left in an overseas account and never brought into Thailand is not taxed here.
+
+---
+
+## Thailand's Tax Rates
+
+Thailand uses a progressive tax system. After allowances and deductions, your income is taxed at the following rates:
+
+| Taxable Income (THB) | Rate |
+|---|---|
+| 0 – 150,000 | 0% |
+| 150,001 – 300,000 | 5% |
+| 300,001 – 500,000 | 10% |
+| 500,001 – 750,000 | 15% |
+| 750,001 – 1,000,000 | 20% |
+| 1,000,001 – 2,000,000 | 25% |
+| 2,000,001 – 5,000,000 | 30% |
+| Above 5,000,000 | 35% |
+
+For most expats earning moderate incomes, the effective rate (total tax divided by gross income) is well below the top marginal rate. Use the calculator to see your specific effective rate.
+
+---
+
+## Key Deductions Available to Expats
+
+Before tax rates are applied, several deductions reduce your assessable income:
+
+- **Personal allowance:** 60,000 THB for every taxpayer
+- **Employment income deduction:** 50% of salary, capped at 100,000 THB
+- **Spouse allowance:** 60,000 THB if your spouse has no income
+- **Life insurance premiums:** up to 100,000 THB
+- **Health insurance premiums:** up to 25,000 THB
+- **Social security contributions:** full amount deductible
+- **Provident fund / RMF / SSF contributions:** up to 30% of income (caps apply)
+
+For a full list of deductions, see our guide to maximising Thai tax deductions.
+
+---
+
+## How to File Your Tax Return as an Expat
+
+### Step 1: Get a Thai Tax ID Number
+
+Before you can file, you need a 13-digit Thai Tax Identification Number (TIN) issued by the Revenue Department. If you are employed by a Thai company, your employer may have registered one for you. Otherwise, you apply in person at your local Revenue Department district office with your passport, current visa, and proof of address.
+
+### Step 2: Choose the Right Form
+
+- **PND 91:** For individuals whose only income is salary or pension from a single employer
+- **PND 90:** For everyone else — freelance, rental, investment, foreign income, or multiple income sources
+
+Most expats should use PND 90.
+
+### Step 3: File by the Deadline
+
+The filing deadline is 31 March each year for the previous calendar year. Online filing via the RD Smart Tax app or rd.go.th provides an 8-day extension to approximately 8 April.
+
+---
+
+## Avoiding Double Taxation
+
+If you pay tax in another country on the same income, Thailand's network of Double Tax Agreements (DTAs) with 61 countries allows you to claim a foreign tax credit — reducing your Thai liability by the tax already paid abroad.
+
+Thailand has DTAs with the United Kingdom, United States, Australia, Germany, France, Singapore, Japan, and many others. The treaty with each country specifies how different income types are treated.
+
+---
+
+## Special Situations
+
+### LTR Visa Holders
+
+Holders of the Long-Term Resident (LTR) Wealthy Global Citizen, Wealthy Pensioner, and Work-from-Thailand Professional visa categories receive a complete exemption from Thai tax on all foreign-sourced income. This is a significant benefit compared to the standard remittance-based tax rules.
+
+### Digital Nomads
+
+Remote workers earning foreign income and living in Thailand are Thai tax residents if they stay 180+ days. Their foreign income remitted to Thailand is taxable. The digital nomad article covers this in detail, including strategies for minimising the tax burden.
+
+### Retirees
+
+Retirees aged 65 and over receive an additional 190,000 THB income exemption on top of the standard allowances. The retirement tax guide covers all relevant rules including pension taxation and the LTR Wealthy Pensioner option.
+
+### UK Expats
+
+UK nationals must also manage their UK tax residency position when moving to Thailand. The Thailand tax for UK expats article covers the UK Statutory Residence Test, HMRC notifications, UK-Thailand DTA details, and National Insurance contributions.
+
+### US Expats
+
+US citizens face the unique challenge of US citizenship-based taxation regardless of where they live. The Thailand tax for US expats article covers FBAR reporting, FATCA obligations, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.
+
+---
+
+## Key Takeaways
+
+| If you... | Then... |
+|---|---|
+| Spend 180+ days in Thailand | You are a Thai tax resident |
+| Earn income in Thailand | Always taxable here |
+| Remit foreign income to Thailand | Taxable (since 2024) |
+| Keep income abroad | Not taxable in Thailand |
+| Hold an LTR visa | Foreign income is fully exempt |
+| Pay tax abroad on the same income | Claim a DTA foreign tax credit |
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 8,
+    category: 'International',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
+      { label: 'Thai Revenue Code Section 41 — Tax Residency', url: 'https://www.rd.go.th/english/' },
+    ]
+  },
+  {
+    slug: 'how-to-get-thai-tax-id-number',
+    title: 'How to Get a Thai Tax ID Number (TIN): Step-by-Step Guide',
+    excerpt: 'A practical guide to obtaining your Thai Tax Identification Number — what it is, who needs one, what documents to bring, and what to do after you have it.',
+    content: `
+## What Is a Thai Tax Identification Number?
+
+A Thai Tax Identification Number (TIN) is a 13-digit number issued by the Revenue Department of Thailand. It identifies you in the Thai tax system and is required to:
+
+- File an annual personal income tax return (PND 90 or PND 91)
+- Claim a refund of overpaid or withheld tax
+- Issue invoices if you are self-employed or freelancing
+- Register for VAT if your revenue exceeds the threshold
+
+For foreigners, the TIN is different from a Thai national ID card number (which non-citizens do not have). Your TIN is specific to the tax system.
+
+---
+
+## Do You Need a TIN?
+
+You need a TIN if any of the following applies:
+
+- You are a Thai tax resident (180+ days in Thailand) and have assessable income above the filing threshold
+- Your Thai employer withholds income tax from your salary (you need a TIN to claim refunds)
+- You are freelancing or self-employed and issue invoices to Thai clients
+- You receive rental income from Thai property
+- You want to file a return to claim a refund of excess withholding
+
+**You may already have one.** If you are employed by a Thai company, your employer may have registered a TIN on your behalf when setting up your payroll. Check any withholding tax certificate (Form 50 Tawi) you have received from your employer or a Thai bank — your TIN will appear on that document.
+
+---
+
+## How to Check If You Already Have a TIN
+
+Before visiting the Revenue Department, check these sources:
+
+1. **Form 50 Tawi (withholding certificate)** from your employer — your TIN will be listed in the taxpayer section
+2. **Bank withholding certificates** — if a Thai bank has withheld tax on your interest or dividends, your TIN may appear on the certificate
+3. **Ask your HR department** — many Thai employers register TINs for foreign employees as part of the work permit and payroll process
+4. **Revenue Department website** — if you have access to rd.go.th with your details, you may be able to look up your TIN
+
+---
+
+## How to Register in Person (Step-by-Step)
+
+TIN registration for foreigners is done in person at a Revenue Department district office. You cannot register online as a foreign national.
+
+### Documents to Bring
+
+- **Passport** (original and photocopy)
+- **Current visa** (shown in your passport)
+- **Proof of address** in Thailand — a lease agreement, utility bill, or bank statement showing your Thai address
+
+Bring photocopies of everything alongside the originals. The officer will keep photocopies and return the originals to you.
+
+### At the Office
+
+1. Go to your local Revenue Department district office — not the central Bangkok head office. Find your nearest office at rd.go.th/english.
+2. Tell the officer you need to register for a Personal Income Tax Identification Number (you can say "TIN registration" — most officers at district offices are familiar with the request).
+3. Fill in Form PP09, the taxpayer registration form. The officer will usually help you complete it.
+4. The process takes approximately 15–30 minutes.
+5. Your TIN is issued the same day and will appear on the registration document you receive.
+
+### Practical Tips
+
+- Go early in the morning to avoid queues
+- If your Thai is limited, bring a translation or printout of your address in Thai
+- No work permit is required to obtain a TIN — you only need your passport, visa, and proof of address
+- Some district offices have English-speaking staff; smaller offices may not
+
+---
+
+## After You Get Your TIN
+
+Once you have your TIN, several things become available to you:
+
+### File Tax Returns
+
+Use your TIN to file PND 90 or PND 91 returns each year by 31 March. You can file online via the RD Smart Tax app (available on iOS and Android) or at the Revenue Department office.
+
+### Claim Refunds
+
+If your employer has over-withheld tax, or if you have had 5% or 15% withholding applied to rental or investment income at a rate higher than your effective rate, you can claim a refund only after filing a return using your TIN.
+
+### Freelance Invoicing
+
+If you are self-employed or freelance, Thai clients may require your TIN on invoices before they can process payment. Some clients also need your TIN to withhold tax on payments (3% withholding applies to many freelance payments).
+
+### Register for the RD Smart Tax App
+
+Download the Revenue Department's official mobile app and log in with your TIN. This app allows you to file returns, check tax records, and track refund status from your phone.
+
+---
+
+## Frequently Asked Questions
+
+### Can a company register a TIN on my behalf?
+Yes — Thai employers commonly register TINs for their foreign employees as part of the onboarding process. If your employer has done this, you may already have a TIN without being aware. Ask your HR or payroll team.
+
+### Do I need a work permit to get a TIN?
+No. A work permit is not required to register for a TIN. You only need your passport, visa, and proof of a Thai address.
+
+### Is my TIN the same as my Thai ID number?
+No. Thai nationals have a 13-digit national ID card number that also serves as their TIN. Foreign nationals are issued a separate 13-digit TIN that is not linked to a Thai national ID.
+
+### What if I lose my TIN or forget the number?
+Return to the Revenue Department district office with your passport. They can look up your TIN on the system and reissue the registration document.
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 6,
+    category: 'Filing',
+    sources: [
+      { label: 'Thai Revenue Department — TIN Registration', url: 'https://www.rd.go.th/english/6044.html' },
+      { label: 'Thai Revenue Department — District Offices', url: 'https://www.rd.go.th/english/' },
+    ]
+  },
+  {
+    slug: 'transferring-money-to-thailand-tax-rules',
+    title: 'Transferring Money to Thailand: What\'s Taxable Under the 2024 Rules',
+    excerpt: 'The 2024 rule change affects every expat who remits foreign income to Thailand. This guide explains what is taxable, what is not, and how to manage your transfers.',
+    content: `
+## The Old Rule vs. the 2024 Change
+
+For many years, Thailand operated on a convenient remittance principle: foreign income was only taxable if you brought it into Thailand in the same calendar year you earned it. Income earned in 2022 and transferred to Thailand in 2023 was not taxable. Many expats used this rule to time their transfers strategically.
+
+**That loophole closed on 1 January 2024.**
+
+Under Revenue Department Circular P.161/2566, Thai tax residents are now taxed on all foreign income remitted to Thailand, regardless of when that income was originally earned. Income earned in 2020 and transferred to Thailand in 2025 is now assessable income for 2025.
+
+This change affects every Thai tax resident who receives money from abroad.
+
+---
+
+## What Counts as "Remitting" Money to Thailand?
+
+A remittance is any movement of money from a foreign source into Thailand for your use. This includes:
+
+- **International wire transfers** to a Thai bank account
+- **ATM cash withdrawals** in Thailand using a foreign debit card
+- **Credit or debit card purchases** in Thailand charged to a foreign account
+- **Digital transfers** via Wise, Revolut, PayPal, or similar services to a Thai account or used for Thai purchases
+- **Cash brought into Thailand** above the reporting threshold (currently USD 20,000 or equivalent)
+
+---
+
+## What Is NOT Taxable When Brought Into Thailand?
+
+Not everything transferred to Thailand is income. The following are generally not assessable:
+
+- **Capital accumulated before you became a Thai tax resident** — savings you held before your Thai residency began are capital, not income
+- **Pre-2024 savings** — income earned and saved before 1 January 2024 may not be assessable under the new rule (this remains a grey area; keep documentation)
+- **Gifts from non-residents** — money given to you by a person who is not a Thai tax resident is not assessable income in your hands
+- **Loans** — borrowed money is not income
+- **Inheritance** — money inherited is not assessable personal income
+
+**The critical distinction is income vs. capital.** If you are transferring savings accumulated before your Thai residency, or pre-2024 savings, document this clearly. Bank statements, investment records, and a clear record of when funds were earned versus when they were saved will support your position if the Revenue Department queries a transfer.
+
+---
+
+## Who Is Affected?
+
+| Situation | Affected by the 2024 change? |
+|---|---|
+| Thai tax resident (180+ days), remitting foreign income | Yes — taxable |
+| Non-resident (under 180 days), remitting anything | No — non-residents pay Thai tax only on Thai-sourced income |
+| Thai tax resident remitting pre-residency savings | No — capital, not income |
+| Tourist using a foreign card in Thailand | No — not a tax resident |
+
+---
+
+## Practical Examples
+
+| Scenario | Taxable? |
+|---|---|
+| UK expat wires monthly salary to Thai bank account | Yes |
+| Retiree transfers savings accumulated over 10 years before moving to Thailand | No (capital) |
+| Digital nomad sends Wise payment to Thai account for rent | Yes |
+| Remote worker receives salary into foreign account; withdraws at Bangkok ATM | Yes |
+| Investor transfers dividends earned offshore, kept in foreign account | No (not remitted) |
+| Investor remits those same dividends to Thailand in a later year | Yes (once remitted) |
+
+---
+
+## How Much Tax Would You Pay?
+
+Remitted foreign income is added to your total assessable income for the year and taxed at progressive rates after your personal allowances and deductions. There is no flat rate for remitted income.
+
+At 60,000 THB personal allowance and 100,000 THB employment deduction, the first approximately 310,000 THB of total income is effectively tax-free for a salaried employee. Income above that is taxed from 5% upwards.
+
+Use the calculator to estimate your total tax position including any remitted foreign income.
+
+---
+
+## How to Reduce the Tax on Remittances
+
+### Transfer Only What You Need
+
+The simplest approach: remit only what you need to cover your Thai living expenses. Money kept in an overseas account is not taxable. Keep foreign savings, investments, and income offshore until you actually need the funds in Thailand.
+
+### Transfer Capital, Not Income
+
+If you have both savings (capital) and current income in the same overseas account, consider opening a separate account for pre-residency savings or pre-2024 funds. Keeping them separate makes it easier to document which transfers are capital (not taxable) and which are income (taxable).
+
+### Consider the LTR Visa
+
+For higher-income earners, the Long-Term Resident (LTR) Wealthy Global Citizen, Wealthy Pensioner, and Work-from-Thailand Professional visa categories provide a complete exemption from Thai tax on all foreign-sourced income. If your annual foreign income exceeds the qualifying thresholds (USD 80,000 for most categories), the LTR visa eliminates the remittance tax problem entirely.
+
+### Claim DTA Foreign Tax Credits
+
+If you have already paid tax on the remitted income in your home country, the Double Tax Agreement between Thailand and that country may allow you to claim a foreign tax credit — reducing your Thai tax by the amount already paid abroad. You cannot pay tax twice on the same income under a DTA.
+
+---
+
+## Record Keeping
+
+Good documentation protects you if the Revenue Department ever queries a transfer:
+
+- **Bank statements** showing the source of funds and when they were deposited
+- **Pay slips or employment records** showing when income was earned
+- **Investment records** distinguishing capital gains from dividends and interest
+- **A clear record of the date you became a Thai tax resident** — this is the baseline for the capital vs. income distinction
+
+There is no formal registration process for declaring capital transfers. The documentation is for your own protection and must be produced if queried.
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 7,
+    category: 'International',
+    sources: [
+      { label: 'Revenue Department Circular P.161/2566', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
+    ]
+  },
+  {
+    slug: 'thailand-tax-for-uk-expats',
+    title: 'Thailand Tax for UK Expats: A Complete Guide',
+    excerpt: 'UK nationals living in Thailand face tax obligations in both countries. This guide covers UK residency, the UK-Thailand Double Tax Agreement, pensions, rental income, and what to do before you leave.',
+    content: `
+## The Dual Tax Position for UK Citizens
+
+When you move to Thailand as a UK national, you do not automatically leave the UK tax system. Two things happen simultaneously:
+
+1. **Thailand** taxes you on Thai income and — once you become a Thai tax resident (180+ days per year) — on foreign income you remit to Thailand
+2. **The UK** continues to tax you on UK-sourced income until you have formally established non-residency under the UK Statutory Residence Test
+
+The UK-Thailand Double Tax Agreement (DTA) prevents you from paying full tax twice on the same income, but it does not eliminate all obligations. Understanding both sides is essential.
+
+---
+
+## Leaving the UK for Tax Purposes
+
+The UK Statutory Residence Test (SRT) determines whether you remain a UK tax resident after leaving. You do not automatically stop being a UK resident just by moving abroad — you must meet specific conditions.
+
+**Automatic non-residence applies if:**
+- You spend fewer than 16 days in the UK in the tax year, or
+- You spend fewer than 46 days in the UK and were not UK-resident in any of the previous 3 tax years, or
+- You work full-time overseas (averaging 35+ hours per week) with fewer than 91 days in the UK
+
+Once you qualify as UK non-resident, you are no longer taxed by the UK on most foreign income. However, **the UK still taxes non-residents on UK-sourced income** — salary from UK employers, UK rental income, and UK pension income (with exceptions — see below).
+
+### Notifying HMRC
+
+Notify HMRC of your departure using **form P85** (available at gov.uk). This starts the process of adjusting your UK tax position. You should also apply for an NT (no tax) PAYE code if you receive a UK salary or private pension to stop UK withholding at source.
+
+---
+
+## What Income Does Thailand Tax for UK Expats?
+
+Once you are a Thai tax resident (180+ days per year), Thailand taxes:
+
+- **Thai employment income** — salary, bonuses, benefits from a Thai employer
+- **UK salary or self-employment income** remitted to Thailand — taxable since the 2024 remittance rule change
+- **UK private pension income** remitted to Thailand — taxable (credit available for any UK tax withheld)
+- **UK rental income** remitted to Thailand — potentially taxable; DTA credit available
+- **Investment income** (dividends, interest) remitted to Thailand from any source
+
+Income left in a UK bank account and not remitted to Thailand is not taxed here.
+
+---
+
+## The UK-Thailand Double Tax Agreement
+
+The UK and Thailand have a DTA that covers most income types. The key provisions:
+
+- **Employment income:** taxable where the work is performed. Thai employment income is taxed in Thailand; UK employment income is taxed in the UK (and may also be assessed in Thailand if remitted, with a credit)
+- **Dividends:** taxable in both countries, but withholding rates are capped; credits available
+- **Interest:** taxable in both countries; withholding capped at 25% in source country
+- **Pensions:** see below — the treatment depends heavily on the type of pension
+
+**Government service pensions** — pensions paid by the UK government for service in a civil, military, or public capacity (NHS, military, teachers, local council) — are taxable **only in the UK**, not in Thailand. This is a significant exception for many UK expats.
+
+**Private pensions, workplace pensions, and SIPPs** — taxable in Thailand as the country of residence. Claim a credit for any UK withholding tax that has been deducted.
+
+---
+
+## UK State Pension in Thailand
+
+The UK State Pension is taxable in Thailand for Thai tax residents. It is treated as foreign pension income remitted to Thailand.
+
+**Practical steps:**
+1. Apply to HMRC for a **gross payment arrangement** (NT code) so the UK pays the State Pension without deducting UK income tax
+2. Declare the full State Pension amount on your Thai PND 90 return each year
+3. Apply personal allowances and the standard tax calculation — most retirees with only modest additional income will pay little or no Thai tax after allowances
+
+For full details on UK and other foreign pension taxation, see the foreign pension income article.
+
+---
+
+## UK Rental Income While Living in Thailand
+
+If you own rental property in the UK while living in Thailand:
+
+- **UK tax:** Rental income is always taxable in the UK. You must file a UK Self Assessment return each year.
+- **Thai tax:** If you remit rental income to Thailand, it is potentially assessable as foreign income. The DTA credit prevents double payment.
+- **Non-Resident Landlord (NRL) scheme:** Register with HMRC as a non-resident landlord so your letting agent or tenant pays rent gross (without withholding). This avoids over-withholding that you then need to reclaim.
+
+---
+
+## What to Do Before You Leave the UK
+
+### 1. File Form P85
+
+Notify HMRC of your departure and estimated date of leaving. This triggers a review of your UK tax position.
+
+### 2. Apply for NT (No Tax) Codes
+
+If you receive a UK salary, pension, or investment income, apply for PAYE NT codes so payments are made gross. This avoids the need to reclaim UK withholding tax.
+
+### 3. Register as a Non-Resident Landlord
+
+If you own UK rental property, register with HMRC's NRL scheme before leaving. Without this, letting agents must withhold 20% of gross rent.
+
+### 4. Review Your National Insurance Position
+
+Once you leave the UK, you stop automatically building State Pension entitlement. You can make **voluntary Class 2 NICs** from abroad at approximately £3.45 per week (2024/25 rate) — one of the best-value investments available to most UK expats. Check your NI record and State Pension forecast at the Government Gateway.
+
+---
+
+## ISAs and UK Investments
+
+UK ISAs remain tax-free for UK tax purposes after you leave — no UK tax on interest or gains. However, Thailand has no equivalent ISA concept:
+
+- ISA income that you remit to Thailand is potentially assessable in Thailand
+- ISA capital gains remitted to Thailand are assessable as foreign income
+
+A practical strategy: hold ISA income offshore and transfer capital (original investment amounts) to Thailand instead, keeping income generating within the ISA wrapper overseas.
+
+---
+
+## Filing Summary
+
+| Obligation | Country | Deadline | Form |
+|---|---|---|---|
+| Thai income tax (all income sources) | Thailand | 31 March | PND 90 or PND 91 |
+| UK income tax (UK-sourced income) | UK | 31 January | Self Assessment SA100 |
+| UK NRL quarterly return (if applicable) | UK | Quarterly | NRL1 |
+| HMRC departure notification | UK | When leaving | P85 |
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 9,
+    category: 'International',
+    sources: [
+      { label: 'HMRC — Statutory Residence Test', url: 'https://www.gov.uk/guidance/the-statutory-residence-test' },
+      { label: 'HMRC — Form P85 (Leave the UK)', url: 'https://www.gov.uk/tell-hmrc-change-of-details/leaving-uk' },
+      { label: 'UK-Thailand Double Tax Agreement', url: 'https://www.gov.uk/government/publications/thailand-tax-treaties' },
+      { label: 'HMRC — Non-Resident Landlord Scheme', url: 'https://www.gov.uk/guidance/non-resident-landlords-scheme-guidance-notes' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
+    ]
+  },
+  {
+    slug: 'rental-income-tax-thailand',
+    title: 'Rental Income Tax in Thailand: A Practical Guide',
+    excerpt: 'Rental income from Thai property is taxable for both residents and non-residents. This guide covers how the tax is calculated, the 30% flat-rate deduction, withholding from corporate tenants, and tips for landlords.',
+    content: `
+## Is Rental Income Taxable in Thailand?
+
+Yes. Rental income from Thai property is assessable personal income under Section 40(5) of the Revenue Code. This applies whether you are:
+
+- A Thai national
+- A foreign national who owns Thai property (foreigners can legally own condominiums in Thailand on a freehold basis)
+- A Thai tax resident or a non-resident earning rental income from a Thai property
+
+Non-residents are taxed on Thai-sourced income even if they do not spend 180 days in Thailand. Rental income from Thai property is Thai-sourced income.
+
+---
+
+## How Rental Income Tax Is Calculated
+
+### Step 1: Choose Your Expense Deduction Method
+
+You have two options for deducting expenses from your gross rental income:
+
+**Option A: 30% Flat-Rate Deduction (Most Common)**
+
+Deduct 30% of gross rental income automatically, with no receipts or documentation required. Net assessable income = 70% of gross rent.
+
+This is the standard approach for most individual landlords. It is simple, requires no paperwork, and is accepted by the Revenue Department without question.
+
+**Option B: Actual Expense Deduction**
+
+Deduct documented actual expenses including repairs, maintenance, management fees, insurance, and depreciation. This requires receipts and records.
+
+Only worthwhile if your actual costs genuinely exceed 30% of gross rent — which is uncommon for residential lettings.
+
+### Step 2: Apply Progressive Tax Rates
+
+Your net rental income is added to your total assessable income for the year. Progressive income tax rates apply after all allowances and deductions (personal allowance, employment deduction, etc.).
+
+### Step 3: Claim Withholding Credits (If Applicable)
+
+If a company paid you rent and withheld 5%, claim this as a credit against your total tax liability.
+
+---
+
+## Worked Example
+
+**Scenario:** A single expat earns 30,000 THB per month from renting a Bangkok condo. No other income.
+
+| Item | Amount (THB) |
+|---|---|
+| Annual rental income | 360,000 |
+| Less 30% flat-rate deduction | −108,000 |
+| Net assessable rental income | 252,000 |
+| Less personal allowance | −60,000 |
+| Total assessable income | 192,000 |
+| First 150,000 THB at 0% | 0 |
+| Remaining 42,000 THB at 5% | 2,100 |
+| Total tax due | 2,100 THB |
+
+Effective tax rate on gross rental income: approximately 0.6%.
+
+---
+
+## Withholding Tax from Corporate Tenants
+
+If your tenant is a company (not an individual), the company is legally required to withhold **5% of rent** at source before paying you. This is common when renting to businesses, multinational companies, or organisations.
+
+What this means in practice:
+- Your tenant pays you 95% of the agreed rent and remits 5% directly to the Revenue Department
+- They issue you a withholding tax certificate showing the amount withheld
+- You include the gross rent (100%) in your income on your PND 90 return and claim the 5% withholding as a tax credit
+
+**Important:** Corporate tenants are supposed to provide this certificate automatically, but some do not. Actively request it — you need it to claim the credit.
+
+Individual tenants (private renters) have no withholding obligation. They simply pay you the agreed rent in full.
+
+---
+
+## Filing Threshold for Rental Income
+
+The filing threshold for rental and investment income is lower than for salary income:
+
+- **Single individual:** 60,000 THB per year in rental income (gross) triggers a filing requirement
+- **Married couple:** 120,000 THB per year combined
+
+This means even modest rental income — such as renting a spare room — may require you to file a PND 90 return.
+
+---
+
+## Rental Income from Overseas Property
+
+If you are a Thai tax resident and own rental property abroad:
+
+- Income from overseas property is **not taxable in Thailand if it remains offshore** — only remitted income is taxable
+- If you transfer overseas rental income to a Thai bank account, it becomes assessable income in Thailand
+- The Double Tax Agreement between Thailand and the property's country may allow a foreign tax credit for tax already paid in the source country
+
+**Practical approach:** Keep overseas rental income in a foreign account. Transfer capital or older savings (not the rental proceeds themselves) to cover your Thai living expenses.
+
+---
+
+## Tips for Property Owners in Thailand
+
+1. **File PND 90** — rental income cannot be declared on PND 91 (which is for employment income only)
+2. **Collect withholding certificates** from corporate tenants proactively — don't wait for them to offer
+3. **Keep lease agreements** for at least 5 years (the Revenue Department audit window)
+4. **Declare all rental income** — the Revenue Department has access to Land Department records of registered leases
+5. **Consider the 30% flat deduction** unless your documented actual costs clearly exceed this
+6. **Foreign rental income:** make a conscious decision about whether to remit it to Thailand, as once remitted it is taxable
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 6,
+    category: 'Tax Basics',
+    sources: [
+      { label: 'Thai Revenue Code Section 40(5) — Rental Income', url: 'https://www.rd.go.th/english/6045.html' },
+      { label: 'Thai Revenue Department — Personal Income Tax Guide', url: 'https://www.rd.go.th/english/' },
+    ]
+  },
+  {
+    slug: 'thailand-tax-for-us-expats',
+    title: 'Thailand Tax for US Expats and Americans: What You Need to Know',
+    excerpt: 'US citizens in Thailand face two overlapping tax systems. This guide covers Thai tax obligations, US citizenship-based taxation, FBAR, FATCA, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.',
+    content: `
+## The Unique Challenge for US Citizens
+
+Almost every country in the world taxes residents — if you leave, your home-country tax obligations largely disappear. The United States is a significant exception: the US taxes its citizens on their worldwide income regardless of where they live. Moving to Thailand does not remove your US tax obligations.
+
+Living in Thailand therefore creates two simultaneous tax systems:
+
+- **Thailand** taxes you on Thai income and, once you are a Thai tax resident (180+ days per year), on foreign income you remit to Thailand
+- **The United States** taxes you on your worldwide income every year, including income earned and taxed in Thailand
+
+The good news: the US-Thailand Double Tax Agreement (DTA) and US tax provisions like the Foreign Earned Income Exclusion and Foreign Tax Credit are specifically designed to prevent genuine double taxation. Most US expats in Thailand do not pay full tax twice — but they do have significant reporting obligations.
+
+---
+
+## US Tax Obligations That Follow You to Thailand
+
+### Annual Form 1040
+
+US citizens must file a federal income tax return every year, regardless of where they live. The deadline for Americans abroad is **15 June** (with an automatic 2-month extension from the standard April deadline). A further extension to 15 October can be requested.
+
+Filing does not always mean paying — the Foreign Earned Income Exclusion and Foreign Tax Credit often reduce or eliminate US tax owed. But the filing obligation itself never goes away.
+
+### FBAR — Foreign Bank Account Reporting
+
+If the **aggregate value** of all your foreign financial accounts (bank accounts, investment accounts, certain insurance policies) exceeds **USD 10,000 at any point during the calendar year**, you must file a Foreign Bank Account Report (FBAR) via FinCEN Form 114.
+
+Key details:
+- Filed separately from your tax return, at fincen.gov (not the IRS)
+- Deadline: 15 April, with an automatic extension to 15 October
+- Penalties for non-filing are severe: up to USD 10,000 per year for non-willful violations; USD 100,000 or 50% of account value per year for willful violations
+- A single Thai bank account with 350,000 THB (~USD 10,000) triggers the requirement
+
+### Form 8938 — FATCA Reporting
+
+Under FATCA (Foreign Account Tax Compliance Act), US taxpayers living abroad must file Form 8938 (attached to Form 1040) if foreign financial assets exceed:
+- USD 200,000 on the last day of the tax year, **or**
+- USD 300,000 at any point during the year
+
+(Higher thresholds apply for joint filers.)
+
+FBAR and Form 8938 can overlap — you may need to file both for the same accounts. When in doubt, file both.
+
+---
+
+## Thai Tax Obligations for US Citizens
+
+Your Thai tax obligations are identical to those of any other expat:
+
+- Become a Thai tax resident after 180+ days in Thailand in a calendar year
+- Thai-sourced income is taxable (salary, freelance, Thai business income)
+- Foreign income remitted to Thailand is taxable since the 2024 rule change
+- File PND 90 or PND 91 by 31 March each year
+
+The US does not have a presence in the Thai filing process — your Thai return is filed independently with the Thai Revenue Department.
+
+---
+
+## The US-Thailand Double Tax Agreement
+
+The DTA between the US and Thailand covers the main income categories and uses a credit mechanism to prevent double taxation:
+
+- **Employment income:** taxable where the work is performed
+- **Dividends:** taxable in both countries with withholding limits
+- **Interest:** taxable in both countries
+- **US government service pensions:** taxable only in the US
+- **Business profits:** generally taxable only in the country of the permanent establishment
+
+The DTA does not eliminate all double taxation, but it provides the framework for claiming credits that reduce overlapping tax.
+
+---
+
+## Foreign Earned Income Exclusion (FEIE)
+
+The FEIE allows eligible US citizens working abroad to exclude a significant amount of foreign earned income from US taxation:
+
+- **2024 exclusion amount:** USD 126,500 (indexed annually)
+- **Eligibility:** You must pass either the **Physical Presence Test** (330+ days outside the US in any 12-month period) or the **Bona Fide Residence Test** (established residence in a foreign country for a full tax year)
+- **What it covers:** Earned income only — salary, wages, self-employment income from work performed outside the US
+- **What it does NOT cover:** Passive income — dividends, interest, capital gains, rental income, Social Security
+
+To claim the FEIE, file Form 2555 with your Form 1040. The exclusion can eliminate US tax entirely for moderate earners working in Thailand.
+
+---
+
+## Foreign Tax Credit (FTC)
+
+Instead of (or in addition to) the FEIE, you can claim a Foreign Tax Credit for Thai income tax paid on the same income that would otherwise be taxed by the US.
+
+- **How it works:** US tax on foreign income is reduced dollar-for-dollar by foreign tax paid on the same income
+- **FTC is generally more valuable** than the FEIE for higher earners or those with significant passive income
+- **You cannot claim both** FEIE and FTC on the same dollars of income — but you can use FEIE for earned income and FTC for passive income
+
+---
+
+## US Social Security in Thailand
+
+US Social Security benefits can be complex for Americans living in Thailand:
+
+- The US taxes up to **85% of Social Security** for higher-income recipients (regardless of where they live)
+- Thailand may also tax Social Security remitted to Thailand under the DTA — the DTA provisions on Social Security are ambiguous
+- The Foreign Tax Credit can generally offset US tax with Thai tax paid on the same benefits
+
+Given the complexity, US retirees receiving Social Security in Thailand should consult a US expat tax specialist.
+
+---
+
+## Thai Bank Accounts and FBAR: Practical Impact
+
+Many US expats in Thailand maintain Thai bank accounts for daily living expenses. A typical Bangkok Bank or Kasikorn Bank account used for rent, food, and daily spending can easily exceed USD 10,000 — triggering the FBAR requirement.
+
+**Common mistake:** Many US expats in Thailand are unaware of FBAR or believe the threshold is much higher. The threshold is low by design — USD 10,000 is approximately 350,000 THB at current rates.
+
+Keep a note of the peak balance across all your foreign accounts during the year. If it exceeds USD 10,000 at any single point, you must file FBAR for that year.
+
+---
+
+## Practical Recommendations
+
+1. **File Form 1040 every year** — the obligation is automatic regardless of income level
+2. **Check your FBAR obligation** — if Thai + other foreign accounts ever exceeded USD 10,000, file FinCEN 114
+3. **Keep records of Thai tax paid** — you will need this to claim the Foreign Tax Credit
+4. **Evaluate FEIE vs. FTC** for your income mix — a US expat tax advisor can run both scenarios
+5. **Do not close US brokerage accounts without advice** — premature account closures can trigger unexpected tax events
+6. **Consider using a US CPA or Enrolled Agent** specializing in expat taxation — the combination of FEIE, FTC, FBAR, and Thai filing is genuinely complex
+
+---
+
+## Summary: Who Files What
+
+| Obligation | Filed Where | Deadline | Form |
+|---|---|---|---|
+| Thai income tax | Thai Revenue Department | 31 March | PND 90 or PND 91 |
+| US federal income tax | IRS | 15 June (abroad) / 15 April (US) | Form 1040 |
+| Foreign bank account reporting | FinCEN | 15 April (auto-extend to 15 Oct) | FinCEN 114 (FBAR) |
+| FATCA financial asset reporting | IRS (attached to 1040) | Same as 1040 | Form 8938 |
+    `,
+    publishedAt: '2026-03-05',
+    readTime: 10,
+    category: 'International',
+    sources: [
+      { label: 'IRS — Foreign Earned Income Exclusion', url: 'https://www.irs.gov/individuals/international-taxpayers/foreign-earned-income-exclusion' },
+      { label: 'FinCEN — FBAR Filing', url: 'https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html' },
+      { label: 'IRS — Form 8938 (FATCA)', url: 'https://www.irs.gov/businesses/corporations/form-8938-statement-of-specified-foreign-financial-assets' },
+      { label: 'US-Thailand Tax Treaty', url: 'https://www.irs.gov/businesses/international-businesses/thailand-tax-treaty-documents' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
+    ]
+  },
 ];
 
 export function getArticleBySlug(slug: string): Article | undefined {

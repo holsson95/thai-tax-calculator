@@ -30,6 +30,15 @@ const ArticleDetailPage: React.FC = () => {
       url: SITE_URL,
     },
   };
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE_URL}/articles` },
+      { '@type': 'ListItem', position: 3, name: article.title, item: canonicalUrl },
+    ],
+  };
 
   // Split content for mid-article ad
   const contentParts = article.content.split('\n\n');
@@ -49,6 +58,7 @@ const ArticleDetailPage: React.FC = () => {
         <meta property="og:type" content="article" />
         <meta property="article:published_time" content={article.publishedAt} />
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
       <div className="max-w-3xl mx-auto px-4">
         {/* Breadcrumb */}
