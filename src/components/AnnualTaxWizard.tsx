@@ -4,6 +4,7 @@ import { TaxFormData } from '../types/taxForm';
 import { FreelancerFormData, createDefaultFreelancerFormData } from '../types/freelancerForm';
 import { SoleProprietorFormData, createDefaultSoleProprietorFormData } from '../types/soleProprietorForm';
 import { CompanyOwnerFormData, createDefaultCompanyOwnerFormData } from '../types/companyOwnerForm';
+import { calculateCompanyOwnerTax } from '../utils/taxCalculations';
 import EmploymentTypeStep from './steps/EmploymentTypeStep';
 import AnnualIncomeStep from './steps/AnnualIncomeStep';
 import MaritalStatusStepAnnual from './steps/MaritalStatusStepAnnual';
@@ -319,7 +320,7 @@ const AnnualTaxWizard: React.FC = () => {
         case 6: // Review
           return <ReviewStep {...baseStepProps} goToStep={goToStep} />;
         case 7: // Results
-          return <AnnualResultsStep formData={formData as TaxFormData} onStartOver={handleStartOver} />;
+          return <AnnualResultsStep formData={formData as TaxFormData} result={calculateCompanyOwnerTax(formData as CompanyOwnerFormData)} onStartOver={handleStartOver} />;
         default:
           return <EmploymentTypeStep {...baseStepProps} />;
       }

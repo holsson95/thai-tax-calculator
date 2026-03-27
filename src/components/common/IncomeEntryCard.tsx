@@ -273,12 +273,14 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
               <p className="text-sm text-green-700">
                 <strong>Flat Rate Deduction Preview:</strong>{' '}
-                ฿{Math.min(
-                  entry.grossAmount * incomeTypeInfo.flatRate,
-                  incomeTypeInfo.flatRateCap || Infinity
-                ).toLocaleString()}
+                ฿{(entry.grossAmount * incomeTypeInfo.flatRate).toLocaleString()}
                 {' '}({(incomeTypeInfo.flatRate * 100).toFixed(0)}% of ฿{entry.grossAmount.toLocaleString()})
               </p>
+              {incomeTypeInfo.flatRateCap && (
+                <p className="text-xs text-green-600 mt-1">
+                  Note: Total salary deduction is capped at ฿{incomeTypeInfo.flatRateCap.toLocaleString()} across all salary entries combined
+                </p>
+              )}
             </div>
           )}
         </div>

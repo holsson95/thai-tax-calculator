@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
-import { TaxFormData, TAX_BRACKETS } from '../../types/taxForm';
+import { TaxFormData, TaxCalculationResult, TAX_BRACKETS } from '../../types/taxForm';
 import { calculateAnnualTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import TaxPacketPDF from '../../pdf/TaxPacketPDF';
 import { generatePdfFilename } from '../../utils/pdfFilename';
@@ -8,12 +8,13 @@ import { generatePdfFilename } from '../../utils/pdfFilename';
 interface AnnualResultsStepProps {
   formData: TaxFormData;
   onStartOver: () => void;
+  result?: TaxCalculationResult;
 }
 
-const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStartOver }) => {
+const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStartOver, result: resultProp }) => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const result = calculateAnnualTax(formData);
+  const result = resultProp ?? calculateAnnualTax(formData);
 
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);

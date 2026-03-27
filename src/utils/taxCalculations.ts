@@ -3,6 +3,12 @@ import {
   FreelancerFormData,
   FreelancerTaxResult,
 } from '../types/freelancerForm';
+import {
+  CompanyOwnerFormData,
+  calculateTotalEmploymentIncome,
+  calculateTaxableDividendIncome,
+  calculateDividendWithholdingCredits,
+} from '../types/companyOwnerForm';
 import { calculateThaiTax } from './tax';
 import {
   getEffectiveDeduction,
@@ -184,6 +190,83 @@ export function calculateAnnualTax(formData: TaxFormData): TaxCalculationResult 
     taxableIncome,
     taxOwed,
     taxWithheld: formData.taxWithheld,
+    refundOrOwed,
+    effectiveRate,
+    breakdown,
+  };
+}
+
+/**
+ * Calculate complete annual tax for company owners
+ * Employment income (salary + director fees + benefits) gets the 50% standard deduction capped at 100,000.
+ * PIT-included dividends are added to taxable income but receive no expense deduction.
+ */
+export function calculateCompanyOwnerTax(formData: CompanyOwnerFormData): TaxCalculationResult {
+  // Employment income — all Section 40(1), eligible for 50% standard deduction
+  const employmentIncome = calculateTotalEmploymentIncome(formData);
+
+  // Dividend income included in PIT (those with includeInPIT = true)
+  const taxableDividends = calculateTaxableDividendIncome(formData);
+
+  // Withholding credits from PIT-included dividends (10% each)
+  const dividendWithholdingCredits = calculateDividendWithholdingCredits(formData);
+
+  // Standard deduction applies only to employment income
+  const standardDeduction = calculateStandardDeduction(employmentIncome);
+
+  // Gross income for display and effective rate
+  const grossIncome = employmentIncome + taxableDividends;
+
+  // Allowances — same logic as salaried (shared fields)
+  const totalAllowances = calculateAllowances(formData as unknown as TaxFormData);
+
+  // Income after standard deduction and allowances
+  const incomeAfterAllowances = Math.max(0, grossIncome - standardDeduction - totalAllowances);
+
+  // Deductions — pass employment income as annualIncome so standardDeduction inside
+  // calculateDeductions is also computed on employment income only
+  const fakeFormData: TaxFormData = {
+    ...(formData as unknown as TaxFormData),
+    annualIncome: employmentIncome,
+  };
+  const breakdown = calculateDeductions(fakeFormData, incomeAfterAllowances);
+
+  // Sum additional deductions (all except standardDeduction which is already accounted for)
+  const additionalDeductions =
+    breakdown.socialSecurity +
+    breakdown.lifeInsurance +
+    breakdown.healthInsurance +
+    breakdown.pensionFund +
+    breakdown.providentFund +
+    breakdown.rmf +
+    breakdown.ssf +
+    breakdown.donations;
+
+  const totalDeductions = standardDeduction + additionalDeductions;
+
+  // Taxable income
+  const taxableIncome = Math.max(0, incomeAfterAllowances - additionalDeductions);
+
+  // Tax using progressive brackets
+  const taxOwed = calculateThaiTax(taxableIncome);
+
+  // Total withholding: salary withholding + any separately entered withholding + dividend credits
+  const taxWithheld =
+    (formData.salaryWithholdingTax || 0) +
+    (formData.taxWithheld || 0) +
+    dividendWithholdingCredits;
+
+  const refundOrOwed = taxWithheld - taxOwed;
+
+  const effectiveRate = grossIncome > 0 ? (taxOwed / grossIncome) * 100 : 0;
+
+  return {
+    grossIncome,
+    totalAllowances,
+    totalDeductions,
+    taxableIncome,
+    taxOwed,
+    taxWithheld,
     refundOrOwed,
     effectiveRate,
     breakdown,
