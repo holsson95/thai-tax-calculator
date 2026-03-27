@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.mythaitaxes.com/sitemap.xml
+Sitemap: https://mythaitaxes.com/sitemap.xml

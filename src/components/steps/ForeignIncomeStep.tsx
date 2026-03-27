@@ -302,6 +302,25 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
         </div>
       </div>
 
+      {/* Non-income remittance info card */}
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <svg className="h-5 w-5 text-green-600 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          <div className="text-sm text-green-800">
+            <p className="font-medium mb-1">Remitting savings or capital? That's not taxable.</p>
+            <p className="text-green-700">
+              Thailand taxes <strong>income</strong>, not capital. If you're transferring money you
+              already saved — whether pre-residency savings, return of investment principal, or funds
+              accumulated before 1 January 2024 — that is not assessable income and does not need to
+              be entered here. Only enter income such as employment pay, interest, dividends, or
+              rental receipts that were earned in 2024 or later and remitted to Thailand.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Income Entries List */}
       <div className="space-y-4 mb-6">
         {formData.foreignIncomeEntries.map((entry, index) => {

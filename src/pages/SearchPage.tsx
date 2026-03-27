@@ -6,7 +6,7 @@ import FAQAccordion from '../components/faq/FAQAccordion';
 import { searchArticles } from '../data/articles';
 import { searchFAQ } from '../data/faq';
 
-const SITE_URL = 'https://www.mythaitaxes.com';
+const SITE_URL = 'https://mythaitaxes.com';
 
 const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();

@@ -5,7 +5,7 @@ import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
 import { getArticleBySlug, getRelatedArticles } from '../data/articles';
 
-const SITE_URL = 'https://www.mythaitaxes.com';
+const SITE_URL = 'https://mythaitaxes.com';
 
 const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
