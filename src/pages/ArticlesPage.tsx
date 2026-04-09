@@ -21,10 +21,10 @@ const ArticlesPage: React.FC = () => {
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`${SITE_URL}/articles`} />
+        <link rel="canonical" href={`${SITE_URL}/articles/`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={`${SITE_URL}/articles`} />
+        <meta property="og:url" content={`${SITE_URL}/articles/`} />
         <meta property="og:type" content="website" />
       </Helmet>
       <div className="max-w-6xl mx-auto px-4">

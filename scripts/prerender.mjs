@@ -12,6 +12,8 @@ const template = readFileSync(resolve(root, 'docs/index.html'), 'utf-8');
 
 const routes = [
   '/',
+  '/monthly-withholding',
+  '/annual-tax',
   '/articles',
   '/faq',
   '/search',
@@ -45,8 +47,8 @@ for (const route of routes) {
 // --- Generate sitemap.xml ---
 const today = new Date().toISOString().split('T')[0];
 
-const staticRoutes = ['/', '/articles', '/faq'];
-const articleRoutes = articles.map((a) => `/articles/${a.slug}`);
+const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/'];
+const articleRoutes = articles.map((a) => `/articles/${a.slug}/`);
 
 const sitemapEntries = [
   ...staticRoutes.map(

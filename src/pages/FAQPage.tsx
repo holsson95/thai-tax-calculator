@@ -33,10 +33,10 @@ const FAQPage: React.FC = () => {
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={`${SITE_URL}/faq`} />
+        <link rel="canonical" href={`${SITE_URL}/faq/`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={`${SITE_URL}/faq`} />
+        <meta property="og:url" content={`${SITE_URL}/faq/`} />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>

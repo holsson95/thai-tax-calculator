@@ -16,7 +16,7 @@ const ArticleDetailPage: React.FC = () => {
     return <Navigate to="/articles" replace />;
   }
 
-  const canonicalUrl = `${SITE_URL}/articles/${article.slug}`;
+  const canonicalUrl = `${SITE_URL}/articles/${article.slug}/`;
   const articleSchema = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -35,7 +35,7 @@ const ArticleDetailPage: React.FC = () => {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
-      { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE_URL}/articles` },
+      { '@type': 'ListItem', position: 2, name: 'Articles', item: `${SITE_URL}/articles/` },
       { '@type': 'ListItem', position: 3, name: article.title, item: canonicalUrl },
     ],
   };

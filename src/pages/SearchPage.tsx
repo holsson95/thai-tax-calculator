@@ -39,7 +39,7 @@ const SearchPage: React.FC = () => {
       <Helmet>
         <title>{title}</title>
         <meta name="description" content="Search Thai tax articles and frequently asked questions." />
-        <link rel="canonical" href={`${SITE_URL}/search`} />
+        <link rel="canonical" href={`${SITE_URL}/search/`} />
         <meta name="robots" content="noindex" />
       </Helmet>
 
