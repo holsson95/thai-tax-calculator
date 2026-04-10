@@ -10,7 +10,7 @@ const SITE_URL = 'https://mythaitaxes.com';
 const ArticleDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? getArticleBySlug(slug) : undefined;
-  const relatedArticles = slug ? getRelatedArticles(slug, 3) : [];
+  const relatedArticles = slug ? getRelatedArticles(slug) : [];
 
   if (!article) {
     return <Navigate to="/articles/" replace />;
@@ -171,7 +171,7 @@ const ArticleDetailPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Related Articles
             </h2>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               {relatedArticles.map((relatedArticle) => (
                 <ArticleCard key={relatedArticle.slug} article={relatedArticle} />
               ))}

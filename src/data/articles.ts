@@ -2952,10 +2952,48 @@ export function getArticleBySlug(slug: string): Article | undefined {
   return articles.find(article => article.slug === slug);
 }
 
-export function getRelatedArticles(currentSlug: string, limit: number = 3): Article[] {
-  return articles
-    .filter(article => article.slug !== currentSlug)
+const FALLBACK_SLUGS = ['how-to-use-the-thai-tax-calculator', 'thai-tax-brackets-explained'];
+
+const RELATED_MAP: Record<string, [string, string]> = {
+  'how-to-use-the-thai-tax-calculator':        ['thai-tax-brackets-explained',             'understanding-thai-tax-residency'],
+  'understanding-thai-tax-residency':           ['expat-guide-filing-thai-taxes',           'foreign-income-thailand-tax'],
+  'maximizing-tax-deductions-thailand':         ['flat-rate-vs-actual-expenses',            'thai-tax-brackets-explained'],
+  'thai-tax-brackets-explained':                ['maximizing-tax-deductions-thailand',      'how-to-use-the-thai-tax-calculator'],
+  'expat-guide-filing-thai-taxes':              ['understanding-thai-tax-residency',        'how-to-get-thai-tax-id-number'],
+  'foreign-income-thailand-tax':                ['transferring-money-to-thailand-tax-rules','double-tax-agreements-thailand'],
+  'social-security-contributions-thailand':     ['freelancer-tax-guide-thailand',           'maximizing-tax-deductions-thailand'],
+  'freelancer-tax-guide-thailand':              ['withholding-tax-freelancers-thailand',    'flat-rate-vs-actual-expenses'],
+  'flat-rate-vs-actual-expenses':               ['freelancer-tax-guide-thailand',           'maximizing-tax-deductions-thailand'],
+  'pnd94-mid-year-tax-filing':                  ['freelancer-tax-guide-thailand',           'withholding-tax-freelancers-thailand'],
+  'withholding-tax-freelancers-thailand':       ['pnd94-mid-year-tax-filing',               'freelancer-tax-guide-thailand'],
+  'vat-registration-freelancers':               ['freelancer-tax-guide-thailand',           'freelancer-record-keeping-thailand'],
+  'digital-nomad-taxes-thailand':               ['foreign-income-thailand-tax',             'understanding-thai-tax-residency'],
+  'freelancer-record-keeping-thailand':         ['vat-registration-freelancers',            'freelancer-tax-guide-thailand'],
+  'double-tax-agreements-thailand':             ['foreign-income-thailand-tax',             'transferring-money-to-thailand-tax-rules'],
+  'pensioner-retiree-tax-guide-thailand':       ['foreign-pension-income-thailand-tax',     'thailand-retirement-visa-tax-obligations'],
+  'foreign-pension-income-thailand-tax':        ['pensioner-retiree-tax-guide-thailand',    'double-tax-agreements-thailand'],
+  'investment-income-retirees-thailand':        ['pensioner-retiree-tax-guide-thailand',    'foreign-pension-income-thailand-tax'],
+  'thailand-retirement-visa-tax-obligations':   ['pensioner-retiree-tax-guide-thailand',    'ltr-visa-tax-benefits'],
+  'ltr-visa-tax-benefits':                      ['thailand-retirement-visa-tax-obligations','foreign-income-thailand-tax'],
+  'thailand-tax-guide-for-expats':              ['understanding-thai-tax-residency',        'expat-guide-filing-thai-taxes'],
+  'how-to-get-thai-tax-id-number':              ['expat-guide-filing-thai-taxes',           'understanding-thai-tax-residency'],
+  'transferring-money-to-thailand-tax-rules':   ['foreign-income-thailand-tax',             'double-tax-agreements-thailand'],
+  'thailand-tax-for-uk-expats':                 ['double-tax-agreements-thailand',          'foreign-pension-income-thailand-tax'],
+  'rental-income-tax-thailand':                 ['thai-tax-brackets-explained',             'maximizing-tax-deductions-thailand'],
+  'thailand-tax-for-us-expats':                 ['double-tax-agreements-thailand',          'foreign-income-thailand-tax'],
+};
+
+export function getRelatedArticles(currentSlug: string, limit: number = 2): Article[] {
+  const preferredSlugs = RELATED_MAP[currentSlug] ?? ([] as string[]);
+  const fallbacks = FALLBACK_SLUGS.filter(s => s !== currentSlug);
+
+  const orderedSlugs = [...preferredSlugs, ...fallbacks]
+    .filter((s, i, arr) => s !== currentSlug && arr.indexOf(s) === i)
     .slice(0, limit);
+
+  return orderedSlugs
+    .map(s => articles.find(a => a.slug === s))
+    .filter((a): a is Article => a !== undefined);
 }
 
 export function searchArticles(query: string): Article[] {
