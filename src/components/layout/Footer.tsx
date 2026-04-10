@@ -22,10 +22,10 @@ const Footer: React.FC = () => {
             <Link to="/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Calculator
             </Link>
-            <Link to="/articles" className="text-gray-600 hover:text-blue-500 transition-colors">
+            <Link to="/articles/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Articles
             </Link>
-            <Link to="/faq" className="text-gray-600 hover:text-blue-500 transition-colors">
+            <Link to="/faq/" className="text-gray-600 hover:text-blue-500 transition-colors">
               FAQ
             </Link>
           </nav>

@@ -36,15 +36,15 @@ const Header: React.FC = () => {
 
   const navLinks = [
     { path: '/', label: 'Calculator' },
-    { path: '/articles', label: 'Articles' },
-    { path: '/faq', label: 'FAQ' },
+    { path: '/articles/', label: 'Articles' },
+    { path: '/faq/', label: 'FAQ' },
   ];
 
   const isActive = (path: string) => {
     if (path === '/') {
       return location.pathname === '/';
     }
-    return location.pathname.startsWith(path);
+    return location.pathname.startsWith(path.replace(/\/$/, ''));
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {

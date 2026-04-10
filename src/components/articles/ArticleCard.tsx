@@ -9,7 +9,7 @@ interface ArticleCardProps {
 const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   return (
     <Link
-      to={`/articles/${article.slug}`}
+      to={`/articles/${article.slug}/`}
       className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
     >
       <div className="p-5">

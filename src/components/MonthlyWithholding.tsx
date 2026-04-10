@@ -224,6 +224,7 @@ const MonthlyWithholding: React.FC = () => {
           name="description"
           content="Estimate how much Thai income tax should be withheld from your monthly salary. Free calculator for salaried employees and freelancers in Thailand."
         />
+        <link rel="canonical" href="https://mythaitaxes.com/monthly-withholding/" />
       </Helmet>
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
         {/* Header with Home button */}

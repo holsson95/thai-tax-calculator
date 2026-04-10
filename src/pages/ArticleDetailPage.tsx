@@ -13,7 +13,7 @@ const ArticleDetailPage: React.FC = () => {
   const relatedArticles = slug ? getRelatedArticles(slug, 3) : [];
 
   if (!article) {
-    return <Navigate to="/articles" replace />;
+    return <Navigate to="/articles/" replace />;
   }
 
   const canonicalUrl = `${SITE_URL}/articles/${article.slug}/`;
@@ -63,7 +63,7 @@ const ArticleDetailPage: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="mb-6">
-          <Link to="/articles" className="text-blue-500 hover:text-blue-600 text-sm">
+          <Link to="/articles/" className="text-blue-500 hover:text-blue-600 text-sm">
             ← Back to Articles
           </Link>
         </nav>

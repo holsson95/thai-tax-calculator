@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
       <div className="max-w-3xl mx-auto px-4 mb-8">
         <div className="grid md:grid-cols-2 gap-4">
           <Link
-            to="/annual-tax"
+            to="/annual-tax/"
             className="block bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border-2 border-transparent hover:border-blue-500"
           >
             <div className="flex items-start gap-4">
@@ -77,7 +77,7 @@ const HomePage: React.FC = () => {
           </Link>
 
           <Link
-            to="/monthly-withholding"
+            to="/monthly-withholding/"
             className="block bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border-2 border-transparent hover:border-blue-500"
           >
             <div className="flex items-start gap-4">
@@ -127,7 +127,7 @@ const HomePage: React.FC = () => {
                     {category.items.map((item, index) => (
                       <li key={index}>
                         <Link
-                          to="/faq"
+                          to="/faq/"
                           className="flex items-start gap-2 text-sm text-gray-600 hover:text-blue-500 transition-colors"
                         >
                           <span className="text-blue-500 flex-shrink-0 mt-0.5">Q:</span>
@@ -140,7 +140,7 @@ const HomePage: React.FC = () => {
               ))}
             </div>
             <Link
-              to="/faq"
+              to="/faq/"
               className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 mt-4 text-sm font-medium"
             >
               View all FAQ
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
               ))}
             </div>
             <Link
-              to="/articles"
+              to="/articles/"
               className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 mt-4 text-sm font-medium"
             >
               View all articles

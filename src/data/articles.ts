@@ -2669,10 +2669,10 @@ A practical strategy: hold ISA income offshore and transfer capital (original in
     readTime: 9,
     category: 'International',
     sources: [
-      { label: 'HMRC — Statutory Residence Test', url: 'https://www.gov.uk/guidance/the-statutory-residence-test' },
+      { label: 'HMRC — Statutory Residence Test', url: 'https://www.gov.uk/government/publications/rdr3-statutory-residence-test-srt/guidance-note-for-statutory-residence-test-srt-rdr3' },
       { label: 'HMRC — Form P85 (Leave the UK)', url: 'https://www.gov.uk/tell-hmrc-change-of-details/leaving-uk' },
       { label: 'UK-Thailand Double Tax Agreement', url: 'https://www.gov.uk/government/publications/thailand-tax-treaties' },
-      { label: 'HMRC — Non-Resident Landlord Scheme', url: 'https://www.gov.uk/guidance/non-resident-landlords-scheme-guidance-notes' },
+      { label: 'HMRC — Non-Resident Landlord Scheme', url: 'https://www.gov.uk/government/publications/non-resident-landord-guidance-notes-for-letting-agents-and-tenants-non-resident-landlords-scheme-guidance-notes/what-the-non-resident-landlords-scheme-is' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
     ]
   },
@@ -2941,7 +2941,7 @@ Keep a note of the peak balance across all your foreign accounts during the year
     sources: [
       { label: 'IRS — Foreign Earned Income Exclusion', url: 'https://www.irs.gov/individuals/international-taxpayers/foreign-earned-income-exclusion' },
       { label: 'FinCEN — FBAR Filing', url: 'https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html' },
-      { label: 'IRS — Form 8938 (FATCA)', url: 'https://www.irs.gov/businesses/corporations/form-8938-statement-of-specified-foreign-financial-assets' },
+      { label: 'IRS — Form 8938 (FATCA)', url: 'https://www.irs.gov/forms-pubs/about-form-8938' },
       { label: 'US-Thailand Tax Treaty', url: 'https://www.irs.gov/businesses/international-businesses/thailand-tax-treaty-documents' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
     ]

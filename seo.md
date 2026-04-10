@@ -317,7 +317,7 @@ H2: Filing Summary
 
 **Sources to include:**
 - HMRC P85: https://www.gov.uk/tell-hmrc-about-a-change-national-insurance
-- HMRC Statutory Residence Test: https://www.gov.uk/guidance/the-statutory-residence-test
+- HMRC Statutory Residence Test: https://www.gov.uk/government/publications/rdr3-statutory-residence-test-srt/guidance-note-for-statutory-residence-test-srt-rdr3
 - UK-Thailand DTA: https://www.gov.uk/government/publications/thailand-tax-treaties
 
 ---

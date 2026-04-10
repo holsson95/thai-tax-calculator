@@ -107,7 +107,7 @@ const SearchPage: React.FC = () => {
                   ))}
                 </div>
                 <div className="mt-3">
-                  <Link to="/faq" className="text-blue-500 hover:underline text-sm">
+                  <Link to="/faq/" className="text-blue-500 hover:underline text-sm">
                     Browse all FAQs →
                   </Link>
                 </div>
@@ -119,8 +119,8 @@ const SearchPage: React.FC = () => {
               <div className="text-center py-12">
                 <p className="text-gray-500 mb-4">Try a different keyword, or browse:</p>
                 <div className="flex justify-center gap-6">
-                  <Link to="/articles" className="text-blue-500 hover:underline">All Articles</Link>
-                  <Link to="/faq" className="text-blue-500 hover:underline">All FAQs</Link>
+                  <Link to="/articles/" className="text-blue-500 hover:underline">All Articles</Link>
+                  <Link to="/faq/" className="text-blue-500 hover:underline">All FAQs</Link>
                 </div>
               </div>
             )}
