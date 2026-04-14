@@ -12,8 +12,8 @@ export interface Article {
 export const articles: Article[] = [
   {
     slug: 'how-to-use-the-thai-tax-calculator',
-    title: 'How to Use the Thai Tax Calculator: Features, Downloads, and Filing Records',
-    excerpt: 'A complete guide to using this tool — from calculating your annual tax or monthly withholding, to downloading a personal filing packet you can keep for your records.',
+    title: 'How to Use the Thai Tax Calculator',
+    excerpt: 'A complete guide to calculating your annual tax or monthly withholding, downloading a personal filing packet, and keeping records for future reference.',
     content: `
 ## What This Calculator Does
 
@@ -131,8 +131,8 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
   },
   {
     slug: 'understanding-thai-tax-residency',
-    title: 'Understanding Thai Tax Residency: The 180-Day Rule',
-    excerpt: 'Learn how Thailand determines your tax residency status and what it means for your tax obligations.',
+    title: 'Thai Tax Residency: The 180-Day Rule Explained',
+    excerpt: 'Learn how Thailand determines your tax residency status, what the 180-day rule means in practice, and how it affects your income tax obligations as an expat.',
     content: `
 ## What is Tax Residency?
 
@@ -176,7 +176,7 @@ Thailand uses a simple test to determine tax residency: if you spend 180 days or
   {
     slug: 'maximizing-tax-deductions-thailand',
     title: 'Maximizing Your Tax Deductions in Thailand',
-    excerpt: 'A comprehensive guide to the allowances and deductions available to reduce your Thai tax liability.',
+    excerpt: 'A comprehensive guide to the allowances, deductions, and personal tax credits available to legally reduce your Thai income tax liability each year.',
     content: `
 ## Personal Allowances
 
@@ -222,8 +222,8 @@ Interest on housing loans is deductible up to 100,000 THB annually.
   },
   {
     slug: 'thai-tax-brackets-explained',
-    title: 'Thai Income Tax Rates and Brackets 2025/2026: Complete Guide',
-    excerpt: 'Understand how progressive tax rates work in Thailand and calculate your effective tax rate.',
+    title: 'Thai Income Tax Rates and Brackets 2025/2026',
+    excerpt: 'Understand how Thailand\'s progressive tax rates work, what each bracket means for your salary, and how to calculate your effective tax rate.',
     content: `
 ## Progressive Tax System
 
@@ -272,8 +272,8 @@ For a taxable income of 600,000 THB:
   },
   {
     slug: 'expat-guide-filing-thai-taxes',
-    title: 'How to File a Thai Tax Return as an Expat: Step-by-Step Guide (PND 90/91)',
-    excerpt: 'Step-by-step guide for expats on how to file annual tax returns in Thailand.',
+    title: 'Thai Tax Return for Expats: PND 90/91 Guide',
+    excerpt: 'A step-by-step guide for expats on filing a Thai annual tax return using PND 90 or PND 91 — including deadlines, required documents, and how to file online.',
     content: `
 ## Who Must File?
 
@@ -332,8 +332,8 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
   },
   {
     slug: 'foreign-income-thailand-tax',
-    title: 'Is Foreign Income Taxable in Thailand? The 2024 Remittance Rule Explained',
-    excerpt: 'Understanding when and how foreign-sourced income is taxed in Thailand.',
+    title: 'Foreign Income in Thailand: When Is It Taxable?',
+    excerpt: 'Learn when foreign-sourced income is taxable in Thailand under the 2024 remittance rule, and how to determine what you need to declare and pay tax on.',
     content: `
 ## The Remittance Rule
 
@@ -396,8 +396,8 @@ Thailand has tax treaties with many countries that may:
   },
   {
     slug: 'social-security-contributions-thailand',
-    title: 'Social Security Contributions in Thailand Explained',
-    excerpt: 'Everything you need to know about Thai social security contributions and benefits.',
+    title: 'Thai Social Security Contributions Explained',
+    excerpt: 'Everything you need to know about Thai social security contributions — how much you pay, what benefits you receive, and how it interacts with your income tax.',
     content: `
 ## Overview
 
@@ -474,8 +474,8 @@ Social security contributions are:
   },
   {
     slug: 'freelancer-tax-guide-thailand',
-    title: 'Freelancer Tax Guide: Navigating Thai Taxes as a Self-Employed Professional',
-    excerpt: 'Complete guide to understanding your tax obligations as a freelancer or independent contractor in Thailand.',
+    title: 'Thai Tax Guide for Freelancers',
+    excerpt: 'Complete guide to Thai tax as a freelancer — income types, deductions, withholding tax, PND filing deadlines, and tips for staying compliant in Thailand.',
     content: `
 ## Freelancing in Thailand
 
@@ -545,8 +545,8 @@ You have two options for expense deductions:
   },
   {
     slug: 'flat-rate-vs-actual-expenses',
-    title: 'Flat-Rate vs Actual Expenses: Which Deduction Method is Right for You?',
-    excerpt: 'Learn how to choose between flat-rate and actual expense deductions to minimize your Thai tax liability.',
+    title: 'Flat-Rate vs Actual Expenses: Which Is Better?',
+    excerpt: 'Learn how to choose between Thailand\'s flat-rate and actual expense deduction methods to legally minimise your tax bill as a freelancer or sole proprietor.',
     content: `
 ## Understanding Your Options
 
@@ -639,8 +639,8 @@ Our calculator automatically computes both methods and shows you which option re
   },
   {
     slug: 'pnd94-mid-year-tax-filing',
-    title: 'PND94 Explained: Mid-Year Tax Filing for Freelancers',
-    excerpt: 'Understanding when and how to file your PND94 mid-year tax return as a self-employed individual in Thailand.',
+    title: 'PND 94: Mid-Year Tax Filing for Thai Freelancers',
+    excerpt: 'Learn when and how to file your PND 94 mid-year return as a self-employed person in Thailand — deadlines, how to calculate your liability, and common mistakes.',
     content: `
 ## What is PND94?
 
@@ -713,8 +713,8 @@ When you file PND90 (annual return):
   },
   {
     slug: 'withholding-tax-freelancers-thailand',
-    title: 'Withholding Tax for Freelancers: Getting Credit for Tax Already Paid',
-    excerpt: 'How to track, document, and claim credit for withholding tax deducted by your Thai clients.',
+    title: 'Withholding Tax for Thai Freelancers',
+    excerpt: 'How to track, document, and claim credit for withholding tax deducted by your Thai clients, reducing what you owe when you file your annual return.',
     content: `
 ## Understanding Withholding Tax
 
@@ -809,7 +809,7 @@ Foreign clients typically don't withhold Thai tax. You must:
   },
   {
     slug: 'vat-registration-freelancers',
-    title: 'VAT Registration for Freelancers: When 1.8 Million THB Changes Everything',
+    title: 'VAT Registration for Freelancers in Thailand',
     excerpt: 'Understanding VAT registration requirements, thresholds, and implications for high-earning freelancers in Thailand.',
     content: `
 ## VAT Basics
@@ -905,8 +905,8 @@ Consider hiring an accountant if:
   },
   {
     slug: 'digital-nomad-taxes-thailand',
-    title: 'Digital Nomad Taxes in Thailand: Working Remotely for Foreign Clients',
-    excerpt: 'Tax considerations for digital nomads and remote workers earning foreign income while living in Thailand.',
+    title: 'Thai Taxes for Digital Nomads and Remote Workers',
+    excerpt: 'Tax guide for digital nomads in Thailand — covering residency rules, what foreign income is taxable, and how remote workers can stay compliant.',
     content: `
 ## The Digital Nomad Reality
 
@@ -1003,8 +1003,8 @@ Digital nomad taxation is evolving. Thailand is increasing enforcement on foreig
   },
   {
     slug: 'freelancer-record-keeping-thailand',
-    title: 'Record Keeping for Thai Freelancers: Stay Organized, Stay Compliant',
-    excerpt: 'Essential record-keeping practices for freelancers to maximize deductions and survive a tax audit.',
+    title: 'Record Keeping for Thai Freelancers',
+    excerpt: 'Essential record-keeping for Thai freelancers — what to save, how long to keep it, and how good records help you claim more deductions and handle a tax audit.',
     content: `
 ## Why Records Matter
 
@@ -1135,7 +1135,7 @@ If the Revenue Department requests documentation:
   },
   {
     slug: 'double-tax-agreements-thailand',
-    title: 'Double Tax Agreements: How Tax Treaties Protect Expats in Thailand',
+    title: 'Thai Double Tax Treaties: Protecting Expats',
     excerpt: 'Understand how Thailand\'s 61 double tax agreements work, who can claim foreign tax credits, and how to avoid paying tax twice on the same income.',
     content: `
 ## What is a Double Tax Agreement (DTA)?
@@ -1277,8 +1277,8 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
   },
   {
     slug: 'pensioner-retiree-tax-guide-thailand',
-    title: 'Retiring in Thailand: A Complete Tax Guide for Pensioners and Retirees',
-    excerpt: 'A comprehensive guide to Thai tax obligations for retirees — including the valuable 65+ income exemption, how foreign pensions are treated, what you must file, and how to legally minimise your tax.',
+    title: 'Retiring in Thailand: Tax Guide for Pensioners',
+    excerpt: 'A complete tax guide for retirees in Thailand — the 65+ income exemption, how foreign pensions are treated, filing obligations, and how to reduce your tax bill.',
     content: `
 ## Introduction
 
@@ -1477,8 +1477,8 @@ For complex situations — particularly those involving multiple countries, gove
   },
   {
     slug: 'foreign-pension-income-thailand-tax',
-    title: 'How Foreign Pensions Are Taxed in Thailand: UK, US, and Australian Pensions Explained',
-    excerpt: 'A country-by-country guide to how UK State Pension, US Social Security, Australian superannuation, and other overseas pensions are treated when you retire in Thailand.',
+    title: 'How Foreign Pensions Are Taxed in Thailand',
+    excerpt: 'How UK State Pension, US Social Security, Australian superannuation, and other foreign pensions are taxed when you retire in Thailand.',
     content: `
 ## The Core Question for Expat Retirees
 
@@ -1665,8 +1665,8 @@ The cost of advice is typically far less than the cost of errors or missed credi
   },
   {
     slug: 'investment-income-retirees-thailand',
-    title: 'Investment Income in Thailand: Tax on Dividends, Interest, and Capital Gains',
-    excerpt: 'How Thai tax applies to bank interest, dividends, and capital gains — from Thai and foreign sources — and what retirees and investors need to know to plan effectively.',
+    title: 'Investment Income Tax in Thailand: Retiree Guide',
+    excerpt: 'How Thai tax applies to bank interest, dividends, and capital gains from Thai and foreign sources — what retirees and investors need to know.',
     content: `
 ## Why Investment Income Matters for Retirees
 
@@ -1870,8 +1870,8 @@ WHT = withholding tax
   },
   {
     slug: 'thailand-retirement-visa-tax-obligations',
-    title: 'Thai Retirement Visa and Tax: What Non-OA Visa Holders Must Know',
-    excerpt: 'Holding a Thai retirement visa (Non-OA) does not exempt you from tax. Here\'s what retirees on any visa type need to know about their Thai tax obligations — and how the LTR visa is different.',
+    title: 'Thai Retirement Visa and Tax Obligations',
+    excerpt: 'Holding a Thai retirement visa does not exempt you from tax. Here\'s what retirees need to know about Thai tax obligations and how the LTR visa differs.',
     content: `
 ## A Common Misconception
 
@@ -2050,8 +2050,8 @@ If you decide to leave Thailand permanently, or if you leave for an extended per
   },
   {
     slug: 'ltr-visa-tax-benefits',
-    title: 'LTR Visa Tax Benefits: Thailand\'s Tax-Advantaged Residency for Expats',
-    excerpt: 'Discover how Thailand\'s Long-Term Resident visa offers significant tax benefits including foreign income exemptions and reduced tax rates.',
+    title: 'LTR Visa Tax Benefits for Expats in Thailand',
+    excerpt: 'How Thailand\'s Long-Term Resident visa offers significant tax benefits — including foreign income exemptions and a reduced flat tax rate for qualifying expats.',
     content: `
 ## What is the LTR Visa?
 
@@ -2165,7 +2165,7 @@ The LTR visa is particularly valuable for:
   },
   {
     slug: 'thailand-tax-guide-for-expats',
-    title: 'Thailand Tax for Expats: The Complete Guide (2025)',
+    title: 'Thailand Tax for Expats: Complete Guide (2025)',
     excerpt: 'Everything foreigners need to know about Thai income tax — who pays, what income is taxed, how to file, and how to avoid double taxation.',
     content: `
 ## Do Foreigners Pay Tax in Thailand?
@@ -2310,7 +2310,7 @@ US citizens face the unique challenge of US citizenship-based taxation regardles
   },
   {
     slug: 'how-to-get-thai-tax-id-number',
-    title: 'How to Get a Thai Tax ID Number (TIN): Step-by-Step Guide',
+    title: 'How to Get a Thai Tax ID Number (TIN)',
     excerpt: 'A practical guide to obtaining your Thai Tax Identification Number — what it is, who needs one, what documents to bring, and what to do after you have it.',
     content: `
 ## What Is a Thai Tax Identification Number?
@@ -2426,8 +2426,8 @@ Return to the Revenue Department district office with your passport. They can lo
   },
   {
     slug: 'transferring-money-to-thailand-tax-rules',
-    title: 'Transferring Money to Thailand: What\'s Taxable Under the 2024 Rules',
-    excerpt: 'The 2024 rule change affects every expat who remits foreign income to Thailand. This guide explains what is taxable, what is not, and how to manage your transfers.',
+    title: 'Transferring Money to Thailand: 2024 Tax Rules',
+    excerpt: 'The 2024 rule change affects expats remitting foreign income to Thailand. Learn what is taxable, what is not, and how to manage transfers to stay compliant.',
     content: `
 ## The Old Rule vs. the 2024 Change
 
@@ -2543,7 +2543,7 @@ There is no formal registration process for declaring capital transfers. The doc
   {
     slug: 'thailand-tax-for-uk-expats',
     title: 'Thailand Tax for UK Expats: A Complete Guide',
-    excerpt: 'UK nationals living in Thailand face tax obligations in both countries. This guide covers UK residency, the UK-Thailand Double Tax Agreement, pensions, rental income, and what to do before you leave.',
+    excerpt: 'UK nationals in Thailand face tax in both countries — covering the UK-Thailand tax treaty, pensions, rental income, and residency rules for expats.',
     content: `
 ## The Dual Tax Position for UK Citizens
 
@@ -2679,7 +2679,7 @@ A practical strategy: hold ISA income offshore and transfer capital (original in
   {
     slug: 'rental-income-tax-thailand',
     title: 'Rental Income Tax in Thailand: A Practical Guide',
-    excerpt: 'Rental income from Thai property is taxable for both residents and non-residents. This guide covers how the tax is calculated, the 30% flat-rate deduction, withholding from corporate tenants, and tips for landlords.',
+    excerpt: 'Rental income from Thai property is taxable for all owners. Learn how tax is calculated, the 30% expense deduction, and withholding rules for corporate tenants.',
     content: `
 ## Is Rental Income Taxable in Thailand?
 
@@ -2797,8 +2797,8 @@ If you are a Thai tax resident and own rental property abroad:
   },
   {
     slug: 'thailand-tax-for-us-expats',
-    title: 'Thailand Tax for US Expats and Americans: What You Need to Know',
-    excerpt: 'US citizens in Thailand face two overlapping tax systems. This guide covers Thai tax obligations, US citizenship-based taxation, FBAR, FATCA, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.',
+    title: 'Thailand Tax for US Expats: A Complete Guide',
+    excerpt: 'US citizens in Thailand navigate two tax systems. This covers Thai obligations, FBAR, FATCA, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.',
     content: `
 ## The Unique Challenge for US Citizens
 

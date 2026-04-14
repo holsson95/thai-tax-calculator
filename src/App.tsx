@@ -27,6 +27,7 @@ const App: React.FC = () => {
                 <link rel="canonical" href="https://mythaitaxes.com/annual-tax/" />
               </Helmet>
               <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
+                <h1 className="sr-only">Annual Tax Calculator</h1>
                 <div className="flex justify-between items-center mb-6">
                   <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
                 </div>

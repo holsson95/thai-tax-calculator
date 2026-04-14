@@ -227,6 +227,7 @@ const MonthlyWithholding: React.FC = () => {
         <link rel="canonical" href="https://mythaitaxes.com/monthly-withholding/" />
       </Helmet>
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
+        <h1 className="sr-only">Monthly Tax Withholding Estimator</h1>
         {/* Header with Home button */}
         <div className="flex justify-between items-center mb-6">
           <Link

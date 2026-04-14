@@ -541,6 +541,7 @@ const AnnualTaxWizard: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center py-8 px-4">
       <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
+        <h1 className="sr-only">Annual Tax Calculator</h1>
         {/* Header with Home button */}
         <div className="flex justify-between items-center mb-6">
           <button
