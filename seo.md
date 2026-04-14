@@ -490,7 +490,7 @@ H2: Summary: Who Files What
 
 **Sources to include:**
 - IRS FEIE: https://www.irs.gov/individuals/international-taxpayers/foreign-earned-income-exclusion
-- FBAR filing: https://bsaefiling.fincen.treas.gov/
+- FBAR filing: https://bsaefiling.fincen.gov/file/fbar
 - US-Thailand DTA: https://www.irs.gov/businesses/international-businesses/thailand-tax-treaty-documents
 
 ---

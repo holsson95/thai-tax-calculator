@@ -126,7 +126,7 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
     readTime: 7,
     category: 'Guide',
     sources: [
-      { label: 'Thai Revenue Department (rd.go.th)', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department (rd.go.th)', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -170,7 +170,7 @@ Thailand uses a simple test to determine tax residency: if you spend 180 days or
     readTime: 5,
     category: 'Tax Basics',
     sources: [
-      { label: 'Thai Revenue Department — Tax Residency & Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Tax Residency & Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -217,7 +217,7 @@ Interest on housing loans is deductible up to 100,000 THB annually.
     readTime: 7,
     category: 'Deductions',
     sources: [
-      { label: 'Thai Revenue Department — Deductions & Allowances', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Deductions & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -267,7 +267,7 @@ For a taxable income of 600,000 THB:
     readTime: 4,
     category: 'Tax Basics',
     sources: [
-      { label: 'Thai Revenue Department — Personal Income Tax Rates', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax Rates', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -327,7 +327,7 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
     readTime: 6,
     category: 'Filing',
     sources: [
-      { label: 'Thai Revenue Department — Filing & Forms (PND 90/91)', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Filing & Forms (PND 90/91)', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -391,7 +391,7 @@ Thailand has tax treaties with many countries that may:
     readTime: 8,
     category: 'International',
     sources: [
-      { label: 'Thai Revenue Department — Foreign Income & Tax Treaties', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Foreign Income & Tax Treaties', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -469,7 +469,7 @@ Social security contributions are:
     category: 'Employment',
     sources: [
       { label: 'Social Security Office of Thailand (sso.go.th)', url: 'https://www.sso.go.th/' },
-      { label: 'Thai Revenue Department — Social Security Deduction', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Social Security Deduction', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -540,7 +540,7 @@ You have two options for expense deductions:
     readTime: 8,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — Revenue Code Section 40', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Revenue Code Section 40', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -634,7 +634,7 @@ Our calculator automatically computes both methods and shows you which option re
     readTime: 7,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — Expense Deductions for Self-Employed', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Expense Deductions for Self-Employed', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -708,7 +708,7 @@ When you file PND90 (annual return):
     readTime: 6,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — PND 94 Form & Mid-Year Filing', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — PND 94 Form & Mid-Year Filing', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -804,7 +804,7 @@ Foreign clients typically don't withhold Thai tax. You must:
     readTime: 7,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — Withholding Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Withholding Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -900,7 +900,7 @@ Consider hiring an accountant if:
     readTime: 8,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — VAT Registration', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — VAT Registration', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -998,7 +998,7 @@ Digital nomad taxation is evolving. Thailand is increasing enforcement on foreig
     readTime: 9,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — Foreign Income & Remittance Rules', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Foreign Income & Remittance Rules', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -1130,7 +1130,7 @@ If the Revenue Department requests documentation:
     readTime: 8,
     category: 'Freelance',
     sources: [
-      { label: 'Thai Revenue Department — Record Keeping Requirements', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Record Keeping Requirements', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -1272,7 +1272,7 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
     category: 'International',
     sources: [
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
-      { label: 'Thai Revenue Department — Foreign Tax Credits & Treaty Relief', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Foreign Tax Credits & Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -1470,8 +1470,8 @@ For complex situations — particularly those involving multiple countries, gove
     readTime: 10,
     category: 'Retirement',
     sources: [
-      { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/' },
-      { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
     ]
   },
@@ -1659,7 +1659,7 @@ The cost of advice is typically far less than the cost of errors or missed credi
     category: 'Retirement',
     sources: [
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
-      { label: 'Thai Revenue Department — Foreign Income & Tax Treaty Relief', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Foreign Income & Tax Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
     ]
   },
@@ -1864,7 +1864,7 @@ WHT = withholding tax
     readTime: 9,
     category: 'Retirement',
     sources: [
-      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Stock Exchange of Thailand (set.or.th)', url: 'https://www.set.or.th/en/home' },
     ]
   },
@@ -2044,7 +2044,7 @@ If you decide to leave Thailand permanently, or if you leave for an extended per
     readTime: 8,
     category: 'Retirement',
     sources: [
-      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — Long-Term Resident (LTR) Visa', url: 'https://ltr.boi.go.th/' },
     ]
   },
@@ -2160,7 +2160,7 @@ The LTR visa is particularly valuable for:
     category: 'International',
     sources: [
       { label: 'BOI — Long-Term Resident (LTR) Visa Portal', url: 'https://ltr.boi.go.th/' },
-      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -2305,7 +2305,7 @@ US citizens face the unique challenge of US citizenship-based taxation regardles
     category: 'International',
     sources: [
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
-      { label: 'Thai Revenue Code Section 41 — Tax Residency', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Code Section 41 — Tax Residency', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -2421,7 +2421,7 @@ Return to the Revenue Department district office with your passport. They can lo
     category: 'Filing',
     sources: [
       { label: 'Thai Revenue Department — TIN Registration', url: 'https://www.rd.go.th/english/6044.html' },
-      { label: 'Thai Revenue Department — District Offices', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — District Offices', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -2536,7 +2536,7 @@ There is no formal registration process for declaring capital transfers. The doc
     readTime: 7,
     category: 'International',
     sources: [
-      { label: 'Revenue Department Circular P.161/2566', url: 'https://www.rd.go.th/english/' },
+      { label: 'Revenue Department Circular P.161/2566', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
     ]
   },
@@ -2670,7 +2670,7 @@ A practical strategy: hold ISA income offshore and transfer capital (original in
     category: 'International',
     sources: [
       { label: 'HMRC — Statutory Residence Test', url: 'https://www.gov.uk/government/publications/rdr3-statutory-residence-test-srt/guidance-note-for-statutory-residence-test-srt-rdr3' },
-      { label: 'HMRC — Form P85 (Leave the UK)', url: 'https://www.gov.uk/tell-hmrc-change-of-details/leaving-uk' },
+      { label: 'HMRC — Form P85 (Leave the UK)', url: 'https://www.gov.uk/tell-hmrc-change-of-details' },
       { label: 'UK-Thailand Double Tax Agreement', url: 'https://www.gov.uk/government/publications/thailand-tax-treaties' },
       { label: 'HMRC — Non-Resident Landlord Scheme', url: 'https://www.gov.uk/government/publications/non-resident-landord-guidance-notes-for-letting-agents-and-tenants-non-resident-landlords-scheme-guidance-notes/what-the-non-resident-landlords-scheme-is' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
@@ -2792,7 +2792,7 @@ If you are a Thai tax resident and own rental property abroad:
     category: 'Tax Basics',
     sources: [
       { label: 'Thai Revenue Code Section 40(5) — Rental Income', url: 'https://www.rd.go.th/english/6045.html' },
-      { label: 'Thai Revenue Department — Personal Income Tax Guide', url: 'https://www.rd.go.th/english/' },
+      { label: 'Thai Revenue Department — Personal Income Tax Guide', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
   {
@@ -2940,7 +2940,7 @@ Keep a note of the peak balance across all your foreign accounts during the year
     category: 'International',
     sources: [
       { label: 'IRS — Foreign Earned Income Exclusion', url: 'https://www.irs.gov/individuals/international-taxpayers/foreign-earned-income-exclusion' },
-      { label: 'FinCEN — FBAR Filing', url: 'https://bsaefiling.fincen.treas.gov/NoRegFBARFiler.html' },
+      { label: 'FinCEN — FBAR Filing', url: 'https://bsaefiling.fincen.gov/file/fbar' },
       { label: 'IRS — Form 8938 (FATCA)', url: 'https://www.irs.gov/forms-pubs/about-form-8938' },
       { label: 'US-Thailand Tax Treaty', url: 'https://www.irs.gov/businesses/international-businesses/thailand-tax-treaty-documents' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
