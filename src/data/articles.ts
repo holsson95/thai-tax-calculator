@@ -2796,6 +2796,228 @@ If you are a Thai tax resident and own rental property abroad:
     ]
   },
   {
+    slug: 'dtv-visa-thailand-tax-guide',
+    title: 'DTV Visa and Thai Tax: What You Actually Owe',
+    excerpt: 'The Destination Thailand Visa creates real tax questions — especially around the 180-day rule. Here\'s what Soft Power and Digital Nomad DTV holders need to know about Thai income tax.',
+    content: `
+## What is the DTV?
+
+The Destination Thailand Visa (DTV) is a long-stay visa launched in 2024 designed for people who want to spend extended time in Thailand without committing to permanent residency. It is valid for five years and allows stays of up to 180 days per entry.
+
+There are two DTV subtypes:
+
+### Soft Power DTV
+For people participating in Thailand's approved cultural and lifestyle activities:
+- Muay Thai training
+- Thai cooking classes
+- Traditional arts, crafts, or music
+- Thai language study
+- Wellness and yoga programs
+- Certain sports and creative activities
+
+Applicants must show evidence of enrollment in an approved program and demonstrate sufficient funds (generally 500,000 THB or equivalent).
+
+### Digital Nomad DTV
+For remote workers and freelancers employed by or contracting for **overseas companies**. The key requirement is that your work and income must originate outside Thailand — you are not employed by a Thai entity and not performing work *for* Thai clients or businesses.
+
+---
+
+## The Core Tax Question
+
+A common misconception among DTV holders is that the visa itself resolves your tax obligations — that because you're on a "tourist-style" long-stay visa, Thai tax simply doesn't apply. This is incorrect.
+
+**Your visa type does not determine your tax residency.** Your tax obligations in Thailand are determined by how many days you spend in the country in a given calendar year.
+
+---
+
+## The 180-Day Rule and What It Means for DTV Holders
+
+Thailand's personal income tax system is based on one straightforward test:
+
+> **If you spend 180 days or more in Thailand during a calendar year (January–December), you are a Thai tax resident for that year.**
+
+Days do not need to be consecutive. Partial days typically count as full days. The 180-day threshold is per calendar year, not per visa period.
+
+### The DTV and the 180-Day Overlap
+
+The DTV allows up to **180 days per entry** — a number that is not a coincidence, and not a tax loophole. It is a visa duration limit, not a tax exemption.
+
+This creates a practical tension:
+
+| DTV Usage Pattern | Tax Residency Outcome |
+|---|---|
+| Enter once, stay fewer than 180 days, leave | **Non-resident** — no Thai tax obligation on foreign income |
+| Enter twice in one year, total days in Thailand ≥ 180 | **Tax resident** — Thai tax obligations apply |
+| Stay close to 180 days, exit and re-enter | Depends on **total days in the calendar year**, not per entry |
+
+Many DTV holders are surprised to find they have crossed the 180-day threshold without realising it, particularly those who treat the DTV as a home base and make short trips abroad.
+
+---
+
+## Soft Power DTV: Tax Implications
+
+If you hold a Soft Power DTV and are primarily participating in cultural activities, your situation depends on:
+
+1. **Your income source** — Are you earning anything while in Thailand?
+2. **Your residency status** — Have you crossed 180 days in the calendar year?
+
+### If you earn no income while in Thailand
+If you are funded by savings, a partner's income, or other passive sources and have no active income, your Thai tax obligation is minimal or nil. You would not typically need to file a Thai tax return unless you have taxable Thai-sourced income (e.g. interest from a Thai bank account above a small threshold).
+
+### If you earn income and become tax resident
+Once you cross 180 days and become a Thai tax resident, you are liable for tax on:
+
+- **Thai-sourced income** (any income generated from work or services performed in Thailand)
+- **Foreign income remitted to Thailand** (from January 2024, all foreign income you bring into Thailand is taxable regardless of when it was earned)
+
+### A grey area: working while on Soft Power DTV
+The Soft Power DTV does not include a work permit. Performing work services for Thai or foreign clients while on this visa is technically not authorised. However, **tax obligations exist independently of work permit status** — if you earn income and remit it to Thailand, it is assessable income under Thai law regardless of your visa category.
+
+---
+
+## Digital Nomad DTV: Tax Implications
+
+The Digital Nomad DTV has a specific profile in mind: a person working remotely for a foreign employer or clients, earning in a foreign currency, and bringing some of that money into Thailand to cover living expenses.
+
+### The key variable: days in Thailand
+
+**Under 180 days in a calendar year (non-resident):**
+- You are only taxed on income that is **sourced in Thailand**
+- Foreign income — salary, freelance payments, dividends from overseas — is generally not taxable in Thailand
+- Most Digital Nomad DTV holders who manage their stays carefully fall into this category
+
+**180 days or more in a calendar year (tax resident):**
+- Thai-sourced income is taxable
+- **Foreign income remitted to Thailand becomes taxable** under the 2024 rule change
+- This includes money transferred from a foreign bank account, ATM withdrawals in Thailand from a foreign card, and potentially credit card spend charged to a foreign account
+
+### The 2024 Foreign Income Rule Change
+
+Prior to 2024, the rule was that foreign income was only taxable if remitted to Thailand in the *same year* it was earned. This created a planning opportunity: you could keep savings offshore and bring them in the following year tax-free.
+
+**From 1 January 2024, this exemption was removed.** All foreign income remitted to Thailand is now assessable income for Thai tax residents, regardless of when it was earned.
+
+This change significantly affects long-stay Digital Nomad DTV holders who become Thai tax residents.
+
+---
+
+## What Counts as "Remittance"?
+
+For tax residents, understanding what constitutes a taxable remittance matters:
+
+| Action | Treated as Remittance? |
+|---|---|
+| Bank transfer from foreign account to Thai bank account | Yes |
+| ATM withdrawal in Thailand using a foreign debit card | Yes |
+| Receiving salary into a Thai bank account | Yes |
+| Foreign credit card purchases made in Thailand | Generally yes (Revenue Department guidance treats this as remittance) |
+| Paying for Thai accommodation directly from overseas | Generally no — payment did not enter Thailand |
+
+The safer assumption is that **money you use or access in Thailand from foreign sources counts as remittance**.
+
+---
+
+## Do DTV Holders Have to File a Tax Return?
+
+Filing obligations depend on:
+
+1. **Whether you are tax resident** (180+ days)
+2. **Whether your assessable income exceeds the filing threshold**
+
+### Filing thresholds (2024):
+- Single filer: assessable income exceeding **120,000 THB** per year
+- Married filer: assessable income exceeding **220,000 THB** per year
+
+If you are a tax resident and your remitted foreign income (plus any Thai-sourced income) exceeds these thresholds, you are required to file a **PND 90** return by **31 March** of the following year.
+
+**Non-residents with no Thai-sourced income typically have no filing obligation.**
+
+---
+
+## What Happens if You Don't Pay or File?
+
+Thailand's Revenue Department has historically focused enforcement on higher-income residents and those with clear Thai-sourced income. However, enforcement is increasing, particularly around foreign income remittance following the 2024 rule change.
+
+Potential consequences of non-compliance:
+
+| Situation | Consequence |
+|---|---|
+| Filed late | Surcharge of 1.5% per month on unpaid tax |
+| Failed to file | Penalty of up to 200% of tax owed (in egregious cases) |
+| Underpaid tax | Interest of 1.5% per month on the shortfall |
+| Criminal non-compliance | Fines and, in extreme cases, prosecution |
+
+For most DTV holders with modest foreign income and careful day counting, enforcement risk is low. But the obligations are real — and claiming ignorance of the rules is not a recognised defence under Thai tax law.
+
+### Practical risk factors that raise enforcement probability:
+- Holding a Thai bank account with large, regular foreign transfers
+- Having a Thai Tax ID number (TIN) on file with the Revenue Department
+- Owning Thai property (triggers Revenue Department attention)
+- Running any Thai-registered business activity
+
+---
+
+## Does the DTV Offer Any Tax Exemptions?
+
+**No.** The DTV provides no preferential tax treatment. It is not equivalent to the [LTR visa](/articles/ltr-visa-tax-benefits), which explicitly exempts qualifying holders from Thai tax on foreign income.
+
+If you want a visa that comes with a built-in tax benefit for foreign income, the LTR Work-from-Thailand category is worth investigating — though it has significantly higher income and asset requirements.
+
+---
+
+## Comparison: DTV vs. LTR Tax Treatment
+
+| | DTV (Both Types) | LTR Work-from-Thailand |
+|---|---|---|
+| Foreign income tax exemption | No | Yes (full exemption) |
+| Needs work permit for remote work | Not included | Included |
+| Tax residency trigger | 180 days | 180 days (but moot — foreign income exempt) |
+| Eligibility | Broad | USD 80,000+ income, 2-year history |
+| Cost | ~10,000 THB | ~50,000 THB application fee |
+
+---
+
+## Practical Guidance for DTV Holders
+
+### Track your days carefully
+Keep a personal log of entry and exit dates. Immigration stamps are not always reliable for counting — carry a personal record. Apps like TravelSpend or a simple spreadsheet work well.
+
+### Know your threshold
+If you are approaching 180 days, you face a choice: either extend your stay and accept tax residency obligations, or exit Thailand and reset the count before the calendar year ends.
+
+### Understand your income picture
+If you are a non-resident for the full year, your foreign income is generally not taxable in Thailand. If you become a tax resident, total remittances to Thailand need to be tracked and reported.
+
+### Get a Thai Tax ID if you plan to file
+If you become tax resident and need to file, you will need a Thai Tax ID number. These are issued at the local Revenue Department office. [Learn how to get one here](/articles/how-to-get-thai-tax-id-number).
+
+### Consider professional advice for complex situations
+If you earn significant foreign income, have income from multiple countries, or are uncertain about your residency count, a Thai tax advisor familiar with expat situations is worth consulting. The cost is typically far less than a penalty assessment.
+
+---
+
+## Summary
+
+| Situation | Tax Obligation |
+|---|---|
+| DTV holder, under 180 days in Thailand | No Thai tax on foreign income; only Thai-sourced income is taxable |
+| DTV holder, 180+ days, no income remitted | Minimal — but file if assessable Thai income exceeds threshold |
+| DTV holder, 180+ days, remitting foreign income | Tax resident — foreign remittances are assessable income |
+| DTV holder, not paying despite obligations | Risk of penalties, surcharges, and (in serious cases) prosecution |
+
+The DTV is an excellent long-stay option for many people — but it is not a tax shelter. Manage your day count and remittances carefully, and you can often minimise or eliminate Thai tax obligations legally. Cross 180 days without planning, and your tax position changes materially.
+    `,
+    publishedAt: '2026-04-15',
+    readTime: 12,
+    category: 'International',
+    sources: [
+      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
+      { label: 'Thai Revenue Department — Tax Residency Rules', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Ministry of Foreign Affairs — Destination Thailand Visa', url: 'https://www.mfa.go.th/en/page/destination-thailand-visa' },
+      { label: 'Thai Revenue Department — 2024 Foreign Income Rule (Departmental Instruction Paw 161/2566)', url: 'https://www.rd.go.th/english/index-eng.html' },
+    ]
+  },
+  {
     slug: 'thailand-tax-for-us-expats',
     title: 'Thailand Tax for US Expats: A Complete Guide',
     excerpt: 'US citizens in Thailand navigate two tax systems. This covers Thai obligations, FBAR, FATCA, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.',
@@ -2967,14 +3189,15 @@ const RELATED_MAP: Record<string, [string, string]> = {
   'pnd94-mid-year-tax-filing':                  ['freelancer-tax-guide-thailand',           'withholding-tax-freelancers-thailand'],
   'withholding-tax-freelancers-thailand':       ['pnd94-mid-year-tax-filing',               'freelancer-tax-guide-thailand'],
   'vat-registration-freelancers':               ['freelancer-tax-guide-thailand',           'freelancer-record-keeping-thailand'],
-  'digital-nomad-taxes-thailand':               ['foreign-income-thailand-tax',             'understanding-thai-tax-residency'],
+  'digital-nomad-taxes-thailand':               ['dtv-visa-thailand-tax-guide',             'foreign-income-thailand-tax'],
   'freelancer-record-keeping-thailand':         ['vat-registration-freelancers',            'freelancer-tax-guide-thailand'],
   'double-tax-agreements-thailand':             ['foreign-income-thailand-tax',             'transferring-money-to-thailand-tax-rules'],
   'pensioner-retiree-tax-guide-thailand':       ['foreign-pension-income-thailand-tax',     'thailand-retirement-visa-tax-obligations'],
   'foreign-pension-income-thailand-tax':        ['pensioner-retiree-tax-guide-thailand',    'double-tax-agreements-thailand'],
   'investment-income-retirees-thailand':        ['pensioner-retiree-tax-guide-thailand',    'foreign-pension-income-thailand-tax'],
   'thailand-retirement-visa-tax-obligations':   ['pensioner-retiree-tax-guide-thailand',    'ltr-visa-tax-benefits'],
-  'ltr-visa-tax-benefits':                      ['thailand-retirement-visa-tax-obligations','foreign-income-thailand-tax'],
+  'ltr-visa-tax-benefits':                      ['dtv-visa-thailand-tax-guide',             'foreign-income-thailand-tax'],
+  'dtv-visa-thailand-tax-guide':                ['ltr-visa-tax-benefits',                   'foreign-income-thailand-tax'],
   'thailand-tax-guide-for-expats':              ['understanding-thai-tax-residency',        'expat-guide-filing-thai-taxes'],
   'how-to-get-thai-tax-id-number':              ['expat-guide-filing-thai-taxes',           'understanding-thai-tax-residency'],
   'transferring-money-to-thailand-tax-rules':   ['foreign-income-thailand-tax',             'double-tax-agreements-thailand'],
