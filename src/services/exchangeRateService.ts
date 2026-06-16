@@ -21,8 +21,8 @@ const BOT_API_KEY = import.meta.env.VITE_BOT_API_KEY as string | undefined;
 const BOT_API_BASE = 'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2';
 const BOT_EXCHANGE_RATE_PATH = '/DAILY_AVG_EXG_RATE/';
 
-// CORS proxy — routes browser requests through, forwarding headers to the target
-const CORS_PROXY = 'https://corsproxy.io/?';
+// Cloudflare Worker proxy URL — set VITE_BOT_PROXY_URL in .env after deploying cloudflare-worker/bot-proxy.js
+const BOT_PROXY_URL = import.meta.env.VITE_BOT_PROXY_URL as string | undefined;
 
 const SESSION_CACHE_PREFIX = 'bot_fx_';
 
@@ -158,14 +158,22 @@ export async function getExchangeRate(
   const cached = readCache(upperCurrency, date);
   if (cached) return { ok: true, data: cached };
 
-  // Ensure API key is configured
   if (!BOT_API_KEY) {
     return {
       ok: false,
       error: {
         type: 'no_api_key',
-        message:
-          'BOT API key not configured. Add VITE_BOT_API_KEY to your .env file.',
+        message: 'BOT API key not configured. Add VITE_BOT_API_KEY to your .env file.',
+      },
+    };
+  }
+
+  if (!BOT_PROXY_URL) {
+    return {
+      ok: false,
+      error: {
+        type: 'network',
+        message: 'BOT proxy not configured. Add VITE_BOT_PROXY_URL to your .env file.',
       },
     };
   }
@@ -181,7 +189,7 @@ export async function getExchangeRate(
     const tryDateStr = formatDate(tryDate);
 
     const targetUrl = `${BOT_API_BASE}${BOT_EXCHANGE_RATE_PATH}?start_period=${tryDateStr}&end_period=${tryDateStr}`;
-    const proxiedUrl = `${CORS_PROXY}${encodeURIComponent(targetUrl)}`;
+    const proxiedUrl = `${BOT_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
 
     try {
       response = await fetch(proxiedUrl, {
