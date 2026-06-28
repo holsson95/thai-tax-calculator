@@ -57,9 +57,9 @@ const sitemapEntries = [
     (r) =>
       `  <url>\n    <loc>${SITE_URL}${r}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${r === '/' ? '1.0' : '0.8'}</priority>\n  </url>`
   ),
-  ...articleRoutes.map(
-    (r) =>
-      `  <url>\n    <loc>${SITE_URL}${r}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+  ...articles.map(
+    (a) =>
+      `  <url>\n    <loc>${SITE_URL}/articles/${a.slug}/</loc>\n    <lastmod>${a.publishedAt}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
   ),
 ].join('\n');
 

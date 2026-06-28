@@ -5,7 +5,8 @@ const Footer: React.FC = () => {
   const location = useLocation();
 
   // Don't show footer on wizard pages
-  const isWizardPage = location.pathname === '/annual-tax' || location.pathname === '/monthly-withholding';
+  const path = location.pathname.replace(/\/$/, '');
+  const isWizardPage = path === '/annual-tax' || path === '/monthly-withholding';
 
   if (isWizardPage) {
     return null;

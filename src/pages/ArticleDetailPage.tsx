@@ -49,7 +49,7 @@ const ArticleDetailPage: React.FC = () => {
   return (
     <div className="py-8">
       <Helmet>
-        <title>{article.title} | Thai Tax Calculator</title>
+        <title>{article.title} | My Thai Taxes</title>
         <meta name="description" content={article.excerpt} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={article.title} />
