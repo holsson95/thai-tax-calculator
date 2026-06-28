@@ -217,17 +217,26 @@ const MonthlyWithholding: React.FC = () => {
   const progressPercent = ((currentStep + 1) / totalSteps) * 100;
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center py-8 px-4">
+    <div className="bg-gray-100 min-h-screen py-8 px-4">
       <Helmet>
-        <title>Monthly Tax Withholding Estimator | Thai Tax Calculator</title>
+        <title>Monthly Tax Withholding Estimator | My Thai Taxes</title>
         <meta
           name="description"
           content="Estimate how much Thai income tax should be withheld from your monthly salary. Free calculator for salaried employees and freelancers in Thailand."
         />
         <link rel="canonical" href="https://mythaitaxes.com/monthly-withholding/" />
       </Helmet>
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
-        <h1 className="sr-only">Monthly Tax Withholding Estimator</h1>
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-5">
+          <h1 className="text-xl font-bold text-gray-900 mb-1">Monthly Withholding Estimator</h1>
+          <p className="text-sm text-gray-600">
+            Check whether the right amount of tax is being deducted from your monthly paycheck. Enter
+            your salary, bonuses, and deductions to see what your employer should be withholding —
+            useful for verifying payslips, planning for a salary change, or estimating the tax impact
+            of a bonus.
+          </p>
+        </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full">
         {/* Header with Home button */}
         <div className="flex justify-between items-center mb-6">
           <Link
@@ -342,6 +351,7 @@ const MonthlyWithholding: React.FC = () => {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

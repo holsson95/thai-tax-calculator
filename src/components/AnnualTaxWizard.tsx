@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { TaxFormData } from '../types/taxForm';
 import { FreelancerFormData, createDefaultFreelancerFormData } from '../types/freelancerForm';
 import { SoleProprietorFormData, createDefaultSoleProprietorFormData } from '../types/soleProprietorForm';
@@ -539,9 +540,23 @@ const AnnualTaxWizard: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center py-8 px-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full">
-        <h1 className="sr-only">Annual Tax Calculator</h1>
+    <div className="bg-gray-100 min-h-screen py-8 px-4">
+      <Helmet>
+        <title>Annual Tax Calculator | My Thai Taxes</title>
+        <meta name="description" content="Calculate your annual Thai personal income tax liability. Step-by-step calculator for salaried employees, freelancers, sole proprietors, and company owners in Thailand." />
+        <link rel="canonical" href="https://mythaitaxes.com/annual-tax/" />
+      </Helmet>
+      <div className="max-w-2xl mx-auto">
+        <div className="mb-5">
+          <h1 className="text-xl font-bold text-gray-900 mb-1">Annual Tax Calculator</h1>
+          <p className="text-sm text-gray-600">
+            Walk through a step-by-step form to estimate your Thai personal income tax for the full
+            calendar year. Covers salaried employees, freelancers, sole proprietors, and company owners —
+            including foreign income and double tax agreement scenarios. At the end you can download a
+            PDF summary to use as a filing reference.
+          </p>
+        </div>
+      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full">
         {/* Header with Home button */}
         <div className="flex justify-between items-center mb-6">
           <button
@@ -725,6 +740,7 @@ const AnnualTaxWizard: React.FC = () => {
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
