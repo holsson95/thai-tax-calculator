@@ -18,6 +18,7 @@ const routes = [
   '/faq',
   '/search',
   '/privacy',
+  '/about',
   ...articles.map((a) => `/articles/${a.slug}`),
 ];
 

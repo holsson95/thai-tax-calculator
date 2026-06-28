@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const SITE_URL = 'https://www.mythaitaxes.com';
-const CONTACT_EMAIL = 'hannwill999@gmail.com';
+const CONTACT_EMAIL = 'info@mythaitaxes.com';
 
 const PrivacyPolicyPage: React.FC = () => {
   const title = 'Privacy Policy | My Thai Taxes';
