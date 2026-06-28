@@ -226,7 +226,7 @@ export const TAX_CONSTANTS = {
   // Standard expense deduction for employment income (50% of income, max 100,000)
   STANDARD_DEDUCTION_RATE: 0.5,
   MAX_STANDARD_DEDUCTION: 100000,
-  MAX_SOCIAL_SECURITY: 9000, // SSO ceiling for 2025
+  MAX_SOCIAL_SECURITY: 10500, // SSO ceiling for 2025
   PERSONAL_ALLOWANCE: 60000,
   SPOUSE_ALLOWANCE: 60000,
   SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
