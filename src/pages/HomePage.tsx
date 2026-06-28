@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
+import QuickTaxCalculator from '../components/QuickTaxCalculator';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
 
@@ -51,6 +52,8 @@ const HomePage: React.FC = () => {
           Calculate your Thai tax obligation quickly and accurately
         </p>
       </div>
+
+      <QuickTaxCalculator />
 
       {/* Calculator CTAs */}
       <div className="max-w-3xl mx-auto px-4 mb-8">
