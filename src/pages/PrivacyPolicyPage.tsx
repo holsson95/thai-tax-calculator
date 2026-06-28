@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = 'https://www.mythaitaxes.com';
+const SITE_URL = 'https://mythaitaxes.com';
 const CONTACT_EMAIL = 'info@mythaitaxes.com';
 
 const PrivacyPolicyPage: React.FC = () => {
