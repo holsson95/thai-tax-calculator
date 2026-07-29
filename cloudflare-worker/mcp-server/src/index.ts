@@ -18,6 +18,7 @@
  */
 
 import { annualTaxTool, runAnnualTaxCalculation } from './taxTool';
+import { openApiSpec } from './openapi';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -148,6 +149,7 @@ function handleInfo(): Response {
         path: '/api/calculate-annual-tax',
         description: 'Plain JSON REST endpoint. Body/response shape matches the MCP tool.',
       },
+      openapi: { method: 'GET', path: '/openapi.json', description: 'OpenAPI schema for the REST endpoint (for GPT Actions, etc).' },
     },
     tools: [annualTaxTool.definition],
     website: 'https://www.mythaitaxes.com',
@@ -164,6 +166,7 @@ export default {
 
     if (pathname === '/mcp') return handleMcp(request);
     if (pathname === '/api/calculate-annual-tax') return handleRest(request);
+    if (pathname === '/openapi.json') return json(openApiSpec);
     if (pathname === '/' || pathname === '') return handleInfo();
 
     return json({ error: 'Not found' }, 404);
