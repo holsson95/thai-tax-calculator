@@ -77,6 +77,37 @@ const AboutPage: React.FC = () => {
           ))}
         </ul>
 
+        <h2 id="for-developers" className="text-xl font-semibold text-gray-900 pt-2">
+          For developers &amp; AI agents
+        </h2>
+
+        <p>
+          The annual tax calculation is also available as a free, open API — useful for embedding a Thai
+          tax estimate elsewhere, or for AI agents that need to compute a live number rather than guess
+          one. No API key or account required.
+        </p>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-lg px-5 py-4 text-sm text-gray-800 space-y-3">
+          <div>
+            <span className="font-medium text-gray-900">MCP endpoint</span>{' '}
+            (Streamable HTTP, tool name <code className="text-xs bg-white px-1 py-0.5 rounded border border-blue-200">calculate_thai_annual_income_tax</code>):
+            <pre className="mt-2 bg-white border border-blue-200 rounded p-3 text-xs overflow-x-auto">
+              https://mythaitaxes-mcp.hannwill999.workers.dev/mcp
+            </pre>
+          </div>
+          <div>
+            <span className="font-medium text-gray-900">REST endpoint</span> (plain <code className="text-xs bg-white px-1 py-0.5 rounded border border-blue-200">POST</code> JSON, same calculation):
+            <pre className="mt-2 bg-white border border-blue-200 rounded p-3 text-xs overflow-x-auto">
+{`curl -X POST https://mythaitaxes-mcp.hannwill999.workers.dev/api/calculate-annual-tax \\
+  -H "Content-Type: application/json" \\
+  -d '{"annualIncome": 800000, "maritalStatus": "married"}'`}
+            </pre>
+          </div>
+          <p className="text-xs text-gray-600">
+            Covers salaried-employee income tax for now. Results are estimates — see the disclaimer below.
+          </p>
+        </div>
+
         <h2 className="text-xl font-semibold text-gray-900 pt-2">Important disclaimer</h2>
 
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-5 py-4 text-sm text-amber-800">

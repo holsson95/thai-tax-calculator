@@ -1,0 +1,26 @@
+# My Thai Taxes
+
+> Free Thai personal income tax calculator and reference for expats, freelancers, and residents living and working in Thailand.
+
+My Thai Taxes helps individuals estimate their Thai personal income tax (PIT), understand allowances and deductions, and check monthly withholding — covering salaried employees, freelancers, sole proprietors, and company directors.
+
+## Tools
+
+- [Annual Tax Calculator](https://www.mythaitaxes.com/annual-tax/): Step-by-step calculator covering income, deductions, allowances, withholding, and a full tax breakdown.
+- [Monthly Withholding Estimator](https://www.mythaitaxes.com/monthly-withholding/): Quick tool to check whether the correct amount of tax is being withheld from a monthly salary.
+
+## API for AI agents and developers
+
+- [MCP tool endpoint](https://mythaitaxes-mcp.hannwill999.workers.dev/mcp): Stateless MCP (Streamable HTTP, JSON-only) endpoint exposing `calculate_thai_annual_income_tax` — computes Thai PIT for a salaried employee from income, marital status, dependents, and deductions. Free, no API key required.
+- [REST endpoint](https://mythaitaxes-mcp.hannwill999.workers.dev/api/calculate-annual-tax): The same calculation as a plain `POST` JSON endpoint, for non-MCP clients.
+
+## Reference
+
+- [Articles](https://www.mythaitaxes.com/articles/): Guides on Thai tax residency, foreign income remittance, double tax agreements, and more.
+- [FAQ](https://www.mythaitaxes.com/faq/): Answers to common questions about Thai tax filing and compliance.
+- [About](https://www.mythaitaxes.com/about/): What the site is and who maintains it.
+
+## Notes
+
+- Figures are estimates for informational purposes only and not a substitute for professional tax advice.
+- Tax constants and brackets are current for the 2026 tax year; verify against https://www.rd.go.th/english/ before filing.
