@@ -1,0 +1,13 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.holsson95/mythaitaxes-mcp",
+  "description": "Free Thai personal income tax (PIT) calculator for salaried employees, from mythaitaxes.com.",
+  "version": "1.0.0",
+  "websiteUrl": "https://www.mythaitaxes.com/about/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mythaitaxes-mcp.hannwill999.workers.dev/mcp"
+    }
+  ]
+}
