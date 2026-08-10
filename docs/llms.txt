@@ -6,8 +6,8 @@ My Thai Taxes helps individuals estimate their Thai personal income tax (PIT), u
 
 ## Tools
 
-- [Annual Tax Calculator](https://www.mythaitaxes.com/annual-tax/): Step-by-step calculator covering income, deductions, allowances, withholding, and a full tax breakdown.
-- [Monthly Withholding Estimator](https://www.mythaitaxes.com/monthly-withholding/): Quick tool to check whether the correct amount of tax is being withheld from a monthly salary.
+- [Annual Tax Calculator](https://mythaitaxes.com/annual-tax/): Step-by-step calculator covering income, deductions, allowances, withholding, and a full tax breakdown.
+- [Monthly Withholding Estimator](https://mythaitaxes.com/monthly-withholding/): Quick tool to check whether the correct amount of tax is being withheld from a monthly salary.
 
 ## API for AI agents and developers
 
@@ -16,9 +16,9 @@ My Thai Taxes helps individuals estimate their Thai personal income tax (PIT), u
 
 ## Reference
 
-- [Articles](https://www.mythaitaxes.com/articles/): Guides on Thai tax residency, foreign income remittance, double tax agreements, and more.
-- [FAQ](https://www.mythaitaxes.com/faq/): Answers to common questions about Thai tax filing and compliance.
-- [About](https://www.mythaitaxes.com/about/): What the site is and who maintains it.
+- [Articles](https://mythaitaxes.com/articles/): Guides on Thai tax residency, foreign income remittance, double tax agreements, and more.
+- [FAQ](https://mythaitaxes.com/faq/): Answers to common questions about Thai tax filing and compliance.
+- [About](https://mythaitaxes.com/about/): What the site is and who maintains it.
 
 ## Notes
 
