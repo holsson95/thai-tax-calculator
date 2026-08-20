@@ -741,6 +741,71 @@ const AnnualTaxWizard: React.FC = () => {
           </div>
         )}
       </div>
+
+      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full mt-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">How this calculator works</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          This calculator walks through Thailand's annual personal income tax return step by step:
+          your employment type, gross income, and eligible deductions and allowances. It applies
+          Thailand's progressive tax brackets to your taxable income and shows a full breakdown of
+          what you owe, with the option to download a PDF summary for your records. Everything runs
+          in your browser — nothing you enter is sent to a server.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Thailand's progressive tax brackets</h2>
+        <p className="text-sm text-gray-600 mb-3">
+          Thailand taxes income progressively — each bracket of income is taxed only at its own rate,
+          not your whole income at your top rate. The first 150,000 THB of taxable income is exempt;
+          income above that is taxed in increasing bands from 5% up to 35% for taxable income over
+          5,000,000 THB. Because of this structure, your effective tax rate is always lower than your
+          top marginal rate.
+        </p>
+        <table className="w-full text-sm text-gray-600 mb-6">
+          <thead>
+            <tr className="text-left border-b border-gray-200">
+              <th className="py-1.5 font-medium text-gray-700">Taxable income (THB)</th>
+              <th className="py-1.5 font-medium text-gray-700">Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-b border-gray-100"><td className="py-1.5">0 – 150,000</td><td className="py-1.5">Exempt</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">150,001 – 300,000</td><td className="py-1.5">5%</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">300,001 – 500,000</td><td className="py-1.5">10%</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">500,001 – 750,000</td><td className="py-1.5">15%</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">750,001 – 1,000,000</td><td className="py-1.5">20%</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">1,000,001 – 2,000,000</td><td className="py-1.5">25%</td></tr>
+            <tr className="border-b border-gray-100"><td className="py-1.5">2,000,001 – 5,000,000</td><td className="py-1.5">30%</td></tr>
+            <tr><td className="py-1.5">Over 5,000,000</td><td className="py-1.5">35%</td></tr>
+          </tbody>
+        </table>
+
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-gray-800">Who should use this calculator?</p>
+            <p className="text-sm text-gray-600">
+              Anyone filing a Thai PND 90/91 return — salaried employees, freelancers, sole
+              proprietors, and company owners — including expats with foreign income remitted to
+              Thailand.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-800">Does it account for deductions and allowances?</p>
+            <p className="text-sm text-gray-600">
+              Yes. The form walks through standard personal allowances, spouse and dependent
+              allowances, social security contributions, and common deductions before applying the
+              tax brackets.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
+            <p className="text-sm text-gray-600">
+              No. Your answers are kept only in your browser's session storage so you can resume if
+              you navigate away, and nothing is transmitted to a server.
+            </p>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

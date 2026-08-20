@@ -352,6 +352,54 @@ const MonthlyWithholding: React.FC = () => {
           </div>
         )}
       </div>
+
+      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full mt-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">What is withholding tax?</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          In Thailand, employers are required to withhold estimated personal income tax from each
+          salary payment and remit it to the Revenue Department on your behalf. The amount withheld
+          is an estimate spread evenly across the year, based on projecting your monthly salary
+          forward — it isn't always exactly right, especially in months with a bonus, a raise, or
+          irregular income. This estimator lets you check what should be withheld against what
+          actually is, using the same progressive brackets and deductions your annual return uses.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Why the withheld amount can be off</h2>
+        <p className="text-sm text-gray-600 mb-6">
+          Withholding is calculated month to month, so a one-off bonus or a mid-year salary change
+          can throw off the projection your employer is working from — you may end up over-withheld
+          (refunded when you file) or under-withheld (owing a balance). Checking your withholding
+          partway through the year, rather than waiting for your annual filing, gives you time to
+          budget for either outcome.
+        </p>
+
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium text-gray-800">Is this the same as my annual tax liability?</p>
+            <p className="text-sm text-gray-600">
+              No — this estimates what should be withheld from a given month's pay. For your full
+              year's tax liability across all income sources, use the{' '}
+              <Link to="/annual-tax/" className="text-blue-600 hover:underline">annual tax calculator</Link>.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-800">Does a bonus get taxed differently?</p>
+            <p className="text-sm text-gray-600">
+              A bonus is added to that month's income for withholding purposes, which can temporarily
+              push you into a higher bracket for that pay period — even though your annual effective
+              rate may be lower once the year is averaged out.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
+            <p className="text-sm text-gray-600">
+              No. The calculation runs entirely in your browser and nothing you enter is sent to a
+              server.
+            </p>
+          </div>
+        </div>
+      </div>
       </div>
     </div>
   );

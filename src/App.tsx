@@ -64,6 +64,32 @@ const App: React.FC = () => {
                   <li>Covers standard allowances, deductions, and progressive tax brackets</li>
                   <li>Free, no signup required, runs entirely in your browser</li>
                 </ul>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">Thailand's progressive tax brackets</h2>
+                <p className="text-gray-600 text-sm mb-6">
+                  Thailand taxes income progressively: the first 150,000 THB of taxable income is
+                  exempt, and income above that is taxed in increasing bands from 5% up to 35% for
+                  taxable income over 5,000,000 THB. Your effective tax rate is always lower than
+                  your top marginal rate, since only the income within each bracket is taxed at
+                  that bracket's rate.
+                </p>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
+                <div className="space-y-3 mb-6">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">Who should use this calculator?</p>
+                    <p className="text-sm text-gray-600">
+                      Anyone filing a Thai PND 90/91 return — salaried employees, freelancers, sole
+                      proprietors, and company owners — including expats with foreign income
+                      remitted to Thailand.
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
+                    <p className="text-sm text-gray-600">
+                      No. Your answers are kept only in your browser's session storage and nothing
+                      is transmitted to a server.
+                    </p>
+                  </div>
+                </div>
                 <p className="text-center text-gray-500">Loading calculator…</p>
               </div>
             </div>
