@@ -131,8 +131,8 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
   },
   {
     slug: 'understanding-thai-tax-residency',
-    title: 'Thai Tax Residency: The 180-Day Rule Explained',
-    excerpt: 'Learn how Thailand determines your tax residency status, what the 180-day rule means in practice, and how it affects your income tax obligations as an expat.',
+    title: 'Am I a Thai Tax Resident? The 180-Day Rule Explained',
+    excerpt: "How Thailand's 180-day rule decides your tax residency status, what counts as a day in-country, and how residency changes which income gets taxed.",
     content: `
 ## What is Tax Residency?
 
@@ -175,8 +175,8 @@ Thailand uses a simple test to determine tax residency: if you spend 180 days or
   },
   {
     slug: 'maximizing-tax-deductions-thailand',
-    title: 'Maximizing Your Tax Deductions in Thailand',
-    excerpt: 'A comprehensive guide to the allowances, deductions, and personal tax credits available to legally reduce your Thai income tax liability each year.',
+    title: 'Thailand Tax Deductions 2026: Full Guide for Expats',
+    excerpt: 'Every personal allowance, deduction, and credit that lowers your Thai income tax bill — amounts and eligibility rules for 2026, explained simply.',
     content: `
 ## Personal Allowances
 
@@ -2997,8 +2997,8 @@ The DTV is an excellent long-stay option for many people — but it is not a tax
   },
   {
     slug: 'thailand-tax-for-us-expats',
-    title: 'Thailand Tax for US Expats: A Complete Guide',
-    excerpt: 'US citizens in Thailand navigate two tax systems. This covers Thai obligations, FBAR, FATCA, the Foreign Earned Income Exclusion, and the Foreign Tax Credit.',
+    title: 'US Expat Taxes in Thailand: FBAR, FATCA & Double Tax',
+    excerpt: 'How US citizens in Thailand avoid double taxation: FBAR and FATCA reporting, the Foreign Earned Income Exclusion, the Foreign Tax Credit, and Thai tax rules.',
     content: `
 ## The Unique Challenge for US Citizens
 
