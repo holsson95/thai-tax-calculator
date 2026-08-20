@@ -155,7 +155,7 @@ const ArticleDetailPage: React.FC = () => {
             Put this knowledge to use with our free calculator.
           </p>
           <Link
-            to="/"
+            to="/annual-tax/"
             className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
           >
             Start Calculator
