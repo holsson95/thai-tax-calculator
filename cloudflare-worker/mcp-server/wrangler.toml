@@ -1,3 +1,7 @@
 name = "mythaitaxes-mcp"
 main = "src/index.ts"
 compatibility_date = "2026-05-03"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "mythaitaxes_mcp_requests"
