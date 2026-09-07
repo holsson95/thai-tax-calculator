@@ -4,6 +4,8 @@ import { TaxFormData, TaxCalculationResult, TAX_BRACKETS } from '../../types/tax
 import { calculateAnnualTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import TaxPacketPDF from '../../pdf/TaxPacketPDF';
 import { generatePdfFilename } from '../../utils/pdfFilename';
+import TaxFlowDiagram, { TaxFlowStep } from '../TaxFlowDiagram';
+import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
 
 interface AnnualResultsStepProps {
   formData: TaxFormData;
@@ -67,6 +69,29 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
 
   const taxBrackets = getTaxByBracket();
 
+  const otherDeductions = result.totalDeductions - result.breakdown.standardDeduction;
+  const takeHomeIncome = result.grossIncome - result.taxOwed;
+
+  const flowSteps: TaxFlowStep[] = [
+    { kind: 'start', label: 'Gross Income', amount: result.grossIncome },
+    {
+      kind: 'subtract',
+      label: 'Employment Deduction',
+      amount: result.breakdown.standardDeduction,
+      sublabel: '50% of income, capped at ฿100,000',
+    },
+    {
+      kind: 'subtract',
+      label: 'Personal Allowance',
+      amount: result.totalAllowances,
+      sublabel: 'Personal, spouse, senior, child & parent allowances',
+    },
+    { kind: 'subtract', label: 'Other Deductions', amount: otherDeductions, sublabel: 'Insurance, retirement funds, donations & social security' },
+    { kind: 'result', label: 'Taxable Income', amount: result.taxableIncome },
+    { kind: 'brackets', label: 'Progressive Tax Calculation', brackets: taxBrackets },
+    { kind: 'result', label: 'Estimated Tax', amount: result.taxOwed },
+  ];
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">Your Tax Calculation Results</h2>
@@ -94,6 +119,9 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
           </p>
         )}
       </div>
+
+      {/* Take-Home Income */}
+      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
@@ -127,6 +155,12 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
       <div className="bg-gray-100 rounded-lg p-4 mb-6 text-center">
         <p className="text-sm text-gray-500">Effective Tax Rate</p>
         <p className="text-2xl font-bold text-gray-800">{formatPercent(result.effectiveRate)}</p>
+      </div>
+
+      {/* How Your Tax Was Calculated */}
+      <div className="mb-6">
+        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <TaxFlowDiagram steps={flowSteps} />
       </div>
 
       {/* Collapsible Breakdown */}

@@ -45,10 +45,11 @@ describe('AnnualResultsStep', () => {
     );
 
     expect(screen.getByText('Your Tax Calculation Results')).toBeInTheDocument();
-    expect(screen.getByText('Gross Income')).toBeInTheDocument();
+    // "Gross Income" and "Taxable Income" now also appear in the tax flow diagram
+    expect(screen.getAllByText('Gross Income').length).toBeGreaterThan(0);
     expect(screen.getByText('Total Allowances')).toBeInTheDocument();
     expect(screen.getByText('Total Deductions')).toBeInTheDocument();
-    expect(screen.getByText('Taxable Income')).toBeInTheDocument();
+    expect(screen.getAllByText('Taxable Income').length).toBeGreaterThan(0);
     expect(screen.getByText('Tax Owed')).toBeInTheDocument();
     expect(screen.getByText('Tax Withheld')).toBeInTheDocument();
   });

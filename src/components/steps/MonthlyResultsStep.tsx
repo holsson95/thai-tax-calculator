@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
-import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData } from '../../types/taxForm';
+import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData, TAX_BRACKETS } from '../../types/taxForm';
 import { calculateThaiTax } from '../../utils/tax';
+import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
+import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
 
 // Calculate child allowance with birth year bonuses
 const calculateChildAllowance = (children: ChildData[]): number => {
@@ -54,57 +56,57 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
     );
 
     const personalAllowance = MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE;
-
-    // Start with standard deduction + personal allowance
-    let totalDeductions = standardDeduction + personalAllowance;
+    let totalAllowances = personalAllowance;
+    let otherDeductions = 0;
 
     // Add social security if included
     if (formData.includeSocialSecurity && formData.socialSecurityContribution > 0) {
-      totalDeductions += Math.min(formData.socialSecurityContribution, MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
+      otherDeductions += Math.min(formData.socialSecurityContribution, MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
     }
 
     // For detailed estimate, add more deductions
     if (formData.estimateType === 'detailed') {
       // Spouse allowance
       if (formData.maritalStatus === 'married' && formData.spouseHasNoIncome) {
-        totalDeductions += MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE;
+        totalAllowances += MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE;
       }
 
       // Child allowance with birth year bonuses
       const childAllowance = calculateChildAllowance(formData.children || []);
-      totalDeductions += childAllowance;
+      totalAllowances += childAllowance;
 
       // Parent allowance
       const parentAllowance = (formData.numberOfParents || 0) * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE;
-      totalDeductions += parentAllowance;
+      totalAllowances += parentAllowance;
 
       // Insurance deductions
       if (formData.hasLifeInsurance) {
-        totalDeductions += Math.min(formData.lifeInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_LIFE_INSURANCE);
+        otherDeductions += Math.min(formData.lifeInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_LIFE_INSURANCE);
       }
       if (formData.hasHealthInsurance) {
-        totalDeductions += Math.min(formData.healthInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
+        otherDeductions += Math.min(formData.healthInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
       }
       if (formData.hasPensionFund) {
-        totalDeductions += Math.min(formData.pensionFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PENSION_FUND);
+        otherDeductions += Math.min(formData.pensionFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PENSION_FUND);
       }
       if (formData.hasProvidentFund) {
-        totalDeductions += Math.min(formData.providentFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PROVIDENT_FUND);
+        otherDeductions += Math.min(formData.providentFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PROVIDENT_FUND);
       }
       if (formData.hasRMF) {
-        totalDeductions += Math.min(formData.rmf || 0, MONTHLY_TAX_CONSTANTS.MAX_RMF);
+        otherDeductions += Math.min(formData.rmf || 0, MONTHLY_TAX_CONSTANTS.MAX_RMF);
       }
       if (formData.hasSSF) {
-        totalDeductions += Math.min(formData.ssf || 0, MONTHLY_TAX_CONSTANTS.MAX_SSF);
+        otherDeductions += Math.min(formData.ssf || 0, MONTHLY_TAX_CONSTANTS.MAX_SSF);
       }
 
       // Donations (limited to 10% of income)
       if (formData.hasDonations) {
         const maxDonation = Math.floor(annualIncome * MONTHLY_TAX_CONSTANTS.MAX_DONATION_PERCENT);
-        totalDeductions += Math.min(formData.donations || 0, maxDonation);
+        otherDeductions += Math.min(formData.donations || 0, maxDonation);
       }
     }
 
+    const totalDeductions = standardDeduction + totalAllowances + otherDeductions;
     const taxableIncome = Math.max(0, annualIncome - totalDeductions);
     const annualTax = calculateThaiTax(taxableIncome);
     const monthlyWithholding = annualTax / 12;
@@ -113,6 +115,8 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       annualIncome,
       standardDeduction,
       personalAllowance,
+      totalAllowances,
+      otherDeductions,
       socialSecurity: formData.includeSocialSecurity
         ? Math.min(formData.socialSecurityContribution || 0, MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY)
         : 0,
@@ -123,6 +127,61 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       effectiveRate: annualIncome > 0 ? (annualTax / annualIncome) * 100 : 0,
     };
   }, [formData]);
+
+  const taxBrackets: TaxFlowBracket[] = useMemo(() => {
+    const brackets: TaxFlowBracket[] = [];
+    let remainingIncome = calculateResult.taxableIncome;
+    let previousLimit = 0;
+
+    for (const bracket of TAX_BRACKETS) {
+      if (remainingIncome <= 0) break;
+
+      const bracketSize = bracket.upTo - previousLimit;
+      const taxableInBracket = Math.min(remainingIncome, bracketSize);
+      const taxInBracket = taxableInBracket * bracket.rate;
+
+      if (taxableInBracket > 0) {
+        brackets.push({ label: bracket.label, rate: bracket.rate * 100, tax: taxInBracket });
+      }
+
+      remainingIncome -= taxableInBracket;
+      previousLimit = bracket.upTo;
+    }
+
+    return brackets;
+  }, [calculateResult.taxableIncome]);
+
+  const takeHomeIncome = calculateResult.annualIncome - calculateResult.annualTax;
+
+  const flowSteps: TaxFlowStep[] = [
+    { kind: 'start', label: 'Annual Income', amount: calculateResult.annualIncome },
+    {
+      kind: 'subtract',
+      label: 'Employment Deduction',
+      amount: calculateResult.standardDeduction,
+      sublabel: '50% of income, capped at ฿100,000',
+    },
+    {
+      kind: 'subtract',
+      label: 'Personal Allowance',
+      amount: calculateResult.totalAllowances,
+      sublabel: 'Personal, spouse, child & parent allowances',
+    },
+    {
+      kind: 'subtract',
+      label: 'Other Deductions',
+      amount: calculateResult.otherDeductions,
+      sublabel: 'Insurance, retirement funds, donations & social security',
+    },
+    { kind: 'result', label: 'Taxable Income', amount: calculateResult.taxableIncome },
+    { kind: 'brackets', label: 'Progressive Tax Calculation', brackets: taxBrackets },
+    {
+      kind: 'result',
+      label: 'Estimated Tax',
+      amount: calculateResult.annualTax,
+      sublabel: `≈ ${'฿' + calculateResult.monthlyWithholding.toLocaleString('en-US', { maximumFractionDigits: 0 })}/month withholding`,
+    },
+  ];
 
   // Build list of editable values
   const editableValues: EditableValue[] = useMemo(() => {
@@ -308,6 +367,9 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
         </p>
       </div>
 
+      {/* Take-Home Income */}
+      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
+
       {/* Summary */}
       <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
         <div className="flex justify-between text-sm">
@@ -326,6 +388,12 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
           <span className="text-gray-600">Annual Tax</span>
           <span className="font-medium">฿{calculateResult.annualTax.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
         </div>
+      </div>
+
+      {/* How Your Tax Was Calculated */}
+      <div className="mb-6">
+        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <TaxFlowDiagram steps={flowSteps} />
       </div>
 
       {/* Toggle Details Button */}

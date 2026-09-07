@@ -39,6 +39,7 @@ const Header: React.FC = () => {
     { path: '/', label: 'Calculator' },
     { path: '/articles/', label: 'Articles' },
     { path: '/faq/', label: 'FAQ' },
+    { path: '/methodology/', label: 'Methodology' },
   ];
 
   const isActive = (path: string) => {

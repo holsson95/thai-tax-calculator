@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import AnnualTaxWizard from '../AnnualTaxWizard';
 
 // Create a fresh store for each test
@@ -24,7 +25,11 @@ Object.defineProperty(window, 'sessionStorage', {
 });
 
 const renderWithRouter = (component: React.ReactNode) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+  return render(
+    <HelmetProvider>
+      <BrowserRouter>{component}</BrowserRouter>
+    </HelmetProvider>
+  );
 };
 
 describe('AnnualTaxWizard', () => {
@@ -171,8 +176,12 @@ describe('AnnualTaxWizard', () => {
     // Go to step 2
     fireEvent.click(screen.getByText('Salaried Employee'));
 
-    // Step 2 of 8 = 25%
-    expect(screen.getByText('25%')).toBeInTheDocument();
+    // Step 2 of 8 = 25%. The step-2 tax bracket reference table also has a "25%"
+    // cell, so scope the query to the percentage next to the step label instead
+    // of asserting on the page-wide text (which would match both).
+    const stepLabel = screen.getByText(/Step 2 of 8:/);
+    const progressRow = stepLabel.parentElement as HTMLElement;
+    expect(within(progressRow).getByText('25%')).toBeInTheDocument();
   });
 
   it('has accessible progress bar', () => {
@@ -186,21 +195,16 @@ describe('AnnualTaxWizard', () => {
     expect(progressBar).toHaveAttribute('aria-valuemax', '8');
   });
 
-  it('shows all step labels', () => {
+  it('shows step labels visible in the initial sliding window', () => {
     renderWithRouter(<AnnualTaxWizard />);
 
-    const stepLabels = [
-      'Employment',
-      'Income',
-      'Marital Status',
-      'Dependents',
-      'Deductions',
-      'Withholding',
-      'Review',
-      'Results',
-    ];
+    // The step-dots nav only renders a window of current ± 2 steps, plus the
+    // first/last steps once the window scrolls away from them. At step 1
+    // (index 0) of 8, that window is indices 0-4 plus the last step (7) —
+    // 'Withholding' and 'Review' (indices 5-6) aren't in the DOM yet.
+    const visibleAtStart = ['Employment', 'Income', 'Marital Status', 'Dependents', 'Deductions', 'Results'];
 
-    stepLabels.forEach((label) => {
+    visibleAtStart.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
   });

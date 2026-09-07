@@ -8,6 +8,8 @@ import { checkAllObligations } from '../../utils/obligationChecks';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
 import TaxPacketPDF from '../../pdf/TaxPacketPDF';
 import { generatePdfFilename } from '../../utils/pdfFilename';
+import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
+import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
 
 interface FreelancerResultsStepProps {
   formData: FreelancerFormData;
@@ -103,6 +105,29 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
     }
   };
 
+  const otherDeductions = result.totalDeductions - result.expenseDeduction;
+  const takeHomeIncome = result.grossIncome - (result.grossTaxBeforeCredits - result.foreignTaxCredits);
+
+  const progressiveBrackets: TaxFlowBracket[] =
+    result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0
+      ? [{ label: 'Employment Income (LTR 17% flat rate)', rate: 17, tax: result.ltrFlatRateTax }, ...taxBrackets]
+      : taxBrackets;
+
+  const flowSteps: TaxFlowStep[] = [
+    { kind: 'start', label: 'Total Gross Income', amount: result.grossIncome },
+    { kind: 'subtract', label: getExpenseDeductionLabel(), amount: result.expenseDeduction },
+    {
+      kind: 'subtract',
+      label: 'Personal Allowance',
+      amount: result.totalAllowances,
+      sublabel: 'Personal, spouse, senior, child & parent allowances',
+    },
+    { kind: 'subtract', label: 'Other Deductions', amount: otherDeductions, sublabel: 'Insurance, retirement funds, donations & social security' },
+    { kind: 'result', label: 'Taxable Income', amount: result.taxableIncome },
+    { kind: 'brackets', label: 'Progressive Tax Calculation', brackets: progressiveBrackets },
+    { kind: 'result', label: 'Estimated Tax', amount: result.grossTaxBeforeCredits },
+  ];
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
@@ -181,6 +206,9 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
         )}
       </div>
 
+      {/* Take-Home Income */}
+      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
+
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-gray-50 rounded-lg p-4 text-center">
@@ -255,6 +283,12 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
           </p>
         </div>
       )}
+
+      {/* How Your Tax Was Calculated */}
+      <div className="mb-6">
+        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <TaxFlowDiagram steps={flowSteps} />
+      </div>
 
       {/* Tax Obligations Section */}
       <div className="border border-gray-200 rounded-lg mb-6">

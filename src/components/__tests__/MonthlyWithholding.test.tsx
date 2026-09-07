@@ -1,13 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import MonthlyWithholding from '../MonthlyWithholding';
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
-    <MemoryRouter>
-      {component}
-    </MemoryRouter>
+    <HelmetProvider>
+      <MemoryRouter>
+        {component}
+      </MemoryRouter>
+    </HelmetProvider>
   );
 };
 

@@ -107,9 +107,10 @@ describe('MonthlyResultsStep', () => {
       />
     );
 
-    expect(screen.getByText('Annual Income')).toBeInTheDocument();
+    // "Annual Income" and "Taxable Income" now also appear in the tax flow diagram
+    expect(screen.getAllByText('Annual Income').length).toBeGreaterThan(0);
     expect(screen.getByText('Total Deductions')).toBeInTheDocument();
-    expect(screen.getByText('Taxable Income')).toBeInTheDocument();
+    expect(screen.getAllByText('Taxable Income').length).toBeGreaterThan(0);
     expect(screen.getByText('Annual Tax')).toBeInTheDocument();
   });
 
@@ -147,7 +148,8 @@ describe('MonthlyResultsStep', () => {
     expect(screen.getByText('Hide Details')).toBeInTheDocument();
     expect(screen.getByText('Monthly Salary')).toBeInTheDocument();
     expect(screen.getByText('Expense Deduction (50%)')).toBeInTheDocument();
-    expect(screen.getByText('Personal Allowance')).toBeInTheDocument();
+    // "Personal Allowance" also appears in the tax flow diagram
+    expect(screen.getAllByText('Personal Allowance').length).toBeGreaterThan(0);
   });
 
   it('marks standard deduction and personal allowance as non-editable (fixed)', () => {
@@ -169,7 +171,8 @@ describe('MonthlyResultsStep', () => {
     const fixedLabels = screen.getAllByText('(fixed)');
     expect(fixedLabels.length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText('Expense Deduction (50%)')).toBeInTheDocument();
-    expect(screen.getByText('Personal Allowance')).toBeInTheDocument();
+    // "Personal Allowance" also appears in the tax flow diagram
+    expect(screen.getAllByText('Personal Allowance').length).toBeGreaterThan(0);
   });
 
   it('renders Start Over button', () => {
@@ -245,8 +248,8 @@ describe('MonthlyResultsStep', () => {
       />
     );
 
-    // Annual income should be 600,000
-    expect(screen.getByText('฿600,000')).toBeInTheDocument();
+    // Annual income should be 600,000 (appears in the summary and in the tax flow diagram)
+    expect(screen.getAllByText('฿600,000').length).toBeGreaterThan(0);
   });
 
   it('shows detailed deductions for detailed estimate', () => {

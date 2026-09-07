@@ -4,11 +4,12 @@ import { Helmet } from 'react-helmet-async';
 
 const SITE_URL = 'https://mythaitaxes.com';
 const CONTACT_EMAIL = 'info@mythaitaxes.com';
+const TAX_RULES_URL = 'https://github.com/holsson95/thai-tax-calculator/blob/main/TAX_RULES.md';
 
 const AboutPage: React.FC = () => {
   const title = 'About | My Thai Taxes';
   const description =
-    'My Thai Taxes is a free Thai personal income tax calculator and resource for expats, freelancers, and residents living and working in Thailand.';
+    'What My Thai Taxes is, why it was built, how the tax calculations work, how figures are sourced and reviewed, and who maintains the site.';
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
@@ -26,6 +27,8 @@ const AboutPage: React.FC = () => {
 
       <div className="space-y-6 text-gray-700 leading-relaxed">
 
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">What is My Thai Taxes?</h2>
+
         <p>
           My Thai Taxes is a free online calculator and information resource designed to help individuals
           understand and estimate their Thai personal income tax obligations. Whether you are a salaried
@@ -33,11 +36,75 @@ const AboutPage: React.FC = () => {
           you through Thailand's tax system in plain language — without requiring an accounting background.
         </p>
 
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">Why we built it</h2>
+
         <p>
           Thailand's personal income tax rules can be confusing, especially for expats and digital nomads
           navigating the 180-day residency rule, foreign income remittance requirements, and the range
-          of allowances available to reduce taxable income. This site exists to make that process clearer
-          and more accessible.
+          of allowances available to reduce taxable income. Good information exists, but it's scattered
+          across Revenue Department PDFs, accounting-firm blog posts, and forum threads that often
+          disagree with each other — and most calculators online don't show their work. My Thai Taxes
+          was built to bring that into one place: a calculator that shows every step of the math, and
+          plain-language guides that explain the reasoning behind it, so you can understand your own
+          tax position rather than just trusting a number.
+        </p>
+
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">How the calculations work</h2>
+
+        <p>
+          The <Link to="/annual-tax/" className="text-blue-600 hover:underline">annual tax calculator</Link>{' '}
+          follows the same structure the Revenue Department uses for a PND90/91 return: it takes your
+          income by type, applies the relevant flat-rate or actual-expense deduction, subtracts your
+          allowances (personal, spouse, children, parents, insurance, retirement funds, donations, and
+          so on), and runs the resulting taxable income through Thailand's progressive tax brackets
+          (0% to 35%). The{' '}
+          <Link to="/monthly-withholding/" className="text-blue-600 hover:underline">monthly withholding
+          estimator</Link>{' '}
+          uses the same underlying logic to check whether the right amount of tax is being deducted from
+          a salary each month. Every step is shown in the results, not hidden behind a single output
+          number — you can see exactly which deduction, allowance, or bracket produced your result.
+        </p>
+
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">How information is sourced</h2>
+
+        <p>
+          Every tax rule, rate, and threshold used in the calculator is tracked in a public sources
+          registry — the{' '}
+          <a
+            href={TAX_RULES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            Thai Tax Rules Registry
+          </a>{' '}
+          in this site's open-source repository. For each figure, the registry records where it came
+          from (ideally a primary Thai Revenue Department document, otherwise reputable secondary
+          sources such as major accounting firms or Thai law firms), what conditions or limitations
+          apply, and whether that figure has been independently verified. Where a value could not be
+          confirmed against a primary source, or where sources disagree, that is flagged openly rather
+          than presented as settled fact. This is a deliberate choice: we'd rather show you where our
+          confidence is lower than quietly guess.
+        </p>
+
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">Who maintains the site</h2>
+
+        <p>
+          My Thai Taxes is built and maintained independently by a single developer. It is not run by a
+          law firm, accounting firm, or the Thai government, and nothing on this site should be taken as
+          advice from a licensed tax professional — see the disclaimer below. The site is a personal
+          project aimed at making Thai tax information more transparent and accessible.
+        </p>
+
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">How often information is reviewed</h2>
+
+        <p>
+          Tax rules and figures are reviewed periodically, and whenever a change to Thai tax law is
+          identified. Each figure in the calculator is tracked in the sources registry above along with
+          its source and verification status, so outdated or disputed values can be caught and corrected
+          rather than sitting unnoticed. If you spot something that looks wrong or out of date, please{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">let us know</a> —
+          see Contact below.
         </p>
 
         <h2 className="text-xl font-semibold text-gray-900 pt-2">What the site offers</h2>
@@ -108,7 +175,7 @@ const AboutPage: React.FC = () => {
           </p>
         </div>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">Important disclaimer</h2>
+        <h2 className="text-xl font-semibold text-gray-900 pt-2">Disclaimer</h2>
 
         <div className="bg-amber-50 border border-amber-200 rounded-lg px-5 py-4 text-sm text-amber-800">
           The calculators and articles on this site are for informational and estimation purposes only.

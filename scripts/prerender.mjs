@@ -19,6 +19,8 @@ const routes = [
   '/search',
   '/privacy',
   '/about',
+  '/methodology',
+  '/sources',
   ...articles.map((a) => `/articles/${a.slug}`),
 ];
 
@@ -49,7 +51,7 @@ for (const route of routes) {
 // --- Generate sitemap.xml ---
 const today = new Date().toISOString().split('T')[0];
 
-const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/'];
+const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/', '/methodology/', '/sources/'];
 const articleRoutes = articles.map((a) => `/articles/${a.slug}/`);
 
 const sitemapEntries = [
