@@ -1,0 +1,86 @@
+{
+  "category": "residency",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Thai tax residency threshold and related mid-year/VAT filing thresholds that depend on residency-adjacent status.",
+  "rules": [
+    {
+      "id": "thai-residency-days",
+      "rule": "Thai tax residency threshold (days in Thailand)",
+      "value": 180,
+      "conditions": "Aggregate days (not necessarily consecutive) physically present in Thailand within a calendar tax year make the individual a Thai tax resident for that year.",
+      "source": {
+        "label": "Thai Revenue Department (EN) — Revenue Code Section 41",
+        "url": "https://www.rd.go.th/english/37749.html"
+      },
+      "verified": true,
+      "verification_notes": "Directly confirmed on RD's own English page, which states verbatim: 'Any person staying in Thailand for a period or periods aggregating 180 days or more in any tax year shall be deemed a resident of Thailand.' A genuine primary-source citation.",
+      "used_in": "src/config/taxConfig.ts:51 (TAX_THRESHOLDS.THAI_RESIDENCY_DAYS); src/utils/foreignIncomeCalculations.ts:262-264 (isThaiTaxResident)"
+    },
+    {
+      "id": "pnd94-threshold-single",
+      "rule": "PND94 mid-year filing threshold — single / no qualifying spouse condition",
+      "value": 60000,
+      "conditions": "Jan–Jun income from Section 40(5)-40(8) qualifying types exceeding this amount triggers mid-year PND94 filing.",
+      "source": {
+        "label": "MBMG Group; Expat Tax Thailand (secondary, citing Revenue Code Sec. 56/56 bis)",
+        "url": "https://mbmg-group.com/pnd-94-half-year-personal-income-tax-who-must-file-by-30-september-2026-and-who-doesnt/"
+      },
+      "verified": false,
+      "verification_notes": "Consistent across two independent secondary sources. RD's own PND94 instruction PDF exists (rd.go.th/fileadmin/download/english_form/080966Ins94.pdf) but its text could not be machine-extracted during this research pass to directly quote the threshold.",
+      "used_in": "src/config/taxConfig.ts:47 (TAX_THRESHOLDS.PND94_SINGLE)"
+    },
+    {
+      "id": "pnd94-threshold-married-spouse-no-income",
+      "rule": "PND94 mid-year filing threshold — married, spouse has no income",
+      "value": 120000,
+      "conditions": "Applies when married and spouse has no income; Jan–Jun qualifying income exceeding this amount triggers mid-year PND94 filing.",
+      "source": {
+        "label": "MBMG Group; Expat Tax Thailand (secondary, citing Revenue Code Sec. 56/56 bis)",
+        "url": "https://mbmg-group.com/pnd-94-half-year-personal-income-tax-who-must-file-by-30-september-2026-and-who-doesnt/"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as pnd94-threshold-single.",
+      "used_in": "src/config/taxConfig.ts:48 (TAX_THRESHOLDS.PND94_MARRIED_SPOUSE_NO_INCOME)"
+    },
+    {
+      "id": "pnd94-due-date",
+      "rule": "PND94 mid-year filing due date",
+      "value": "September 30 of the tax year (paper filing)",
+      "conditions": "Paper-filing deadline is solid. An e-filing extension to approximately October 8 exists but depends on a periodically-renewed Ministry of Finance notification (currently Notification No. 7, covering e-filings made 1 Feb 2024 – 31 Jan 2027) — NOT a permanent statutory rule.",
+      "source": {
+        "label": "MBMG Group; Sherrings",
+        "url": "https://mbmg-group.com/pnd-94-half-year-personal-income-tax-who-must-file-by-30-september-2026-and-who-doesnt/"
+      },
+      "verified": true,
+      "verification_notes": "September 30 paper deadline is well corroborated. The current e-filing extension window comfortably covers the 2026 half-year filing (due ~Sept/Oct 2026). App does not currently model the e-filing extension separately — only the paper due date is stored.",
+      "used_in": "src/config/taxConfig.ts:154 (TAX_YEAR_CONFIG.PND94_DUE_DATE)"
+    },
+    {
+      "id": "pnd90-91-due-date",
+      "rule": "PND90/PND91 annual filing due date",
+      "value": "March 31 of the following year (paper filing)",
+      "conditions": "Standard annual PIT filing deadline for paper filing is solid law. An e-filing extension of ~8 days to early April exists historically but depends on a periodically-renewed Ministry of Finance notification, NOT permanent statute.",
+      "source": {
+        "label": "Nishimura & Asahi; Forvis Mazars; Sherrings",
+        "url": "https://www.nishimura.com/en/knowledge/publications/further-eight-day-extension-for-e-filing-tax-returns-and-online-tax-payments-in-thailand"
+      },
+      "verified": true,
+      "verification_notes": "IMPORTANT UNCERTAINTY FOUND: March 31 is solidly confirmed. However, the current e-filing extension notification (No. 7, dated 12 Jan 2024) only covers e-filings made through 31 January 2027. The tax-year-2026 annual return would be e-filed Feb-Apr 2027 — AFTER that cutoff. Based on the historical pattern (a prior notification, No. 3, similarly expired and was renewed as No. 7), a renewal before Feb 2027 is likely but NOT YET CONFIRMED by any notification found during this research pass. Treat the e-filing extension as 'expected based on historical pattern, unconfirmed for tax year 2026 filings' rather than settled fact. The app's stored PND90_91_DUE_DATE (2027-03-31) reflects only the solid paper deadline, which is correct either way.",
+      "used_in": "src/config/taxConfig.ts:155 (TAX_YEAR_CONFIG.PND90_91_DUE_DATE)"
+    },
+    {
+      "id": "pnd94-qualifying-income-types",
+      "rule": "Income types that trigger PND94 mid-year filing obligation",
+      "value": ["rental_40_5", "liberal_profession_40_6", "contractor_40_7", "business_sales_40_8"],
+      "conditions": "Only these four Section 40 categories count toward the PND94 Jan-Jun threshold check — salary (40(1)) and dividend income do not.",
+      "source": {
+        "label": "MBMG Group; Expat Tax Thailand",
+        "url": "https://mbmg-group.com/pnd-94-half-year-personal-income-tax-who-must-file-by-30-september-2026-and-who-doesnt/"
+      },
+      "verified": true,
+      "verification_notes": "The app's current list matches both independent secondary sources exactly.",
+      "used_in": "src/config/taxConfig.ts:61-66 (PND94_QUALIFYING_INCOME_TYPES)"
+    }
+  ]
+}

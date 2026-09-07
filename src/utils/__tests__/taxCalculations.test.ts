@@ -5,10 +5,17 @@ import {
   calculateAnnualTax,
   calculateChildAllowance,
   calculateFreelancerTax,
+  calculateCompanyOwnerTax,
   formatThb,
   formatPercent,
 } from '../taxCalculations';
 import { TaxFormData, TAX_CONSTANTS } from '../../types/taxForm';
+import {
+  CompanyOwnerFormData,
+  createDefaultCompanyOwnerFormData,
+  createDefaultCompanyInfo,
+  DividendEntry,
+} from '../../types/companyOwnerForm';
 import {
   FreelancerFormData,
   ThaiIncomeEntry,
@@ -117,6 +124,30 @@ describe('calculateAllowances', () => {
     // Test cap at 4 parents
     const tooManyParents = createBaseFormData({ numberOfParents: 6 });
     expect(calculateAllowances(tooManyParents)).toBe(60000 + 120000); // personal + max 4 parents
+  });
+
+  it('includes senior allowance for taxpayers 65 or older', () => {
+    const formData = createBaseFormData({ isAge65OrOlder: true });
+    expect(calculateAllowances(formData)).toBe(
+      TAX_CONSTANTS.PERSONAL_ALLOWANCE + TAX_CONSTANTS.SENIOR_ALLOWANCE
+    );
+  });
+
+  it('does not include senior allowance when under 65', () => {
+    const formData = createBaseFormData({ isAge65OrOlder: false });
+    expect(calculateAllowances(formData)).toBe(TAX_CONSTANTS.PERSONAL_ALLOWANCE);
+  });
+
+  it('combines all allowance categories (married, senior, children, parents)', () => {
+    const formData = createBaseFormData({
+      maritalStatus: 'married',
+      spouseHasNoIncome: true,
+      isAge65OrOlder: true,
+      children: [{ birthYear: 2020 }],
+      numberOfParents: 2,
+    });
+    // Personal 60k + spouse 60k + senior 190k + child 30k + 2 parents (60k) = 400k
+    expect(calculateAllowances(formData)).toBe(400000);
   });
 });
 
@@ -314,6 +345,93 @@ describe('calculateAnnualTax', () => {
     expect(result.taxOwed).toBe(0);
     expect(result.effectiveRate).toBe(0);
   });
+
+  it('applies Social Security contribution as a deduction, capped at the maximum', () => {
+    const formData = createBaseFormData({
+      annualIncome: 500000,
+      includeSocialSecurity: true,
+      socialSecurityContribution: TAX_CONSTANTS.MAX_SOCIAL_SECURITY + 5000, // over the cap
+    });
+
+    const result = calculateAnnualTax(formData);
+
+    expect(result.breakdown.socialSecurity).toBe(TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
+    // Standard deduction 100,000 + allowances 60,000 + SS cap 10,500
+    const expectedTaxable = 500000 - 100000 - 60000 - TAX_CONSTANTS.MAX_SOCIAL_SECURITY;
+    expect(result.taxableIncome).toBe(expectedTaxable);
+  });
+
+  it('applies senior allowance in the full calculation for a taxpayer 65+', () => {
+    const formData = createBaseFormData({
+      annualIncome: 500000,
+      isAge65OrOlder: true,
+    });
+
+    const result = calculateAnnualTax(formData);
+
+    expect(result.totalAllowances).toBe(
+      TAX_CONSTANTS.PERSONAL_ALLOWANCE + TAX_CONSTANTS.SENIOR_ALLOWANCE
+    );
+    // Standard deduction 100,000 + allowances 250,000 = 350,000; taxable = 500,000 - 350,000
+    expect(result.taxableIncome).toBe(150000);
+    expect(result.taxOwed).toBe(0); // fully within the 0% bracket
+  });
+
+  it('calculates very high income (top 35% bracket) correctly', () => {
+    const formData = createBaseFormData({
+      annualIncome: 20000000,
+    });
+
+    const result = calculateAnnualTax(formData);
+
+    // Standard deduction capped at 100,000; allowances 60,000 (personal only)
+    const expectedTaxable = 20000000 - 100000 - 60000; // 19,840,000
+    const expectedTax =
+      150000 * 0.05 +
+      200000 * 0.1 +
+      250000 * 0.15 +
+      250000 * 0.2 +
+      1000000 * 0.25 +
+      3000000 * 0.3 +
+      (expectedTaxable - 5000000) * 0.35;
+
+    expect(result.taxableIncome).toBe(expectedTaxable);
+    expect(result.taxOwed).toBeCloseTo(expectedTax, 5);
+  });
+
+  it('lands exactly on the 300k -> 500k bracket boundary after allowances', () => {
+    // Income chosen so taxable income lands exactly on the 500,000 boundary:
+    // 600,000 - 100,000 (std ded) - 60,000 (personal) = 440,000 taxable... adjust to hit 500,000 exactly.
+    const formData = createBaseFormData({
+      annualIncome: 660000, // std ded capped at 100,000; taxable = 660,000-100,000-60,000 = 500,000
+    });
+
+    const result = calculateAnnualTax(formData);
+
+    expect(result.taxableIncome).toBe(500000);
+    expect(result.taxOwed).toBeCloseTo(150000 * 0.05 + 200000 * 0.1, 5);
+  });
+
+  it('handles a very large bonus folded into annual income', () => {
+    // A bonus is just additional taxable income for the year in this calculator —
+    // verify a base salary + large bonus combination taxes correctly.
+    const baseSalary = 600000;
+    const bonus = 400000;
+    const formData = createBaseFormData({
+      annualIncome: baseSalary + bonus, // 1,000,000
+      taxWithheld: 40000,
+    });
+
+    const result = calculateAnnualTax(formData);
+
+    // Standard deduction 100,000 + personal allowance 60,000
+    expect(result.taxableIncome).toBe(1000000 - 100000 - 60000); // 840,000
+    // Full brackets up to 750k, plus 90,000 of the remainder at 20%
+    const expectedTax =
+      150000 * 0.05 + 200000 * 0.1 + 250000 * 0.15 + 90000 * 0.2;
+    expect(result.taxOwed).toBeCloseTo(expectedTax, 5);
+    expect(result.refundOrOwed).toBeCloseTo(40000 - expectedTax, 5);
+  });
 });
 
 describe('formatThb', () => {
@@ -433,7 +551,11 @@ describe('calculateFreelancerTax', () => {
       expect(result.grossTaxBeforeCredits).toBe(48500);
     });
 
-    it('calculates tax for contractor income (40(7)) at 40%', () => {
+    it('calculates tax for contractor income (40(7)) at 60%', () => {
+      // Rate corrected 2026-09-07 from an incorrect 40% to 60%, per RD's
+      // "Guide to Personal Income Tax Return 2021 (PND90)", which directly
+      // states 60% for hire-of-work income where the contractor supplies
+      // essential materials. See tax-data/2026/deductions.json#flat-rate-contractor-40-7.
       const formData = createFreelancerFormData({
         daysInThailand: 200,
         isThaiResident: true,
@@ -447,11 +569,11 @@ describe('calculateFreelancerTax', () => {
       const result = calculateFreelancerTax(formData);
 
       // Income: 800,000
-      // Flat-rate deduction for contractor (40(7)): 40% = 320,000
+      // Flat-rate deduction for contractor (40(7)): 60% = 480,000
       // Personal allowance: 60,000
-      // Taxable: 800,000 - 320,000 - 60,000 = 420,000
-      expect(result.expenseDeduction).toBe(320000);
-      expect(result.taxableIncome).toBe(420000);
+      // Taxable: 800,000 - 480,000 - 60,000 = 260,000
+      expect(result.expenseDeduction).toBe(480000);
+      expect(result.taxableIncome).toBe(260000);
     });
 
     it('handles multiple income types correctly', () => {
@@ -769,6 +891,78 @@ describe('calculateFreelancerTax', () => {
     });
   });
 
+  describe('very high income', () => {
+    it('handles very high income across the top tax bracket', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 300,
+        isThaiResident: true,
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(15000000, 'business_sales_40_8'), // 60% flat deduction
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      // Expense deduction: 15,000,000 * 60% = 9,000,000
+      // Taxable: 15,000,000 - 9,000,000 - 60,000 (personal allowance) = 5,940,000
+      expect(result.expenseDeduction).toBe(9000000);
+      expect(result.taxableIncome).toBe(5940000);
+      const taxAt5M =
+        150000 * 0.05 + 200000 * 0.1 + 250000 * 0.15 + 250000 * 0.2 + 1000000 * 0.25 + 3000000 * 0.3;
+      expect(result.grossTaxBeforeCredits).toBeCloseTo(taxAt5M + 940000 * 0.35, 5);
+    });
+  });
+
+  describe('LTR visa benefits', () => {
+    it('taxes salary income at the 17% flat rate for LTR Highly Skilled visa holders', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 300,
+        isThaiResident: true,
+        visaType: 'ltr_highly_skilled',
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(2000000, 'salary_40_1'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.ltrBenefitApplied).toBe(true);
+      expect(result.ltrFlatRateTax).toBeCloseTo(2000000 * 0.17, 5);
+      // Salary income is excluded from the progressive calculation entirely,
+      // so with no other income taxable income for progressive tax is 0.
+      expect(result.grossTaxBeforeCredits).toBeCloseTo(2000000 * 0.17, 5);
+    });
+
+    it('exempts foreign income entirely for LTR Wealthy Global Citizen visa holders', () => {
+      const formData = createFreelancerFormData({
+        daysInThailand: 300,
+        isThaiResident: true,
+        visaType: 'ltr_wealthy_global',
+        hasForeignIncome: true,
+        foreignIncomeEntries: [
+          createForeignIncomeEntry(1000000, '2024-03-01', '2024-04-15'),
+        ],
+        thaiIncomeEntries: [
+          createThaiIncomeEntry(500000, 'business_sales_40_8'),
+        ],
+        expenseMethod: 'force_flat',
+        maritalStatus: 'single',
+      });
+
+      const result = calculateFreelancerTax(formData);
+
+      expect(result.ltrForeignIncomeExempt).toBe(true);
+      expect(result.taxableForeignIncome).toBe(0);
+      expect(result.foreignIncomeTotal).toBe(1000000); // full amount reported...
+      // ...but excluded entirely from gross/taxable income since it's LTR-exempt
+      expect(result.grossIncome).toBe(500000);
+    });
+  });
+
   describe('edge cases', () => {
     it('handles zero income gracefully', () => {
       const formData = createFreelancerFormData({
@@ -806,5 +1000,84 @@ describe('calculateFreelancerTax', () => {
       expect(result.taxableForeignIncome).toBe(500000);
       expect(result.grossIncome).toBe(500000);
     });
+  });
+});
+
+function createDividendEntry(overrides: Partial<DividendEntry> = {}): DividendEntry {
+  return {
+    id: 'div-1',
+    amount: 0,
+    dividendType: 'thai_listed',
+    withholdingTax: 0,
+    companyName: 'Test Co',
+    dateReceived: '2026-01-01',
+    includeInPIT: true,
+    ...overrides,
+  };
+}
+
+function createCompanyOwnerFormData(
+  overrides: Partial<CompanyOwnerFormData> = {}
+): CompanyOwnerFormData {
+  return {
+    ...createDefaultCompanyOwnerFormData(),
+    companyInfo: createDefaultCompanyInfo(),
+    ...overrides,
+  };
+}
+
+describe('calculateCompanyOwnerTax', () => {
+  it('returns zero tax for a company owner with no income', () => {
+    const formData = createCompanyOwnerFormData();
+    const result = calculateCompanyOwnerTax(formData);
+
+    expect(result.grossIncome).toBe(0);
+    expect(result.taxableIncome).toBe(0);
+    expect(result.taxOwed).toBe(0);
+  });
+
+  it('applies the standard deduction only to employment income, not dividends', () => {
+    const formData = createCompanyOwnerFormData({
+      salaryFromCompany: 600000,
+      hasDividends: true,
+      dividendEntries: [createDividendEntry({ amount: 200000, withholdingTax: 20000 })],
+    });
+
+    const result = calculateCompanyOwnerTax(formData);
+
+    // Gross income = salary + taxable dividends (both included since includeInPIT=true)
+    expect(result.grossIncome).toBe(800000);
+    // Standard deduction (50% of employment income, capped at 100,000) applies
+    // only to the 600,000 salary portion, not to the 200,000 dividend portion.
+    const expectedStandardDeduction = Math.min(600000 * 0.5, 100000);
+    expect(result.totalDeductions).toBeGreaterThanOrEqual(expectedStandardDeduction);
+  });
+
+  it('excludes dividend entries with includeInPIT=false from gross income', () => {
+    const formData = createCompanyOwnerFormData({
+      salaryFromCompany: 400000,
+      hasDividends: true,
+      dividendEntries: [
+        createDividendEntry({ amount: 300000, withholdingTax: 30000, includeInPIT: false }),
+      ],
+    });
+
+    const result = calculateCompanyOwnerTax(formData);
+
+    expect(result.grossIncome).toBe(400000);
+  });
+
+  it('credits dividend withholding tax against tax owed', () => {
+    const formData = createCompanyOwnerFormData({
+      salaryFromCompany: 0,
+      salaryWithholdingTax: 0,
+      hasDividends: true,
+      dividendEntries: [createDividendEntry({ amount: 100000, withholdingTax: 10000 })],
+    });
+
+    const result = calculateCompanyOwnerTax(formData);
+
+    expect(result.taxWithheld).toBe(10000);
+    expect(result.refundOrOwed).toBe(10000 - result.taxOwed);
   });
 });

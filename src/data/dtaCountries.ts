@@ -1,7 +1,12 @@
 /**
  * Thailand Double Tax Agreement (DTA) country database
  *
- * Thailand has 61 DTA partner countries as of 2025.
+ * This list currently has 61 countries marked hasDTA: true. A 2026-09-07
+ * research pass parsed the RD's own live data table and found 62 distinct
+ * countries currently have an in-force DTA — this array is likely missing
+ * one. The specific missing country has not been identified; do not assume
+ * which one without re-checking the live RD table. See TAX_RULES.md
+ * (foreign-income.json#dta-country-list) for details before editing this list.
  * Source: Thai Revenue Department (rd.go.th/english/766.html)
  *
  * DTAs primarily use the CREDIT METHOD: taxes paid abroad can be

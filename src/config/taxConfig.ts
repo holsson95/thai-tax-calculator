@@ -4,27 +4,47 @@ import { BusinessCategory } from '../types/soleProprietorForm';
 /**
  * Flat-rate deduction percentages per income type (Revenue Code sections)
  * These rates are applied to gross income when using flat-rate deduction method
+ * Source: Thai Revenue Department — Guide to Personal Income Tax Return 2021 (PND90)
+ * https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf
+ * See TAX_RULES.md / tax-data/2026/deductions.json for full sourcing detail.
  */
 export const FLAT_RATE_DEDUCTIONS: Record<IncomeType, number> = {
   salary_40_1: 0.50, // 50% capped at 100,000 THB (handled separately)
-  liberal_profession_40_6: 0.30, // 30% default, some professions get 60%
-  contractor_40_7: 0.40, // 40%
+  liberal_profession_40_6: 0.30, // 30% default, medical practice gets 60% (see LIBERAL_PROFESSION_RATES)
+  contractor_40_7: 0.60, // 60% — corrected 2026-09-07 from an incorrect 40%; RD guide directly confirms 60% for hire-of-work income where the contractor supplies essential materials
   business_sales_40_8: 0.60, // 60%
-  rental_40_5: 0.30, // 30%
+  rental_40_5: 0.30, // 30% (applies to houses/buildings/vehicles; RD's table has lower rates for land — not modeled here)
   dividend: 0, // No expense deduction for dividends
   other: 0, // No default deduction for unclassified income
 };
 
 /**
  * Liberal profession sub-categories with their specific deduction rates
- * Section 40(6) allows either 30% or 60% depending on profession type
+ * Section 40(6) allows either 30% or 60% depending on profession type.
+ *
+ * RD's official Section 40(6) list is exactly six professions: legal, medical
+ * (arts of healing), engineering, architecture, accounting, fine arts. Only
+ * medical gets 60% — the rest get 30%.
+ *
+ * "entertainment", "sports", and "author_royalties" were REMOVED from this
+ * table on 2026-09-07 (were previously listed at 60%): they are not Section
+ * 40(6) income at all. Entertainers/athletes are Section 40(8) income with a
+ * tiered 60%/40%-above-300,000-THB rate capped at 600,000 THB total; author/
+ * royalty income is Section 40(3) "royalties" at 50%, capped at 100,000 THB
+ * (200,000 THB if filing jointly with an earning spouse). Neither of these is
+ * a flat percentage the way this table assumes, so they cannot simply be
+ * re-added here with a corrected number — they'd need dedicated tiered/capped
+ * calculation logic if ever wired into the app. See
+ * tax-data/2026/deductions.json#liberal-profession-subrates for full detail.
+ *
+ * NOTE: this table is not currently read by any calculation or UI component —
+ * ThaiIncomeEntry has no sub-type field, and calculateFlatRateDeduction always
+ * applies the single default rate in FLAT_RATE_DEDUCTIONS.liberal_profession_40_6.
+ * Kept here as documentation-of-record; correct the data even though unused.
  */
 export const LIBERAL_PROFESSION_RATES: Record<string, number> = {
   // 60% deduction professions
   medical_practice: 0.60,
-  entertainment: 0.60,
-  sports: 0.60,
-  author_royalties: 0.60,
 
   // 30% deduction professions
   legal: 0.30,
@@ -148,11 +168,11 @@ export const EXTENDED_CURRENCIES = [
  * Tax year configuration
  */
 export const TAX_YEAR_CONFIG = {
-  CURRENT_TAX_YEAR: 2024,
-  TAX_YEAR_START: '2024-01-01',
-  TAX_YEAR_END: '2024-12-31',
-  PND94_DUE_DATE: '2024-09-30', // September 30 of tax year
-  PND90_91_DUE_DATE: '2025-03-31', // March 31 of following year
+  CURRENT_TAX_YEAR: 2026,
+  TAX_YEAR_START: '2026-01-01',
+  TAX_YEAR_END: '2026-12-31',
+  PND94_DUE_DATE: '2026-09-30', // September 30 of tax year
+  PND90_91_DUE_DATE: '2027-03-31', // March 31 of following year
 };
 
 /**
@@ -172,7 +192,6 @@ export const DEDUCTION_CAPS = {
   MAX_PROVIDENT_FUND: 500000,
   MAX_RMF: 500000,
   MAX_SSF: 200000,
-  MAX_SOCIAL_SECURITY: 9000,
 };
 
 /**
@@ -230,10 +249,10 @@ export const BUSINESS_CATEGORY_LABELS: Record<BusinessCategory, string> = {
 export const BUSINESS_CATEGORY_DESCRIPTIONS: Record<BusinessCategory, string> = {
   retail_trade: 'Selling goods - 60% flat-rate deduction',
   manufacturing: 'Producing goods for sale - 60% flat-rate deduction',
-  service_business: 'General services - 40% flat-rate deduction',
+  service_business: 'General services - 60% flat-rate deduction',
   restaurant_food: 'Food and beverage business - 60% flat-rate deduction',
-  transportation: 'Delivery and logistics - 40% flat-rate deduction',
-  construction: 'Building and contracting - 40% flat-rate deduction',
+  transportation: 'Delivery and logistics - 60% flat-rate deduction',
+  construction: 'Building and contracting - 60% flat-rate deduction',
   professional_service: 'Legal, accounting, consulting - 30% flat-rate deduction',
   rental_property: 'Renting property - 30% flat-rate deduction',
   agriculture: 'Farming and agricultural - 60% flat-rate deduction',
@@ -241,17 +260,28 @@ export const BUSINESS_CATEGORY_DESCRIPTIONS: Record<BusinessCategory, string> = 
 };
 
 /**
- * Flat-rate deduction percentages by business category
+ * Flat-rate deduction percentages by business category (Section 40(8) sole
+ * proprietor income). Corrected 2026-09-07: service_business, transportation,
+ * construction, and other_business were previously set to an incorrect 40% —
+ * current RD guidance sets nearly all Section 40(8)/40(7) business categories
+ * to a flat 60%. Source: Sherrings and Acclime Thailand tax guides,
+ * corroborating the RD guide used for FLAT_RATE_DEDUCTIONS above. See
+ * tax-data/2026/deductions.json#business-category-flat-rates for detail.
+ *
+ * NOTE: this table is not currently read by any calculation — there is no
+ * sole-proprietor tax calculation function yet (BusinessProfileStep.tsx only
+ * uses the category for display, via BUSINESS_CATEGORY_DESCRIPTIONS above).
+ * Kept here as documentation-of-record; correct the data even though unused.
  */
 export const BUSINESS_FLAT_RATE_DEDUCTIONS: Record<BusinessCategory, number> = {
   retail_trade: 0.60,
   manufacturing: 0.60,
-  service_business: 0.40,
+  service_business: 0.60,
   restaurant_food: 0.60,
-  transportation: 0.40,
-  construction: 0.40,
+  transportation: 0.60,
+  construction: 0.60,
   professional_service: 0.30,
   rental_property: 0.30,
   agriculture: 0.60,
-  other_business: 0.40,
+  other_business: 0.60,
 };

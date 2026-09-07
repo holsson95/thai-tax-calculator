@@ -1,0 +1,100 @@
+{
+  "category": "allowances",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Personal allowances that reduce taxable income before deductions.",
+  "known_issue": "Thai Revenue Department's own English-language page (rd.go.th/english/6045.html) is STALE for these figures too — see income-tax-brackets.json known_issue. Do not use it as a source here.",
+  "rules": [
+    {
+      "id": "personal-allowance",
+      "rule": "Personal allowance",
+      "value": 60000,
+      "conditions": "Applies to every taxpayer, unconditionally. In effect since the 2017 tax year (raised from 30,000 by Revenue Code Amendment Act (No. 44) B.E. 2560).",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions (secondary; corroborated by Sherrings)",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": false,
+      "verification_notes": "Two independent reputable secondary sources agree, and the legal basis (Amendment Act No. 44) is named, but no working primary RD/Revenue Code page was found stating this figure directly during the 2026-09-07 research pass — RD's own English page is stale.",
+      "used_in": "src/types/taxForm.ts:236,76 (TAX_CONSTANTS.PERSONAL_ALLOWANCE, MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE)"
+    },
+    {
+      "id": "spouse-allowance",
+      "rule": "Spouse allowance",
+      "value": 60000,
+      "conditions": "Only if married AND spouse has no income of their own (or the couple files a joint return). In effect since the 2017 tax year, same amendment as personal allowance.",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions; corroborated by Sherrings",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as personal-allowance.",
+      "used_in": "src/types/taxForm.ts:237,77 (TAX_CONSTANTS.SPOUSE_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE)"
+    },
+    {
+      "id": "senior-allowance",
+      "rule": "Senior citizen (65+) income exemption — misnamed 'allowance' in code",
+      "value": 190000,
+      "conditions": "Taxpayer is age 65 or older during the tax year. Confirmed to legally be an INCOME EXEMPTION (exempting the first 190,000 THB of income), not a standard deduction-style 'allowance' the way personal/spouse allowance are.",
+      "source": {
+        "label": "Sherrings — Personal Tax Deductions & Allowances Thailand; corroborated by an RD English-language form referencing the 65+ exemption",
+        "url": "https://sherrings.com/personal-tax-deductions-allowances-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "IMPORTANT CORRECTION: the codebase and articles.ts previously cited this as 'Revenue Code Section 42(17)' but the 2026-09-07 research pass could NOT confirm that section number from any source fetched — no page explicitly cites Section 42(17). That citation should be treated as unconfirmed, not fact, until a primary source is found. Recommend the app's copy describe this as 'an income exemption for taxpayers 65+' rather than asserting a specific Revenue Code section number it hasn't verified.",
+      "used_in": "src/types/taxForm.ts:238,78 (TAX_CONSTANTS.SENIOR_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE); also cited (with the now-unconfirmed section number) in src/data/articles.ts:1474"
+    },
+    {
+      "id": "child-allowance-base",
+      "rule": "Child allowance (base, per child)",
+      "value": 30000,
+      "conditions": "Per qualifying child (legitimate or adopted, adopted children capped at 3 total per taxpayer). In effect since the 2017 tax year.",
+      "source": {
+        "label": "Forvis Mazars — Tax deduction for a second child; corroborated by Sherrings",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/tax-deduction-for-a-second-child"
+      },
+      "verified": true,
+      "verification_notes": "Verified via two independent reputable secondary sources with a named legal basis and consistent detail (including the adopted-children cap of 3, which the app does not currently model).",
+      "used_in": "src/types/taxForm.ts:239,80 (CHILD_ALLOWANCE_BASE)"
+    },
+    {
+      "id": "child-allowance-bonus",
+      "rule": "Child allowance bonus (2nd+ child)",
+      "value": 30000,
+      "conditions": "Additional amount (total 60,000 THB) for the 2nd and subsequent child BORN IN OR AFTER 2018, by chronological birth order. Effective from Revenue Code Amendment Act (No. 46) B.E. 2561, gazetted/effective 12 November 2018 — a SEPARATE, LATER amendment than the one that set the base allowance. IMPORTANT LIMITATION found in research: this extra amount does NOT apply to adopted children — only to legitimate (biological) children of the taxpayer or spouse. The app does not currently model this adopted-vs-biological distinction.",
+      "source": {
+        "label": "Forvis Mazars — Tax deduction for a second child; corroborated by Sherrings",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/tax-deduction-for-a-second-child"
+      },
+      "verified": true,
+      "verification_notes": "Verified via two independent reputable secondary sources, both naming Amendment Act No. 46 (B.E. 2561) and the 12 Nov 2018 effective date. The 2018 birth-year cutoff used in the app's code matches. Flagging the adopted-child exclusion as a real modeling gap, not just a sourcing gap — the calculator would currently overstate this allowance for a family whose 2nd+ child is adopted.",
+      "used_in": "src/types/taxForm.ts:240,81-82 (CHILD_ALLOWANCE_BONUS, CHILD_BONUS_BIRTH_YEAR); src/utils/taxCalculations.ts:38-52 (calculateChildAllowance)"
+    },
+    {
+      "id": "parent-allowance",
+      "rule": "Parent support allowance (per parent)",
+      "value": 30000,
+      "conditions": "Per qualifying parent (own or spouse's). To qualify, the parent must be 60+ years old, living in Thailand, and have assessable income (including exempt income) not exceeding 30,000 THB/year; only one sibling may claim the allowance per parent (requires a Parental Care Certificate, Lor.Yor.04). The app currently only records a user self-certification checkbox for these conditions rather than the specific numeric thresholds (parent age 60+, parent income ≤30,000).",
+      "source": {
+        "label": "MSNA Group — Parents' Allowance for Computation of Thai Personal Income Tax; corroborated by PwC and Sherrings",
+        "url": "https://msnagroup.com/parents-allowance-for-computation-of-thai-personal-income-tax/"
+      },
+      "verified": false,
+      "verification_notes": "Partially verified across three sources for the 30,000 THB figure and eligibility mechanics, but no primary RD/Revenue Code citation was located.",
+      "used_in": "src/types/taxForm.ts:241,84 (PARENT_ALLOWANCE)"
+    },
+    {
+      "id": "max-parents",
+      "rule": "Maximum parents eligible for allowance",
+      "value": 4,
+      "conditions": "IMPORTANT CORRECTION: no source found states an explicit statutory 'maximum of 4 parents' cap. The number 4 falls out of arithmetic — at most 2 of the taxpayer's own parents + 2 of the spouse's parents — not a stated numeric ceiling in the law itself. The app's constant is a reasonable real-world derived cap, but should be documented as 'up to 2 own parents + 2 spouse's parents' rather than cited as if the law names the number 4 directly.",
+      "source": {
+        "label": "Derived from parent-eligibility rules (own + spouse's parents), not a directly-stated statutory cap — see MSNA Group source",
+        "url": "https://msnagroup.com/parents-allowance-for-computation-of-thai-personal-income-tax/"
+      },
+      "verified": false,
+      "verification_notes": "This is a derived figure, not a directly sourced one. Recommend rewording any user-facing copy that implies '4' is a named statutory limit.",
+      "used_in": "src/types/taxForm.ts:242,85 (MAX_PARENTS)"
+    }
+  ]
+}

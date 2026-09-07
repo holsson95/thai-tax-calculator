@@ -1,0 +1,87 @@
+{
+  "category": "withholding",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Withholding tax (WHT) rates applied at source by payers, shown in the UI as typical/expected rates per income type.",
+  "known_issue": "These rates do NOT come from Revenue Code Section 40(5)-(8) directly (those sections only classify income TYPE, not WHT rate) — they come from a separate delegated Revenue Department instruction, Tor.Por. 4/2528 (26 Sep 1985) and its amendments, issued under Section 3 Tredecim. Any in-code comment that implies '40(6) = 3%' as if the rate lives in that Revenue Code section is a mislabeling of the legal basis, even where the number is correct.",
+  "rules": [
+    {
+      "id": "wht-liberal-profession-40-6",
+      "rule": "Withholding tax — Liberal profession income (40(6))",
+      "value": 0.03,
+      "conditions": "3% when payer is a company/juristic partnership (the common case). Rate rises to 10% if the payer is a foundation or association. There is no separate lower/higher rate specifically for medical professionals — 3% applies uniformly across law, medicine, engineering, architecture, accountancy, and fine arts. Individual-to-individual payments typically carry no statutory withholding obligation at all, since WHT agents are generally juristic persons or government bodies, not private individuals.",
+      "source": {
+        "label": "Thai Revenue Department — WHT rate table under Tor.Por. 4/2528",
+        "url": "https://www.rd.go.th/3535.html"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed via RD's own page hosting the Tor.Por. 4/2528 rate table. The app's '3% typical' framing is correct as the modal case but omits the 10% foundation/association exception, which is a real (if less common) scenario worth documenting.",
+      "used_in": "src/data/incomeTypes.ts:60 (INCOME_TYPE_INFO.liberal_profession_40_6.withholdingRate)"
+    },
+    {
+      "id": "wht-contractor-40-7",
+      "rule": "Withholding tax — Contractor income (40(7))",
+      "value": 0.03,
+      "conditions": "3% when payer is a Thai company/partnership or a foreign company with a permanent establishment (PE) in Thailand. Rises to 5% if the payer is a foreign company with no PE/branch in Thailand.",
+      "source": {
+        "label": "Thai Revenue Department — WHT rate table under Tor.Por. 4/2528; corroborated by Acclime Thailand",
+        "url": "https://www.rd.go.th/3535.html"
+      },
+      "verified": true,
+      "verification_notes": "3% confirmed as correct for the standard Thai-resident-payer case. The 5% foreign-payer-without-PE branch is not modeled in the app — worth flagging as a documented gap rather than an error, since it's a less common scenario for most users.",
+      "used_in": "src/data/incomeTypes.ts:78 (INCOME_TYPE_INFO.contractor_40_7.withholdingRate)"
+    },
+    {
+      "id": "wht-business-sales-40-8",
+      "rule": "Withholding tax — Business & sales income (40(8))",
+      "value": 0.03,
+      "conditions": "IMPORTANT: this is NOT a single rate for all Section 40(8) income — the rate is set per specific activity sub-category enumerated in Tor.Por. 4/2528 and its amendments: general service fees = 3%, transportation/freight = 1%, advertising = 2%, non-life insurance premiums = 1%, prizes/contest winnings = 5%. The app's flat 3% only holds for the 'general service fee' sub-category.",
+      "source": {
+        "label": "Acclime Thailand — Withholding Tax Guide; corroborated by Forvis Mazars",
+        "url": "https://thailand.acclime.com/guides/withholding-tax/"
+      },
+      "verified": true,
+      "verification_notes": "CONFIRMED OVERSIMPLIFICATION: research found this is a real gap, not just a sourcing gap. The app presents one flat rate for all of Section 40(8), but transportation (1%), advertising (2%), and other sub-categories are materially different and commonly encountered (e.g. many freelancers/gig workers doing delivery or logistics work would actually see 1%, not 3%). Recommend either adding a sub-category selector or explicitly labeling the 3% figure as 'general service fee — other activities differ.'",
+      "used_in": "src/data/incomeTypes.ts:97 (INCOME_TYPE_INFO.business_sales_40_8.withholdingRate)"
+    },
+    {
+      "id": "wht-rental-40-5",
+      "rule": "Withholding tax — Rental income (40(5))",
+      "value": 0.05,
+      "conditions": "5% when payer is a company/juristic partnership paying an individual lessor. Rises to 10% if payer is a foundation/association. Individual-to-individual rent (the most common real-world case for private landlords) typically has NO statutory withholding obligation at all, since only certain payer types are designated withholding agents.",
+      "source": {
+        "label": "Thai Revenue Department — WHT rate table under Tor.Por. 4/2528; corroborated by Forvis Mazars and Acclime",
+        "url": "https://www.rd.go.th/3535.html"
+      },
+      "verified": true,
+      "verification_notes": "5% is correct for the intended case (juristic payer) but the app should state that assumption explicitly, since a large share of real rental payments (individual landlord + individual tenant) are never withheld at all.",
+      "used_in": "src/data/incomeTypes.ts:115 (INCOME_TYPE_INFO.rental_40_5.withholdingRate)"
+    },
+    {
+      "id": "wht-dividend",
+      "rule": "Withholding tax — Dividend income (final withholding election)",
+      "value": 0.10,
+      "conditions": "10% flat WHT. Taxpayer may elect under Revenue Code Section 48(3) to treat the 10% as final tax (dividend excluded from PIT base entirely), OR forgo the election, gross up the dividend with the underlying corporate tax credit, include it in PIT taxable income, and net the credit against PIT payable. The 'final 10%' election is generally more favorable near the top PIT bracket (35%); the 'include and credit' route is generally more favorable at lower/mid income.",
+      "source": {
+        "label": "Sherrings — Dividend Income Personal Income Tax Thailand; corroborated by PwC Tax Summaries",
+        "url": "https://sherrings.com/dividend-income-personal-income-tax-thailand.html"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed correct, with the specific legal basis (Section 48(3)) identified. Note: some secondary sources describe the crossover threshold using an outdated '37% top bracket' — Thailand's top PIT marginal rate has been 35% since 2017 (see income-tax-brackets.json); if the app ever models this crossover decision, use 35%, not 37%.",
+      "used_in": "src/data/incomeTypes.ts:131 (INCOME_TYPE_INFO.dividend.withholdingRate); src/types/companyOwnerForm.ts (calculateDividendWithholdingCredits, referenced in src/utils/taxCalculations.ts:211)"
+    },
+    {
+      "id": "salary-40-1-no-flat-wht",
+      "rule": "Withholding tax — Salary income (40(1))",
+      "value": null,
+      "conditions": "No flat withholding rate — employer withholding is computed progressively based on estimated annual tax, not a single percentage.",
+      "source": {
+        "label": "N/A — structural note, not a numeric rule",
+        "url": ""
+      },
+      "verified": true,
+      "verification_notes": "This entry documents an intentional 'undefined' in the code (withholdingRate: undefined for salary_40_1 and 'other'), not a missing source — it reflects that salary withholding isn't a flat rate.",
+      "used_in": "src/data/incomeTypes.ts:39 (INCOME_TYPE_INFO.salary_40_1.withholdingRate = undefined)"
+    }
+  ]
+}

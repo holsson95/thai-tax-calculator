@@ -1,0 +1,86 @@
+{
+  "category": "foreign-income",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Foreign-sourced income remittance rules, DTA foreign tax credit logic, and LTR visa-related exemptions/flat rates.",
+  "rules": [
+    {
+      "id": "foreign-income-remittance-rule-start",
+      "rule": "Foreign income remittance rule effective date",
+      "value": "2024-01-01",
+      "conditions": "Order Por. 161/2566: foreign-sourced income earned on or after this date is assessable in Thailand when remitted by a Thai tax resident, in the same or a later tax year. A LATER clarifying order, Por. 162/2566 (issued 20 Nov 2023), confirms income earned BEFORE 2024-01-01 remains under the old same-year-remittance rule even if remitted in 2024+.",
+      "source": {
+        "label": "Mahanakorn Partners Group — Overview of Por. 161/2566 and Por. 162/2566; corroborated by KPMG Flash Alert",
+        "url": "https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed via multiple independent professional-services firms (KPMG, Forvis Mazars, Mahanakorn Partners) all agreeing on both order numbers, dates, and effect. The Revenue Department's original Thai-language order text was not directly fetched during this research pass — this is convergent secondary-source verification, not primary-document verification. No evidence found of any further 2025/2026 order changing this rule (a separately-discussed broader remittance-exemption decree was reportedly shelved, unrelated to this rule).",
+      "used_in": "src/config/taxConfig.ts:54 (TAX_THRESHOLDS.FOREIGN_INCOME_TAX_YEAR_START); src/utils/foreignIncomeCalculations.ts:112-127 (isForeignIncomeTaxable date check)"
+    },
+    {
+      "id": "dta-foreign-tax-credit-logic",
+      "rule": "Foreign tax credit — limited to lesser of foreign tax paid or Thai tax on same income, requires a DTA",
+      "value": "credit = min(foreignTaxPaid, ThaiTaxOnThatIncome); disallowed entirely if no DTA with source country",
+      "conditions": "Applies per foreign income entry; DTA existence checked against the DTA country list. Must actually pay foreign tax, remit the income to Thailand, include it in the Thai return, and keep documentation.",
+      "source": {
+        "label": "US-Thailand Double Taxation Convention, Article 25(2) (primary treaty text, illustrating the general DTA credit mechanism)",
+        "url": "https://www.irs.gov/pub/irs-trty/thailand.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed against actual primary treaty text: Article 25(2) states the credit 'shall not exceed that part of the Thai tax as computed before the credit is given which is appropriate to such item of income' — exactly the lesser-of mechanic the app implements. Also corroborated by Sherrings, citing an RD-published FTC guide.",
+      "used_in": "src/utils/foreignIncomeCalculations.ts:166-195 (calculateForeignTaxCredit); src/utils/taxCalculations.ts:438-442 (maxForeignTaxCredit cap)"
+    },
+    {
+      "id": "dta-country-list",
+      "rule": "List of countries with a Double Tax Agreement (DTA) with Thailand",
+      "value": "62 countries with an in-force DTA (see src/data/dtaCountries.ts — DTA_COUNTRIES array)",
+      "conditions": "A country is treated as DTA-covered for foreign tax credit eligibility only if present with hasDTA: true.",
+      "source": {
+        "label": "Thai Revenue Department — Double Tax Agreements (full list, live data table)",
+        "url": "https://www.rd.go.th/english/766.html"
+      },
+      "verified": true,
+      "verification_notes": "DISCREPANCY FOUND: the app's code comment claims '61 DTA partner countries as of 2025', but this research pass parsed RD's own live data table directly (page marked 'Last updated: 06.07.2026') and found 62 distinct countries with an in-force DTA (64 total DTA records — the Philippines and Singapore each have an older terminated treaty superseded by a current one, which likely explains the off-by-one). This is a primary-source-verified correction: update the code comment/count from 61 to 62. The underlying DTA_COUNTRIES array itself was not diffed line-by-line against the live RD list in this pass — recommend that as a follow-up before treating the full list as verified.",
+      "used_in": "src/data/dtaCountries.ts (DTA_COUNTRIES, hasDTAWithThailand) — comment at top of file states '61 DTA partner countries as of 2025', should be corrected to 62"
+    },
+    {
+      "id": "dta-pension-exemptions",
+      "rule": "DTA pension article exemptions (country + pension-type specific)",
+      "value": "See src/data/dtaCountries.ts — getPensionDTAExemption()",
+      "conditions": "Confirmed mechanism exists but is more nuanced than a blanket 'pensions are exempt' rule. Example from the US-Thailand treaty (read directly from primary text): government-service pensions (Art. 21(2)(a)) and social-security/public pensions (Art. 20(2)) are taxable ONLY in the source (paying) country. But ORDINARY PRIVATE pensions under the same treaty (Art. 20(1)) are taxable only in the state of RESIDENCE (i.e. only in Thailand for a Thai resident) — the OPPOSITE treatment. A blanket 'pensions are exempt from Thai tax' framing would be wrong for private pensions specifically.",
+      "source": {
+        "label": "US-Thailand Double Taxation Convention (1996), Articles 20-21 — primary treaty text",
+        "url": "https://www.irs.gov/pub/irs-trty/thailand.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Mechanism confirmed against actual treaty text for one example country (US). Per-country pension article numbers/conditions for the other 61 DTA partners still need individual verification — this should be prioritized by which countries the user base actually has pensioners from. IMPORTANT: verify the app's copy doesn't overgeneralize 'pension' as a single category — government/social-security pensions and private pensions can have opposite source-vs-residence treatment even within the same treaty.",
+      "used_in": "src/utils/foreignIncomeCalculations.ts:80-96 (getPensionDTAExemption usage)"
+    },
+    {
+      "id": "ltr-foreign-income-exemption-visas",
+      "rule": "LTR visa categories exempt from Thai tax on foreign income remitted to Thailand",
+      "value": ["ltr_wealthy_global", "ltr_wealthy_pensioner", "ltr_work_from_thailand"],
+      "conditions": "Holders of these three LTR (Long-Term Resident) visa categories are exempt from Thai PIT on foreign-sourced income (from employment, foreign business, or foreign property) for the PRIOR tax year's income, WHEN THAT INCOME IS BROUGHT INTO (REMITTED TO) THAILAND. Also requires maintaining BOI-prescribed LTR qualifications and filing a return declaring the exempt income; benefits are suspended for any year of non-compliance.",
+      "source": {
+        "label": "Royal Decree No. 743, B.E. 2565 (2022), Section 5 — primary source, hosted officially by BOI",
+        "url": "https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf"
+      },
+      "verified": true,
+      "verification_notes": "CORRECTION TO EARLIER APP WORDING: the app's prior description said this exemption applied 'regardless of remittance.' The actual decree text (Section 5) exempts foreign income only when it is 'derived... from an employment, or from business carried on abroad, or from a property situated abroad, and brought into Thailand' — i.e., the exemption is specifically for REMITTED income. In practice this still functions as a full exemption for these three visa categories (since non-remitted foreign income was never taxable for anyone regardless of LTR status), but the wording 'regardless of remittance' is imprecise and should be corrected to 'on income remitted to Thailand.' Fully verified against primary legal text (full decree PDF read directly).",
+      "used_in": "src/utils/foreignIncomeCalculations.ts:13-24 (LTR_FOREIGN_INCOME_EXEMPT_VISAS, hasLTRForeignIncomeExemption)"
+    },
+    {
+      "id": "ltr-highly-skilled-flat-rate",
+      "rule": "LTR Highly Skilled Professional flat tax rate on Thai employment income",
+      "value": 0.17,
+      "conditions": "17% flat withholding tax on Section 40(1)-type employment income (computed per Revenue Code Section 50(1)), replacing progressive rates up to 35%. Applies ONLY to the 'Highly-Skilled Professional' LTR sub-category — NOT to the SMART visa program, which is separate. Employer must be a company/juristic partnership in a 'targeted industry' under national competitiveness law, BOI investment-promotion law, or Eastern Economic Corridor (EEC) law. Taxpayer must not claim any refund/credit on the withheld tax. No minimum income threshold is stated in the decree itself — eligibility is industry/employer-based, not income-based.",
+      "source": {
+        "label": "Royal Decree No. 743, B.E. 2565 (2022), Sections 3-4 — primary source, hosted officially by BOI",
+        "url": "https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf"
+      },
+      "verified": true,
+      "verification_notes": "Fully verified against primary legal text (full decree PDF read directly, Sections 3-4). Corroborated by Price Sanond law firm, Sherrings, and the Australian-Thai Chamber of Commerce, which additionally note a Revenue Department Notification (No. 427 per Price Sanond) prescribing implementation procedures. This resolves what was previously the single largest citation gap in the registry (the app had zero citation for this rule before 2026-09-07).",
+      "used_in": "src/utils/taxCalculations.ts:31 (LTR_HIGHLY_SKILLED_FLAT_RATE)"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "category": "income-tax-brackets",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Progressive personal income tax (PIT) brackets applied to taxable income after all allowances and deductions.",
+  "known_issue": "Thai Revenue Department's own English-language page (rd.go.th/english/6045.html) is STALE — it still shows pre-2017 figures (top bracket at 4,000,000 THB, 30% max rate) and directly contradicts the current law. Do NOT cite this page as a current source for brackets, allowances, or the standard deduction rate. Verified via research pass on 2026-09-07.",
+  "rules": [
+    {
+      "id": "bracket-0-150k",
+      "rule": "0% bracket",
+      "value": { "from": 0, "upTo": 150000, "rate": 0 },
+      "conditions": "Applies to the first 150,000 THB of taxable income (after allowances/deductions). Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates (secondary source, cites Revenue Code Amendment Act (No. 44) B.E. 2560, gazetted 27 Jan 2017)",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Confirmed via a reputable secondary source with a named legal basis (Amendment Act No. 44), but not yet a primary RD/Revenue Code citation — RD's own English page for this is stale (see known_issue above) and no working primary-law page was located during this research pass.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-150k-300k",
+      "rule": "5% bracket",
+      "value": { "from": 150001, "upTo": 300000, "rate": 0.05 },
+      "conditions": "Applies to taxable income from 150,001 to 300,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-300k-500k",
+      "rule": "10% bracket",
+      "value": { "from": 300001, "upTo": 500000, "rate": 0.10 },
+      "conditions": "Applies to taxable income from 300,001 to 500,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-500k-750k",
+      "rule": "15% bracket",
+      "value": { "from": 500001, "upTo": 750000, "rate": 0.15 },
+      "conditions": "Applies to taxable income from 500,001 to 750,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-750k-1m",
+      "rule": "20% bracket",
+      "value": { "from": 750001, "upTo": 1000000, "rate": 0.20 },
+      "conditions": "Applies to taxable income from 750,001 to 1,000,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-1m-2m",
+      "rule": "25% bracket",
+      "value": { "from": 1000001, "upTo": 2000000, "rate": 0.25 },
+      "conditions": "Applies to taxable income from 1,000,001 to 2,000,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-2m-5m",
+      "rule": "30% bracket",
+      "value": { "from": 2000001, "upTo": 5000000, "rate": 0.30 },
+      "conditions": "Applies to taxable income from 2,000,001 to 5,000,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    },
+    {
+      "id": "bracket-5m-plus",
+      "rule": "35% bracket (top rate)",
+      "value": { "from": 5000001, "upTo": null, "rate": 0.35 },
+      "conditions": "Applies to taxable income above 5,000,000 THB. Effective from the 2017 tax year onward.",
+      "source": {
+        "label": "Sherrings — Thailand Personal Income Tax Rates",
+        "url": "https://sherrings.com/personal-income-tax-rates-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as bracket-0-150k. Note RD's own stale English page (see known_issue) shows an incorrect 4,000,000+/30% top bracket — do not use it to 'correct' this figure, it is the outdated one.",
+      "used_in": "src/types/taxForm.ts:260-269 (TAX_BRACKETS)"
+    }
+  ]
+}

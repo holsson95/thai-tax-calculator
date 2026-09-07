@@ -1,0 +1,246 @@
+{
+  "category": "deductions",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Expense deductions and deduction caps: standard/flat-rate deductions by income type, and caps on insurance/retirement/donation deductions.",
+  "CRITICAL_FLAG": "Research on 2026-09-07 against the Thai Revenue Department's own 'Guide to Personal Income Tax Return (PND90)' (rd.go.th/fileadmin/download/english_form/030265guide90.pdf, Appendix Table A) found SEVERAL POTENTIAL MATERIAL MISMATCHES between the app's current flat-rate deduction tables and the current official post-2017 rate schedule. These are NOT fixed in code — per CLAUDE.md, calculation-engine changes require inspection, justification, tests, and explicit approval. They are documented here for review. See individual rule entries below for details.",
+  "rules": [
+    {
+      "id": "standard-deduction-rate",
+      "rule": "Standard expense deduction rate (employment income, Section 40(1))",
+      "value": 0.50,
+      "conditions": "Applies to salary/employment income (Section 40(1)), capped at MAX_STANDARD_DEDUCTION.",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions (via the brackets/allowances research pass)",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": false,
+      "verification_notes": "Confirmed via reputable secondary source with named legal basis (Amendment Act No. 44, effective 2017), but no working primary RD page located.",
+      "used_in": "src/types/taxForm.ts:233,73 (STANDARD_DEDUCTION_RATE)"
+    },
+    {
+      "id": "max-standard-deduction",
+      "rule": "Standard expense deduction cap",
+      "value": 100000,
+      "conditions": "Caps the 50% standard deduction on employment income (Section 40(1)).",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": false,
+      "verification_notes": "Same sourcing status as standard-deduction-rate.",
+      "used_in": "src/types/taxForm.ts:234,74 (MAX_STANDARD_DEDUCTION); src/config/taxConfig.ts:163 (DEDUCTION_CAPS.SALARY_EXPENSE_CAP)"
+    },
+    {
+      "id": "flat-rate-rental-40-5",
+      "rule": "Flat-rate deduction — Rental income (40(5))",
+      "value": 0.30,
+      "conditions": "MISMATCH FOUND: the app applies a flat 30% to ALL Section 40(5) rental income. The RD's official guide (Table A) actually breaks this down by property type: houses/buildings/floating houses = 30%, vehicles = 30%, agricultural land = 20%, non-agricultural land = 15%, other property = 10%. The app's flat 30% is only correct for the houses/vehicles sub-category.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to PND90 Return, Appendix Table A, p.13",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Verified against a primary RD document (the official English-language filing guide). The 30% figure itself is correct for houses/buildings/vehicles, but the app has no categories for agricultural land (20%), non-agricultural land (15%), or other property (10%) — a real modeling gap, not just a sourcing gap. Recommend review before deciding whether to expand the rental income type with a property-type sub-selector.",
+      "used_in": "src/config/taxConfig.ts:13 (FLAT_RATE_DEDUCTIONS.rental_40_5)"
+    },
+    {
+      "id": "flat-rate-liberal-profession-40-6",
+      "rule": "Flat-rate deduction — Liberal profession income (40(6)), default",
+      "value": 0.30,
+      "conditions": "RD's official Section 40(6) list (Guide p.14-15) covers exactly six professions: legal, medical ('arts of healing'), engineering, architecture, accounting, and fine arts. Medical gets 60%; the other five get 30%. The app's default 30% for 'liberal_profession_40_6' is correct AS A DEFAULT for the five non-medical professions on this official list.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to PND90 Return, p.14-15",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Verified against a primary RD document. See flat-rate-liberal-profession-40-6-subrates below for a significant classification issue found with entertainment/sports/author-royalty.",
+      "used_in": "src/config/taxConfig.ts:10 (FLAT_RATE_DEDUCTIONS.liberal_profession_40_6)"
+    },
+    {
+      "id": "flat-rate-contractor-40-7",
+      "rule": "Flat-rate deduction — Contractor income (40(7))",
+      "value": 0.60,
+      "status": "FIXED 2026-09-07",
+      "conditions": "The correct Section 40(7) contractor flat-rate deduction (labor + essential materials the contractor supplies) is 60%. The app previously used 40%, confirmed wrong by two independent research passes; corrected in src/config/taxConfig.ts on 2026-09-07 with regression test coverage added.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return 2021 (PND90), Section 'No. 6 Income from contracts of work' (direct quote: '...checking the \"60 percent\" box and entering 60% of the income...'); corroborated by thailand.go.th official portal and Sherrings, both independently stating 60% for this category with no conflicting figure found anywhere",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "CONFIRMED via a second, independent research pass on 2026-09-07: the RD guide PDF was fetched and text-extracted directly (title page confirms '2021' edition — the filename's '030265' is an internal upload code, not a stale Buddhist-calendar year), and the quoted passage unambiguously states 60% for exactly this income description. Two additional independent secondary sources (thailand.go.th official government portal, Sherrings) both state 60% with no conflicting figure found anywhere in either research pass. FIXED 2026-09-07 with explicit user approval: src/config/taxConfig.ts:11 (contractor_40_7 changed 0.40 -> 0.60), regression test added in src/utils/__tests__/taxCalculations.test.ts (updated existing test) and src/config/__tests__/taxConfig.test.ts (new data-integrity test).",
+      "used_in": "src/config/taxConfig.ts (FLAT_RATE_DEDUCTIONS.contractor_40_7) — FIXED, see src/config/__tests__/taxConfig.test.ts"
+    },
+    {
+      "id": "flat-rate-business-sales-40-8",
+      "rule": "Flat-rate deduction — Business & sales income (40(8))",
+      "value": 0.60,
+      "conditions": "The app's 60% figure for the general 40(8) category is directionally consistent with the RD's official Table A, which sets nearly every named business/commerce/industry/transport category to 60% (post-2017 simplification) rather than a tiered 30/40/60 system. See the business-category-flat-rates entry below for a bigger structural concern about the app's category-to-rate mapping.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to PND90 Return, Appendix Table A, pp.34-36",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "The single flat 60% used for the freelancer-flow 'business_sales_40_8' income type (src/config/taxConfig.ts FLAT_RATE_DEDUCTIONS) matches the modal case in the current RD table. The bigger concern is in the SEPARATE sole-proprietor business-category table (BUSINESS_FLAT_RATE_DEDUCTIONS) — see business-category-flat-rates below.",
+      "used_in": "src/config/taxConfig.ts:12 (FLAT_RATE_DEDUCTIONS.business_sales_40_8)"
+    },
+    {
+      "id": "flat-rate-dividend",
+      "rule": "Flat-rate deduction — Dividend income",
+      "value": 0,
+      "conditions": "No expense deduction permitted against dividend income.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to PND90 Return (inferred: no expense line shown for dividends, which are taxed on a gross/gross-up basis with credit)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed by strong inference from the RD guide's treatment of dividend income (p.9-10), which shows no expense-deduction line — dividends are taxed on a gross or gross-up basis with a corporate tax credit instead. Not a direct explicit statement of '0% deduction', hence inference-based rather than a directly-quoted figure.",
+      "used_in": "src/config/taxConfig.ts:14 (FLAT_RATE_DEDUCTIONS.dividend)"
+    },
+    {
+      "id": "liberal-profession-subrates",
+      "rule": "Liberal profession sub-category rates — CONFIRMED MISCLASSIFICATION, PARTIALLY FIXED 2026-09-07",
+      "value": {
+        "app_current_60_percent": ["medical_practice", "entertainment", "sports", "author_royalties"],
+        "app_current_30_percent": ["legal", "engineering", "architecture", "accounting", "fine_arts", "consulting", "other_liberal"],
+        "correct_classification": {
+          "section_40_6_liberal_profession_60_percent": ["medical_practice (arts of healing)"],
+          "section_40_6_liberal_profession_30_percent": ["legal", "engineering", "architecture", "accounting"],
+          "section_40_6_fine_arts_visual_artists_only": "60% from tax year 2025 onward per Royal Decree No. 803 (2026) — applies specifically to painting, sculpture, and craftsmanship, NOT performers; 30% for tax years before 2025",
+          "section_40_8_entertainers_athletes_tiered": "60% on the first 300,000 THB, 40% on the portion above 300,000 THB, total deduction capped at 600,000 THB — applies to actors, movie/TV/radio performers, singers, musicians, professional athletes",
+          "section_40_3_royalties": "50% deduction, capped at 100,000 THB (200,000 THB if filing jointly with a spouse who also has income) — applies to author/book/music royalties and IP licensing"
+        }
+      },
+      "conditions": "CONFIRMED by a second, independent research pass (2026-09-07) that directly extracted the RD PND90 guide's PDF text (not just a summary) and cross-checked against Sherrings, ExpatTaxThailand, and other independent sources, with no disagreement found: (a) RD's official Section 40(6) 'liberal profession' list is exactly six professions: legal, medical (arts of healing), engineering, architecture, accounting, fine arts — quoted directly from the guide. (b) Entertainment/sports performers (actors, singers, musicians, athletes) are Section 40(8) income with the tiered 60%/40%-above-300k rate, capped at 600,000 THB total — quoted directly from the guide's Table A. (c) Author/royalty income is Section 40(3) 'royalties' income at 50%, capped at 100,000 THB (200,000 THB joint) — quoted directly from the guide. NEW DETAIL from the second pass: a 2026 Royal Decree No. 803 raised the 'fine arts' sub-rate within the legitimate 40(6) list to 60%, effective from tax year 2025 onward — but this applies ONLY to visual/fine artists (painters, sculptors, craftspeople), explicitly NOT to performers, musicians, actors, or athletes. The app's current 'entertainment' subtype conflates performing artists (properly 40(8), tiered/capped) with this narrow, newer visual-fine-arts carve-out (properly 40(6), 60% only from 2025).",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return 2021 (PND90), direct PDF text extraction of the Section 40(6) profession list, Table A (entertainers), and the royalties section; corroborated by Sherrings and ExpatTaxThailand on the 2025 fine-arts rate change (Royal Decree No. 803)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/030265guide90.pdf"
+      },
+      "verified": true,
+      "verification_notes": "CONFIRMED, not just flagged: two independent research passes (one summarizing the PDF, one extracting its raw text directly with pdfminer) reached the same conclusion with directly quoted primary-source text and multiple corroborating secondary sources with zero disagreement. IMPORTANT SCOPE FINDING made during the fix (2026-09-07): entertainment, sports, and author_royalties were NEVER actually reachable in the live calculator — ThaiIncomeEntry has no sub-type field, LIBERAL_PROFESSION_RATES/LIBERAL_PROFESSION_SUBTYPES were dead code that no calculation or UI component ever read, and the live flat-rate calculation for liberal_profession_40_6 always applied the single default 30% regardless of sub-type. So this bug never actually mis-taxed a real user. What WAS live and user-facing: INCOME_TYPE_INFO.liberal_profession_40_6 in src/data/incomeTypes.ts listed 'Entertainment/performance fees', 'Sports earnings', and 'Author royalties' as examples of Section 40(6) income, and its 'notes' field falsely claimed a 60% rate for entertainment/sports — this misleading copy was corrected 2026-09-07 (examples removed, notes fixed to only mention medical practice at 60%). The dead LIBERAL_PROFESSION_RATES/LIBERAL_PROFESSION_SUBTYPES tables had the three misclassified entries REMOVED (not given corrected percentages, since Section 40(8) tiered/capped and Section 40(3) capped income cannot be represented as a single flat percentage) — a comment was added directing future implementers to the correct classification and to this registry entry. Building the actual tiered/capped calculation logic for entertainer/athlete (40(8)) and author-royalty (40(3)) income as new, selectable income types was NOT done — that is a real feature addition (new IncomeType values, new UI, new calculation branches), not a bug fix, and is out of scope until separately designed and approved.",
+      "used_in": "src/config/taxConfig.ts (LIBERAL_PROFESSION_RATES — misclassified entries removed, still dead code); src/data/incomeTypes.ts (LIBERAL_PROFESSION_SUBTYPES — misclassified entries removed; INCOME_TYPE_INFO.liberal_profession_40_6 — FIXED, misleading examples/notes corrected, this part was live) — see src/config/__tests__/taxConfig.test.ts"
+    },
+    {
+      "id": "business-category-flat-rates",
+      "rule": "Sole-proprietor business category flat-rate deductions — CONFIRMED PARTIAL MISMATCH, FIXED 2026-09-07",
+      "value": {
+        "app_current_60_percent_correct": ["retail_trade", "manufacturing", "restaurant_food", "agriculture"],
+        "app_current_40_percent_should_be_60_percent": ["service_business", "transportation", "construction", "other_business"],
+        "app_current_30_percent_professional_service_correct_for_non_medical": ["professional_service (legal/engineering/architecture/accounting only)"],
+        "app_current_30_percent_rental_property_simplified": ["rental_property (correct for houses/vehicles; current law is actually tiered 30%/20%/15% by land vs. building type)"]
+      },
+      "conditions": "CONFIRMED by a second, independent research pass (2026-09-07) using two independent secondary sources (Sherrings, Acclime) which agree with each other and with the first pass's primary-source reading: Section 40(8) (business/commerce/agriculture/industry/transport/'other') is uniformly 60% under current law (post-2017 Royal Decree No. 629), and Section 40(7) construction/contract-of-work is separately confirmed at 60% (see flat-rate-contractor-40-7). The app's 40% tier (service_business, transportation, construction, other_business) does not match either of these — all four should be 60%. The app's 60% tier (retail_trade, manufacturing, restaurant_food, agriculture) is correct. professional_service at 30% is correct ONLY for the non-medical/non-artist professions (legal, engineering, architecture, accounting); rental_property at a flat 30% is a defensible simplification of what's actually a tiered system (30% houses/vehicles, 20% agricultural land, 15% other land) rather than an error.",
+      "source": {
+        "label": "Sherrings — Personal Tax Deductions & Allowances Thailand; Acclime Thailand — Personal Income Tax Guide (two independent secondary sources, agreeing with each other and with the first pass's primary RD source)",
+        "url": "https://sherrings.com/personal-tax-deductions-allowances-thailand.html"
+      },
+      "verified": true,
+      "verification_notes": "CONFIRMED (though the second pass could not itself re-extract the primary RD PDF's Table A text due to a tooling failure — it corroborates via two independent secondary sources rather than a second primary-source read). This table had NO source comment at all in the original code, unlike every other table in taxConfig.ts — a source comment has now been added. SCOPE NOTE found during the fix (2026-09-07): BUSINESS_FLAT_RATE_DEDUCTIONS is dead code — there is no sole-proprietor tax calculation function anywhere in the app yet; BusinessProfileStep.tsx only uses BUSINESS_CATEGORY_DESCRIPTIONS (a separate, LIVE, user-facing string table) for display. So this specific bug never mis-taxed a real user either, but BUSINESS_CATEGORY_DESCRIPTIONS did display the wrong '40% flat-rate deduction' text to users choosing a business category — that live copy has been corrected alongside the underlying data table. FIXED 2026-09-07 with explicit user approval: service_business, transportation, construction, other_business changed 0.40 -> 0.60 in both BUSINESS_FLAT_RATE_DEDUCTIONS and the corresponding BUSINESS_CATEGORY_DESCRIPTIONS text; regression test added. rental_property's flat 30% (a defensible simplification of a tiered land/building system) was left as-is — refining it into the full tiered system would be a separate, lower-priority enhancement, not a bug fix.",
+      "used_in": "src/config/taxConfig.ts (BUSINESS_FLAT_RATE_DEDUCTIONS and BUSINESS_CATEGORY_DESCRIPTIONS) — FIXED, see src/config/__tests__/taxConfig.test.ts"
+    },
+    {
+      "id": "combined-retirement-cap",
+      "rule": "Combined retirement fund deduction cap (pension + provident + RMF + SSF)",
+      "value": 500000,
+      "conditions": "Combined ceiling across pension insurance fund, provident fund, RMF, and SSF contributions (also, per research, the National Savings Fund, Government Pension Fund, and private teachers' aid fund contribute to the same combined ceiling). This combined cap does NOT include life or health insurance, which have their own separate caps (100,000 and 25,000 respectively).",
+      "source": {
+        "label": "Forvis Mazars (secondary, strong convergence with SCB and other sources); scope confirmed against RD Guide p.7",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+      },
+      "verified": true,
+      "verification_notes": "Combined cap and scope (retirement instruments only, excludes life/health insurance) confirmed via strong convergence of secondary sources plus partial primary corroboration. STILL UNRESOLVED: this combined cap is defined in DEDUCTION_CAPS but is NOT referenced/enforced anywhere in src/utils/taxCalculations.ts — the calculation only applies the individual per-fund caps, which could let a user's combined retirement deductions exceed 500,000 THB in the app when they legally cannot. This is a functional gap, not just a sourcing gap, flagged in the original audit and still open.",
+      "used_in": "src/config/taxConfig.ts:166 (DEDUCTION_CAPS.COMBINED_RETIREMENT_CAP) — defined but not enforced in calculation logic"
+    },
+    {
+      "id": "max-life-insurance",
+      "rule": "Life insurance deduction cap",
+      "value": 100000,
+      "conditions": "Caps deductible life insurance premiums. Policy must be with a Thai insurer with a term of 10+ years.",
+      "source": {
+        "label": "Thai Revenue Department (EN) official page",
+        "url": "https://www.rd.go.th/english/6045.html"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed directly on an RD English page — a genuine primary-source citation, despite this same page being flagged elsewhere in the registry as stale for OTHER figures (brackets, standard deduction rate). Life insurance cap specifically checked out as current.",
+      "used_in": "src/types/taxForm.ts:243,87 (MAX_LIFE_INSURANCE)"
+    },
+    {
+      "id": "max-health-insurance",
+      "rule": "Health insurance deduction cap",
+      "value": 25000,
+      "conditions": "Caps deductible health insurance premiums. Combined with life insurance, the TOTAL life+health deduction is itself capped at 100,000 THB.",
+      "source": {
+        "label": "Sherrings; Forvis Mazars (secondary — RD's own English page did not list this figure when fetched)",
+        "url": "https://sherrings.com/personal-tax-deductions-allowances-thailand.html"
+      },
+      "verified": false,
+      "verification_notes": "Consistent across secondary sources but the RD primary page fetched during research did not itself list the health-insurance-specific cap or the combined-with-life-insurance interaction. Recommend a follow-up RD-specific fetch.",
+      "used_in": "src/types/taxForm.ts:244,88 (MAX_HEALTH_INSURANCE)"
+    },
+    {
+      "id": "max-pension-fund",
+      "rule": "Pension/annuity insurance fund deduction cap",
+      "value": 500000,
+      "conditions": "POTENTIAL MISMATCH FOUND: research suggests the INDIVIDUAL sub-cap for pension/annuity insurance specifically is 200,000 THB (also subject to a 15%-of-income limit), and it only reaches 500,000 THB when combined with RMF/SSF/provident fund contributions under the shared combined-retirement-cap. The app currently applies 500,000 THB as the pension fund's OWN individual cap, which may be double-counting the combined ceiling as an individual one.",
+      "source": {
+        "label": "Forvis Mazars (secondary)",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+      },
+      "verified": true,
+      "verification_notes": "IMPORTANT: if this reading is correct, this is a real calculation issue — allowing up to 500,000 THB in pension-fund deduction ALONE, when combined with the individual RMF (500,000) and SSF (200,000) caps already in the code plus the (currently-unenforced) combined 500,000 cap, could let a user's app-calculated deductions substantially exceed what's legally allowed. This interacts directly with the combined-retirement-cap enforcement gap noted above. Needs review alongside that item before any code change.",
+      "used_in": "src/types/taxForm.ts:245,89 (MAX_PENSION_FUND) — POSSIBLY SHOULD BE 200,000 AS AN INDIVIDUAL CAP, NEEDS REVIEW"
+    },
+    {
+      "id": "max-provident-fund",
+      "rule": "Provident fund deduction cap",
+      "value": 500000,
+      "conditions": "Individual cap on provident fund contributions: not more than 15% of wage, but not exceeding 500,000 THB. Also bounded by the combined-retirement-cap.",
+      "source": {
+        "label": "Thai Revenue Department (EN) official page",
+        "url": "https://www.rd.go.th/english/6045.html"
+      },
+      "verified": true,
+      "verification_notes": "Directly confirmed on RD's own English page, which states 'not more than 15% of wage, but not exceeding 500,000 baht' — a genuine primary-source citation for this specific figure.",
+      "used_in": "src/types/taxForm.ts:246,90 (MAX_PROVIDENT_FUND)"
+    },
+    {
+      "id": "max-rmf",
+      "rule": "Retirement Mutual Fund (RMF) deduction cap",
+      "value": 500000,
+      "conditions": "Individual cap on RMF contributions, also subject to a 30%-of-assessable-income overlay limit. Also bounded by the combined-retirement-cap.",
+      "source": {
+        "label": "Forvis Mazars (secondary, high confidence)",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed via a reputable secondary source. The additional 30%-of-income overlay limit is NOT modeled in the app's DEDUCTION_CAPS.MAX_RMF (which only applies the flat 500,000 THB cap) — a potential functional gap for high earners with modest RMF contributions relative to income, though it would only matter in edge cases where 30% of income is below 500,000 THB.",
+      "used_in": "src/types/taxForm.ts:247,91 (MAX_RMF)"
+    },
+    {
+      "id": "max-ssf",
+      "rule": "Super Savings Fund (SSF) deduction cap",
+      "value": 200000,
+      "conditions": "Individual cap on SSF contributions, also subject to a 30%-of-assessable-income overlay limit. Also bounded by the combined-retirement-cap.",
+      "source": {
+        "label": "Forvis Mazars (secondary, high confidence)",
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed via a reputable secondary source. Same 30%-of-income overlay caveat as max-rmf — not modeled in the app's flat cap.",
+      "used_in": "src/types/taxForm.ts:248,92 (MAX_SSF)"
+    },
+    {
+      "id": "max-donation-percent",
+      "rule": "Charitable donation deduction cap",
+      "value": 0.10,
+      "conditions": "Limited to 10% of taxable income after other deductions/allowances, before the donation deduction itself. For GENERAL charities, the actual donated amount counts (not doubled). Some specific categories (education, hospitals, certain e-Donation campaigns) get a 2x multiplier on the amount counted, still subject to the same overall 10% cap.",
+      "source": {
+        "label": "Thai Revenue Department (EN) official page; corroborated by RD Guide No.11 item 6",
+        "url": "https://www.rd.go.th/english/6045.html"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed directly by RD. The app's plain 10% description matches for the general (non-doubled) donation category. The 2x multiplier for education/hospital/e-Donation categories is NOT modeled in the app — a documented feature gap (understates the deduction for donors to those specific categories) rather than an error, since applying the plain 10% cap without the multiplier is conservative, not incorrect.",
+      "used_in": "src/types/taxForm.ts:249,94 (MAX_DONATION_PERCENT)"
+    }
+  ]
+}

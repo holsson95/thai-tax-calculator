@@ -53,12 +53,14 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Engineering services',
       'Accounting services',
       'Architecture fees',
-      'Entertainment/performance fees',
-      'Sports earnings',
-      'Author royalties',
     ],
     withholdingRate: 0.03, // 3% withholding typical
-    notes: 'Deduction rate varies: 30% for most professions, 60% for medical, entertainment, sports',
+    // Corrected 2026-09-07: entertainment, sports, and author-royalty income were
+    // removed from this list — they are not Section 40(6) liberal profession income.
+    // Entertainers/athletes are Section 40(8) with a tiered/capped rate; author
+    // royalties are Section 40(3), also capped. Neither is currently a selectable
+    // income type in this app — see tax-data/2026/deductions.json#liberal-profession-subrates.
+    notes: 'Deduction rate varies: 30% for most professions, 60% for medical practice',
   },
 
   contractor_40_7: {
@@ -151,6 +153,13 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
 
 /**
  * Liberal profession sub-types for detailed classification
+ *
+ * "entertainment", "sports", and "author_royalties" were REMOVED from this
+ * list on 2026-09-07 — they are not Section 40(6) liberal profession income.
+ * See LIBERAL_PROFESSION_RATES in src/config/taxConfig.ts for the correct
+ * classification (Section 40(8) tiered/capped for entertainers/athletes,
+ * Section 40(3) capped for royalties) and
+ * tax-data/2026/deductions.json#liberal-profession-subrates for full detail.
  */
 export interface LiberalProfessionSubType {
   id: string;
@@ -165,24 +174,6 @@ export const LIBERAL_PROFESSION_SUBTYPES: LiberalProfessionSubType[] = [
     label: 'Medical & Healthcare',
     rate: 0.60,
     examples: ['Doctor fees', 'Dentist fees', 'Specialist consultations'],
-  },
-  {
-    id: 'entertainment',
-    label: 'Entertainment & Media',
-    rate: 0.60,
-    examples: ['Actor/actress fees', 'Singer performance', 'DJ/MC fees', 'Influencer content'],
-  },
-  {
-    id: 'sports',
-    label: 'Sports & Athletics',
-    rate: 0.60,
-    examples: ['Athlete earnings', 'Coach fees', 'Sports instructor'],
-  },
-  {
-    id: 'author_royalties',
-    label: 'Author & Royalties',
-    rate: 0.60,
-    examples: ['Book royalties', 'Music royalties', 'IP licensing'],
   },
   {
     id: 'legal',

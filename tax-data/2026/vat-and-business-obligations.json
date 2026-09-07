@@ -1,0 +1,47 @@
+{
+  "category": "vat-and-business-obligations",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "VAT registration threshold and rate. Not one of the seven originally-requested categories, but included because these are live constants the calculator uses and every one must be traceable per project policy.",
+  "rules": [
+    {
+      "id": "vat-registration-threshold",
+      "rule": "VAT registration threshold (annual turnover)",
+      "value": 1800000,
+      "conditions": "Mandatory VAT registration once projected/actual annual taxable turnover reaches this amount. Revenue Code Section 81/1 exempts 'small business' below a threshold, but delegates the exact baht figure to a Royal Decree rather than stating it in the Code itself.",
+      "source": {
+        "label": "Thai Revenue Department (EN) — Revenue Code Sections 80-82",
+        "url": "https://www.rd.go.th/english/37732.html"
+      },
+      "verified": true,
+      "verification_notes": "rd.go.th confirms the legal mechanism (Section 81/1, exact figure set by Royal Decree) and multiple independent secondary sources (Stripe, Siam Legal, Forvis Mazars) converge on 1,800,000 THB as the current decree figure. The underlying Royal Decree's own text was not directly fetched, so treat as well-corroborated rather than fully primary-verified.",
+      "used_in": "src/config/taxConfig.ts:44 (TAX_THRESHOLDS.VAT_REGISTRATION); src/utils/obligationChecks.ts:117-130 (checkVATRegistration)"
+    },
+    {
+      "id": "vat-registration-deadline-days",
+      "rule": "VAT registration deadline after exceeding threshold",
+      "value": 30,
+      "conditions": "Days allowed to register for VAT, counted from the date the tax base exceeds the Section 81/1 threshold.",
+      "source": {
+        "label": "Thai Revenue Department (EN) — Revenue Code Section 85/1",
+        "url": "https://www.rd.go.th/english/37741.html"
+      },
+      "verified": true,
+      "verification_notes": "Directly confirmed on rd.go.th's own English page: 'value added tax registration application shall be made within 30 days as from' the date the threshold is exceeded. This is a genuine primary-source citation.",
+      "used_in": "src/config/taxConfig.ts:73 (VAT_CONFIG.REGISTRATION_DEADLINE_DAYS); src/utils/obligationChecks.ts:128 (mustRegisterWithinDays)"
+    },
+    {
+      "id": "vat-standard-rate",
+      "rule": "Effective VAT rate (temporary reduction from statutory 10%)",
+      "value": 0.07,
+      "conditions": "Statutory VAT rate under Revenue Code Section 80 is 10%, but has been temporarily reduced to 7% (6.3% VAT + 0.7% mandatory local-government allocation) by successive Royal Decrees, renewed roughly annually since 1997.",
+      "source": {
+        "label": "Royal Decree No. 807 (2026), reported via regfollower.com and HLB Thailand",
+        "url": "https://regfollower.com/thailand-extends-reduced-vat-rate-until-september-2027/"
+      },
+      "verified": false,
+      "verification_notes": "IMPORTANT — TIME-LIMITED RULE, NOT PERMANENT LAW: the current decree covers 1 Oct 2026 – 30 Sept 2027 only (Cabinet approved the extension 27 July 2026; Royal Decree No. 807 published in the Royal Gazette 23 Aug 2026). This is confirmed via reputable secondary sources (regfollower.com, HLB Thailand, Nishimura & Asahi) but the primary Royal Gazette text was not directly fetched. The calculator should display this expiry date and flag that the rate reverts to 10% if not extended again — this has happened roughly annually for ~34 years but is never guaranteed.",
+      "used_in": "src/config/taxConfig.ts:72 (VAT_CONFIG.STANDARD_RATE)"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "category": "social-security",
+  "tax_year": 2026,
+  "last_reviewed": "2026-09-07",
+  "description": "Social Security Office (SSO) contribution ceiling used as the deductible social security contribution cap.",
+  "rules": [
+    {
+      "id": "sso-employee-contribution-rate",
+      "rule": "SSO employee contribution rate",
+      "value": 0.05,
+      "tax_year": "2024, 2025, 2026",
+      "conditions": "Applies to Section 33 (employed, private-sector) insured persons. Unchanged by the 2026 wage-ceiling reform — only the wage base changed, not the rate.",
+      "source": {
+        "label": "BDO Thailand — New Social Security Fund's Wage Ceiling",
+        "url": "https://www.bdo.th/en-gb/insights/new-social-security-fund%E2%80%99s-wage-ceiling-effective-january-2026"
+      },
+      "verified": true,
+      "verification_notes": "Verified via a reputable secondary source (BDO Thailand) during a research pass on 2026-09-07. Not yet cross-checked against the primary Royal Gazette text.",
+      "used_in": "Not directly modeled as a rate in the app — the app only stores the resulting annual cap (see max-social-security-2024-2025 / max-social-security-2026-onward)."
+    },
+    {
+      "id": "max-social-security-2024-2025",
+      "rule": "Social security contribution deduction cap — 2024 and 2025",
+      "value": 9000,
+      "tax_year": "2024, 2025",
+      "conditions": "Based on the SSO monthly wage ceiling of 15,000 THB/month (5% x 15,000 x 12 = 9,000/year). This ceiling held for all of 2024 AND all of 2025 — it did NOT rise mid-2025.",
+      "source": {
+        "label": "BDO Thailand — New Social Security Fund's Wage Ceiling",
+        "url": "https://www.bdo.th/en-gb/insights/new-social-security-fund%E2%80%99s-wage-ceiling-effective-january-2026"
+      },
+      "verified": true,
+      "verification_notes": "CORRECTION to an earlier, incorrect assumption in this registry: the project owner initially stated 10,500 THB applied for 2025 as well as 2026. Research on 2026-09-07 (BDO Thailand, corroborated by DLA Piper) found the 15,000/month ceiling — and therefore the 9,000 THB/year deduction cap — was unchanged through the end of 2025. The 10,500 figure only takes effect from tax year 2026 (see max-social-security-2026-onward). Not used by any live 2026 app code path (this app only models the current tax year), kept here for historical accuracy.",
+      "used_in": "Historical only — src/types/taxForm.ts models tax year 2026 only, so this value is not wired into any live constant."
+    },
+    {
+      "id": "max-social-security-2026-onward",
+      "rule": "Social security contribution deduction cap — 2026 onward (Phase 1)",
+      "value": 10500,
+      "tax_year": "2026, 2027, 2028",
+      "conditions": "Based on the new SSO monthly wage ceiling of 17,500 THB/month (5% x 17,500 x 12 = 10,500/year), effective 1 January 2026. This is 'Phase 1' of a 3-phase increase schedule: Phase 2 (2029-2031) raises the ceiling to 20,000 THB/month; Phase 3 (2032+) to 23,000 THB/month. Those later phases are out of scope for this app's current 2026 tax year but should be revisited when the app is updated for 2029.",
+      "source": {
+        "label": "BDO Thailand — New Social Security Fund's Wage Ceiling; corroborated by DLA Piper GENIE",
+        "url": "https://www.bdo.th/en-gb/insights/new-social-security-fund%E2%80%99s-wage-ceiling-effective-january-2026"
+      },
+      "verified": true,
+      "verification_notes": "Confirmed by two independent reputable secondary sources (BDO Thailand and DLA Piper), both citing Cabinet approval on 2 December 2025 and Royal Gazette publication on 12 December 2025, effective 1 January 2026. Multiple Thai-language news outlets (Hfocus, Thaipost, GCC.go.th, ThaiPBS) corroborate the gazette date. The exact ministerial regulation/gazette number has NOT been pulled from the primary source (ratchakitcha.soc.go.th) — this is a secondary-source verification, not a primary-document one. Upgrade to a primary citation when possible.",
+      "used_in": "src/types/taxForm.ts:235 (TAX_CONSTANTS.MAX_SOCIAL_SECURITY), src/types/taxForm.ts:75 (MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY)"
+    }
+  ]
+}
