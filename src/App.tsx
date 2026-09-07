@@ -12,6 +12,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import AboutPage from './pages/AboutPage';
 import MethodologyPage from './pages/MethodologyPage';
 import SourcesPage from './pages/SourcesPage';
+import ContactPage from './pages/ContactPage';
 
 const AnnualTaxWizard = React.lazy(() => import('./components/AnnualTaxWizard'));
 
@@ -107,6 +108,7 @@ const App: React.FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/methodology" element={<MethodologyPage />} />
         <Route path="/sources" element={<SourcesPage />} />
+        <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </Layout>
   );
