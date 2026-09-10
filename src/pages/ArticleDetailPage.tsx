@@ -3,6 +3,8 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
+import CalculateTaxCTA from '../components/CalculateTaxCTA';
+import RelatedExamples from '../components/RelatedExamples';
 import { getArticleBySlug, getRelatedArticles } from '../data/articles';
 
 const SITE_URL = 'https://mythaitaxes.com';
@@ -152,26 +154,27 @@ const ArticleDetailPage: React.FC = () => {
                 </li>
               ))}
             </ul>
+            <p className="text-sm text-gray-500 mt-2">
+              See the full source registry and verification status on{' '}
+              <Link to="/sources/" className="text-blue-600 hover:underline">Sources &amp; References</Link>.
+            </p>
+          </div>
+        )}
+
+        {/* Related Examples */}
+        {article.relatedExamples && article.relatedExamples.length > 0 && (
+          <div className="mb-8">
+            <RelatedExamples exampleIds={article.relatedExamples} />
           </div>
         )}
 
         {/* Calculator CTA */}
-        <div className="bg-blue-50 rounded-xl p-6 text-center mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Ready to calculate your tax?
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Put this knowledge to use with our free calculator.
-          </p>
-          <Link
-            to="/annual-tax/"
-            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-          >
-            Start Calculator
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+        <div className="mb-8">
+          <CalculateTaxCTA
+            heading="Ready to calculate your tax?"
+            description="Put this knowledge to use with our free calculator."
+            primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
+          />
         </div>
 
         {/* Related Articles */}

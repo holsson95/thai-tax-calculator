@@ -11,6 +11,12 @@ export interface Article {
   readTime: number;
   category: string;
   sources?: { label: string; url: string }[];
+  /**
+   * IDs of taxExamples entries (src/data/taxExamples.ts) that directly
+   * demonstrate this article's point — curated per-article, not every
+   * example that happens to share a topic. Omit when no example fits.
+   */
+  relatedExamples?: string[];
 }
 
 /**
@@ -175,13 +181,16 @@ This calculator is intended for:
 This tool provides estimates based on information you enter and standard Thai personal income tax rules. It is intended for general guidance only and does not constitute professional tax advice. For complex situations — particularly those involving foreign income, double tax agreements, or business structures — consider consulting a licensed Thai tax advisor or accountant.
 
 Tax laws can change. Always verify current rates and thresholds with the Thai Revenue Department or a qualified professional before filing.
+
+For the full step-by-step math the calculator runs behind the scenes — gross income through to tax owed — see the [Methodology](/methodology/) page.
     `,
     publishedAt: '2026-02-22',
     readTime: 7,
     category: 'Guide',
     sources: [
       { label: 'Thai Revenue Department (rd.go.th)', url: 'https://www.rd.go.th/english/index-eng.html' },
-    ]
+    ],
+    relatedExamples: ['calculator-walkthrough'],
   },
   {
     slug: 'understanding-thai-tax-residency',
@@ -189,6 +198,8 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
     excerpt: "Thailand's 180-day residency test, worked day-count examples, why your visa type doesn't decide it, and what changes once you cross the threshold.",
     content: `
 Thai tax residency comes down to one test: how many days did you actually spend in Thailand during the calendar year? Not your visa type, not your nationality, not where your money is. This article walks through that test, shows how the day count works with real examples, and explains why the answer matters.
+
+For the broader 2026 system this rule fits into — brackets, foreign income, and filing — see [Thailand Personal Income Tax 2026: The Complete Overview](/thailand-tax-2026/).
 
 ## The 180-Day Rule
 
@@ -314,7 +325,8 @@ Interest on housing loans is deductible up to 100,000 THB annually.
     category: 'Deductions',
     sources: [
       { label: 'Thai Revenue Department — Deductions & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
-    ]
+    ],
+    relatedExamples: ['deductions-impact'],
   },
   {
     slug: 'thai-tax-brackets-explained',
@@ -400,7 +412,7 @@ Your "tax bracket" is really just a label for the highest-taxed slice of your in
 
 ## Calculate Your Own Thai Income Tax
 
-Every example above starts from taxable income, not gross salary — your own taxable income depends on your allowances, deductions, and income type. The [Annual Tax Calculator](/annual-tax/) walks through your actual numbers and shows your effective tax rate along with a full bracket-by-bracket breakdown, so you can see exactly which bracket — and which rate — your own income reaches. See [How to Use the Thai Tax Calculator](/articles/how-to-use-the-thai-tax-calculator) for a full walkthrough.
+Every example above starts from taxable income, not gross salary — your own taxable income depends on your allowances, deductions, and income type. The [Annual Tax Calculator](/annual-tax/) walks through your actual numbers and shows your effective tax rate along with a full bracket-by-bracket breakdown, so you can see exactly which bracket — and which rate — your own income reaches. See [How to Use the Thai Tax Calculator](/articles/how-to-use-the-thai-tax-calculator) for a full walkthrough, or the [Methodology](/methodology/) page for the full gross-to-tax calculation this article's bracket step fits into.
 
 ## FAQs
 
@@ -422,7 +434,8 @@ As of our last review (September 2026), we haven't found any indication that the
     category: 'Tax Basics',
     sources: [
       { label: 'Sherrings — Thailand Personal Income Tax Rates (secondary source; the Revenue Department\'s own English bracket page is outdated and not cited)', url: 'https://sherrings.com/personal-income-tax-rates-thailand.html' },
-    ]
+    ],
+    relatedExamples: ['lower-income-employee', 'middle-income-employee', 'high-income-employee'],
   },
   {
     slug: 'expat-guide-filing-thai-taxes',
@@ -490,6 +503,8 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
     excerpt: 'What foreign income actually means under Thai tax law — employment, investment, rental, and business income — and how residency, the 2024 remittance rule, and specific exemptions decide what you owe.',
     content: `
 "Foreign income" is not simply money sitting in a foreign bank account — whether Thailand can tax it depends on three separate questions: where the income was sourced, whether you're a Thai tax resident, and when it was earned versus when it was remitted to Thailand. This article walks through those three questions at a conceptual level. It doesn't replace personalized tax advice for your specific situation.
+
+For the broader 2026 system this fits into — brackets, residency, and filing — see [Thailand Personal Income Tax 2026: The Complete Overview](/thailand-tax-2026/).
 
 ## Which Article Do I Need?
 
@@ -591,7 +606,8 @@ Once you know which of your income is foreign-sourced and have a sense of whethe
       { label: 'Mahanakorn Partners Group — Overview of Orders Por. 161/2566 and Por. 162/2566', url: 'https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/' },
       { label: 'Royal Decree No. 743 B.E. 2565 — LTR Visa Tax Provisions', url: 'https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf' },
       { label: 'US–Thailand Double Taxation Convention (treaty text)', url: 'https://www.irs.gov/pub/irs-trty/thailand.pdf' },
-    ]
+    ],
+    relatedExamples: ['foreign-income-remittance-timing'],
   },
   {
     slug: 'social-security-contributions-thailand',
@@ -742,7 +758,8 @@ You have two options for expense deductions:
     category: 'Freelance',
     sources: [
       { label: 'Thai Revenue Department — Revenue Code Section 40', url: 'https://www.rd.go.th/english/index-eng.html' },
-    ]
+    ],
+    relatedExamples: ['freelancer-business-income'],
   },
   {
     slug: 'flat-rate-vs-actual-expenses',
@@ -836,7 +853,8 @@ Our calculator automatically computes both methods and shows you which option re
     category: 'Freelance',
     sources: [
       { label: 'Thai Revenue Department — Expense Deductions for Self-Employed', url: 'https://www.rd.go.th/english/index-eng.html' },
-    ]
+    ],
+    relatedExamples: ['freelancer-business-income'],
   },
   {
     slug: 'pnd94-mid-year-tax-filing',
@@ -1474,7 +1492,8 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
     sources: [
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
       { label: 'Thai Revenue Department — Foreign Tax Credits & Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
-    ]
+    ],
+    relatedExamples: ['foreign-pension-dta-exemption'],
   },
   {
     slug: 'pensioner-retiree-tax-guide-thailand',
@@ -1676,7 +1695,8 @@ For complex situations — particularly those involving multiple countries, gove
       { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
-    ]
+    ],
+    relatedExamples: ['foreign-pension-dta-exemption'],
   },
   {
     slug: 'foreign-pension-income-thailand-tax',
@@ -1864,7 +1884,8 @@ The cost of advice is typically far less than the cost of errors or missed credi
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
       { label: 'Thai Revenue Department — Foreign Income & Tax Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
-    ]
+    ],
+    relatedExamples: ['foreign-pension-dta-exemption'],
   },
   {
     slug: 'investment-income-retirees-thailand',
@@ -2743,7 +2764,8 @@ There is no formal registration process for declaring capital transfers. The doc
     sources: [
       { label: 'Revenue Department Circular P.161/2566', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
-    ]
+    ],
+    relatedExamples: ['foreign-income-remittance-timing'],
   },
   {
     slug: 'thailand-tax-for-uk-expats',
@@ -3359,15 +3381,17 @@ export function getArticleBySlug(slug: string): Article | undefined {
 
 const FALLBACK_SLUGS = ['how-to-use-the-thai-tax-calculator', 'thai-tax-brackets-explained'];
 
-const RELATED_MAP: Record<string, [string, string]> = {
+const RELATED_MAP: Record<string, string[]> = {
   'how-to-use-the-thai-tax-calculator':        ['thai-tax-brackets-explained',             'understanding-thai-tax-residency'],
   'understanding-thai-tax-residency':           ['expat-guide-filing-thai-taxes',           'foreign-income-thailand-tax'],
   'maximizing-tax-deductions-thailand':         ['flat-rate-vs-actual-expenses',            'thai-tax-brackets-explained'],
   'thai-tax-brackets-explained':                ['maximizing-tax-deductions-thailand',      'how-to-use-the-thai-tax-calculator'],
   'expat-guide-filing-thai-taxes':              ['understanding-thai-tax-residency',        'how-to-get-thai-tax-id-number'],
   'foreign-income-thailand-tax':                ['transferring-money-to-thailand-tax-rules','double-tax-agreements-thailand'],
-  'social-security-contributions-thailand':     ['freelancer-tax-guide-thailand',           'maximizing-tax-deductions-thailand'],
-  'freelancer-tax-guide-thailand':              ['withholding-tax-freelancers-thailand',    'flat-rate-vs-actual-expenses'],
+  // SSO is an employment-income topic (category: 'Employment'), not a freelance one —
+  // the calculator guide is the more relevant pairing than the freelancer hub.
+  'social-security-contributions-thailand':     ['how-to-use-the-thai-tax-calculator',      'maximizing-tax-deductions-thailand'],
+  'freelancer-tax-guide-thailand':              ['withholding-tax-freelancers-thailand',    'flat-rate-vs-actual-expenses',    'vat-registration-freelancers'],
   'flat-rate-vs-actual-expenses':               ['freelancer-tax-guide-thailand',           'maximizing-tax-deductions-thailand'],
   'pnd94-mid-year-tax-filing':                  ['freelancer-tax-guide-thailand',           'withholding-tax-freelancers-thailand'],
   'withholding-tax-freelancers-thailand':       ['pnd94-mid-year-tax-filing',               'freelancer-tax-guide-thailand'],
@@ -3375,7 +3399,7 @@ const RELATED_MAP: Record<string, [string, string]> = {
   'digital-nomad-taxes-thailand':               ['dtv-visa-thailand-tax-guide',             'foreign-income-thailand-tax'],
   'freelancer-record-keeping-thailand':         ['vat-registration-freelancers',            'freelancer-tax-guide-thailand'],
   'double-tax-agreements-thailand':             ['foreign-income-thailand-tax',             'transferring-money-to-thailand-tax-rules'],
-  'pensioner-retiree-tax-guide-thailand':       ['foreign-pension-income-thailand-tax',     'thailand-retirement-visa-tax-obligations'],
+  'pensioner-retiree-tax-guide-thailand':       ['foreign-pension-income-thailand-tax',     'thailand-retirement-visa-tax-obligations', 'ltr-visa-tax-benefits'],
   'foreign-pension-income-thailand-tax':        ['pensioner-retiree-tax-guide-thailand',    'double-tax-agreements-thailand'],
   'investment-income-retirees-thailand':        ['pensioner-retiree-tax-guide-thailand',    'foreign-pension-income-thailand-tax'],
   'thailand-retirement-visa-tax-obligations':   ['pensioner-retiree-tax-guide-thailand',    'ltr-visa-tax-benefits'],
@@ -3389,13 +3413,23 @@ const RELATED_MAP: Record<string, [string, string]> = {
   'thailand-tax-for-us-expats':                 ['double-tax-agreements-thailand',          'foreign-income-thailand-tax'],
 };
 
-export function getRelatedArticles(currentSlug: string, limit: number = 2): Article[] {
+/**
+ * Curated related articles for `currentSlug`, from RELATED_MAP.
+ *
+ * `limit` caps the result but does not pad it out — a curated entry with 2
+ * genuinely relevant links stays at 2 rather than being filled up to the cap
+ * with fallback slugs. Fallback slugs only fill in when a slug has fewer
+ * than 2 curated relations (or none), so every article still shows at least
+ * 2 where possible, and 3-4 only where RELATED_MAP curates that many.
+ */
+export function getRelatedArticles(currentSlug: string, limit: number = 4): Article[] {
   const preferredSlugs = RELATED_MAP[currentSlug] ?? ([] as string[]);
   const fallbacks = FALLBACK_SLUGS.filter(s => s !== currentSlug);
+  const minCount = Math.min(2, preferredSlugs.length + fallbacks.length);
 
   const orderedSlugs = [...preferredSlugs, ...fallbacks]
     .filter((s, i, arr) => s !== currentSlug && arr.indexOf(s) === i)
-    .slice(0, limit);
+    .slice(0, Math.max(minCount, Math.min(preferredSlugs.length, limit)));
 
   return orderedSlugs
     .map(s => articles.find(a => a.slug === s))

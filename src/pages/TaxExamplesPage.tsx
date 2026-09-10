@@ -34,6 +34,12 @@ const SECTIONS: { heading: string; description: string; exampleIds: string[] }[]
     description: 'A realistic profile — married, one child, several deductions — computed exactly as the calculator would compute it.',
     exampleIds: ['calculator-walkthrough'],
   },
+  {
+    heading: 'Freelance income, foreign remittance, and pensions',
+    description:
+      'Salaried employees are not the only tax situation on this site. These examples cover the flat-rate business-income deduction, why the same remitted amount can be taxable or exempt depending on when it was earned, and how a DTA can exempt one foreign pension while taxing another.',
+    exampleIds: ['freelancer-business-income', 'foreign-income-remittance-timing', 'foreign-pension-dta-exemption'],
+  },
 ];
 
 const TaxExamplesPage: React.FC = () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getArticleBySlug } from '../articles';
+import { getArticleBySlug, getRelatedArticles, articles } from '../articles';
 import { getTaxExampleById } from '../taxExamples';
 
 describe('thai-tax-brackets-explained article numbers', () => {
@@ -29,5 +29,42 @@ describe('thai-tax-brackets-explained article numbers', () => {
     const middleIncome = getTaxExampleById('middle-income-employee')!;
     expect(middleIncome.taxOwed).toBe(115000);
     expect(article.content).toContain('฿115,000');
+  });
+});
+
+describe('getRelatedArticles', () => {
+  it('does not pad a 2-entry curated relation up to the limit with fallbacks', () => {
+    // 'expat-guide-filing-thai-taxes' has exactly 2 curated relations in RELATED_MAP.
+    const related = getRelatedArticles('expat-guide-filing-thai-taxes');
+    expect(related).toHaveLength(2);
+    expect(related.map(a => a.slug)).toEqual(['understanding-thai-tax-residency', 'how-to-get-thai-tax-id-number']);
+  });
+
+  it('shows more than 2 when RELATED_MAP curates a 3rd/4th genuinely relevant article', () => {
+    const related = getRelatedArticles('freelancer-tax-guide-thailand');
+    expect(related.length).toBeGreaterThan(2);
+    expect(related.map(a => a.slug)).toContain('vat-registration-freelancers');
+  });
+
+  it('falls back to the default fallback slugs when a slug has no curated relations', () => {
+    const related = getRelatedArticles('not-a-real-slug');
+    expect(related).toHaveLength(2);
+    expect(related.map(a => a.slug)).toEqual(['how-to-use-the-thai-tax-calculator', 'thai-tax-brackets-explained']);
+  });
+
+  it('never recommends the article to itself', () => {
+    for (const article of articles) {
+      const related = getRelatedArticles(article.slug);
+      expect(related.map(a => a.slug)).not.toContain(article.slug);
+    }
+  });
+
+  it('every RELATED_MAP entry points to slugs that actually exist', () => {
+    for (const article of articles) {
+      const related = getRelatedArticles(article.slug);
+      for (const r of related) {
+        expect(getArticleBySlug(r.slug)).toBeDefined();
+      }
+    }
   });
 });

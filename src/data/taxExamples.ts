@@ -1,7 +1,8 @@
 import { TaxFormData } from '../types/taxForm';
-import { calculateAnnualTax } from '../utils/taxCalculations';
+import { calculateAnnualTax, calculateFreelancerTax } from '../utils/taxCalculations';
 import { calculateThaiTax, getTaxByBracket, getMarginalRate, TaxByBracketLine } from '../utils/tax';
 import { TaxFlowStep } from '../components/TaxFlowDiagram';
+import { FreelancerFormData, createDefaultFreelancerFormData } from '../types/freelancerForm';
 
 /**
  * Source citation for a worked example. Mirrors the verification status
@@ -66,6 +67,33 @@ const ALLOWANCE_DEDUCTION_SOURCE: TaxExampleSource = {
   verified: false,
 };
 
+// Reuses the exact citation already used for the flat-rate expense deduction
+// figure in the flat-rate-vs-actual-expenses article (src/data/articles.ts) —
+// same source, not a newly invented one.
+const FREELANCE_EXPENSE_SOURCE: TaxExampleSource = {
+  label: 'Thai Revenue Department — Expense Deductions for Self-Employed',
+  url: 'https://www.rd.go.th/english/index-eng.html',
+  verified: false,
+};
+
+// Reuses the exact citation already used for the 2024+ remittance rule in
+// understanding-thai-tax-residency and foreign-income-thailand-tax.
+const REMITTANCE_RULE_SOURCE: TaxExampleSource = {
+  label: 'Mahanakorn Partners Group — Overview of Orders Por. 161/2566 and Por. 162/2566',
+  url: 'https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/',
+  verified: false,
+};
+
+// The specific pension-exemption rules (which country/pension-type
+// combinations are exempt) live in src/data/dtaCountries.ts
+// (PENSION_DTA_EXEMPTIONS), already sourced to the US-Thailand treaty text
+// for the Article 20(2) Social Security exemption used below.
+const DTA_PENSION_SOURCE: TaxExampleSource = {
+  label: 'IRS — US–Thailand Double Taxation Convention (treaty text, Article 20(2))',
+  url: 'https://www.irs.gov/pub/irs-trty/thailand.pdf',
+  verified: false,
+};
+
 function bracketFlowStep(taxableIncome: number, label = 'Tax by bracket'): TaxFlowStep {
   const brackets = getTaxByBracket(taxableIncome);
   return {
@@ -77,6 +105,21 @@ function bracketFlowStep(taxableIncome: number, label = 'Tax by bracket'): TaxFl
 
 function round2(n: number): number {
   return Math.round(n * 100) / 100;
+}
+
+function thb(n: number): string {
+  return `฿${Math.round(n).toLocaleString('en-US')}`;
+}
+
+/** Minimal base FreelancerFormData (single, no dependents, Thai resident); examples override what they need. */
+function freelancerBaseFormData(overrides: Partial<FreelancerFormData>): FreelancerFormData {
+  return {
+    ...createDefaultFreelancerFormData(),
+    maritalStatus: 'single',
+    daysInThailand: 300,
+    isThaiResident: true,
+    ...overrides,
+  };
 }
 
 /** Minimal base TaxFormData with every field zeroed/off; examples override what they need. */
@@ -358,6 +401,199 @@ export const taxExamples: TaxExample[] = [
       explanation:
         'This is exactly what the Annual Tax Calculator computes when these values are entered: every allowance and deduction stacks up before the progressive brackets are applied, bringing taxable income from ฿1,200,000 down to ฿864,500 and landing this taxpayer at a 20% marginal rate but only a 7.32% effective rate on gross income.',
       source: ALLOWANCE_DEDUCTION_SOURCE,
+    };
+  })(),
+
+  // Example 8 — Freelance/business income: flat-rate expense deduction.
+  (() => {
+    const formData = freelancerBaseFormData({
+      thaiIncomeEntries: [
+        {
+          id: 'consulting-fees',
+          grossAmount: 900000,
+          incomeType: 'business_sales_40_8',
+          withholdingAmount: 0,
+          monthReceived: 6,
+          payerName: 'Multiple Thai clients',
+          description: 'Online consulting and e-commerce revenue',
+        },
+      ],
+      expenseMethod: 'force_flat',
+    });
+    const result = calculateFreelancerTax(formData);
+    return {
+      id: 'freelancer-business-income',
+      title: 'Freelance Consultant: From Gross Fees to Tax Owed',
+      concept: 'Freelance/business income and the flat-rate expense deduction',
+      scenario:
+        'A single freelance consultant earning ฿900,000 a year in Section 40(8) business/sales income from multiple Thai clients, using the 60% flat-rate expense deduction instead of tracking actual receipts.',
+      taxYear: 2026,
+      assumptions: [
+        'Filing status: single, no dependents',
+        'Section 40(8) business/sales income (consulting, e-commerce, agency-type revenue) — eligible for the 60% flat-rate expense deduction, uncapped',
+        'No withholding tax, foreign income, insurance, or retirement fund contributions in this scenario',
+      ],
+      grossIncome: result.grossIncome,
+      taxableIncome: round2(result.taxableIncome),
+      totalDeductionsAndAllowances: round2(result.totalDeductions + result.totalAllowances),
+      taxOwed: round2(result.grossTaxBeforeCredits),
+      marginalRatePercent: getMarginalRate(result.taxableIncome) * 100,
+      effectiveRatePercent: round2((result.grossTaxBeforeCredits / result.grossIncome) * 100),
+      effectiveRateBasis: 'gross income',
+      bracketBreakdown: getTaxByBracket(result.taxableIncome),
+      flowSteps: [
+        { kind: 'start', label: 'Gross business income (Section 40(8))', amount: result.grossIncome },
+        { kind: 'subtract', label: 'Flat-rate expense deduction', amount: result.expenseDeduction, sublabel: '60% of gross income, no cap' },
+        { kind: 'subtract', label: 'Personal allowance', amount: result.totalAllowances, sublabel: 'Single filer, no dependents' },
+        { kind: 'result', label: 'Taxable income', amount: result.taxableIncome },
+        bracketFlowStep(result.taxableIncome),
+        { kind: 'result', label: 'Total tax owed', amount: result.grossTaxBeforeCredits },
+      ],
+      explanation:
+        'This is the same gross-to-taxable flow as an employee, but the deduction is a flat 60% of income instead of the employee\'s capped 50%/฿100,000 deduction — a much larger reduction for the same gross figure. That is why this article\'s companion, Flat-Rate vs. Actual Expenses, matters: for a freelancer with low actual costs, the flat rate is usually the better choice. Freelancers who also had tax withheld from client invoices would subtract that withholding as a credit against this total — see Withholding Tax for Thai Freelancers.',
+      source: FREELANCE_EXPENSE_SOURCE,
+    };
+  })(),
+
+  // Example 9 — Foreign income remittance: the 2024 earned-date line.
+  (() => {
+    const formData = freelancerBaseFormData({
+      hasForeignIncome: true,
+      foreignIncomeEntries: [
+        {
+          id: 'pre-2024-earnings',
+          amount: 15000,
+          currency: 'USD',
+          amountThb: 500000,
+          dateEarned: '2023-06-15',
+          dateRemitted: '2025-03-01',
+          foreignTaxPaid: 0,
+          description: 'Consulting fee earned before the 1 January 2024 rule change',
+          country: 'United States',
+        },
+        {
+          id: 'post-2024-earnings',
+          amount: 15000,
+          currency: 'USD',
+          amountThb: 500000,
+          dateEarned: '2024-06-15',
+          dateRemitted: '2025-03-01',
+          foreignTaxPaid: 0,
+          description: 'Consulting fee earned after the 1 January 2024 rule change',
+          country: 'United States',
+        },
+      ],
+      expenseMethod: 'force_flat',
+    });
+    const result = calculateFreelancerTax(formData);
+    const exemptPortion = result.foreignIncomeTotal - result.taxableForeignIncome;
+    return {
+      id: 'foreign-income-remittance-timing',
+      title: 'Foreign Income Remittance: Same Amount, Different Earned Dates',
+      concept: 'Why the 2024+ remittance rule depends on when income was earned, not just when it was remitted',
+      scenario:
+        'A Thai tax resident freelancer remits two equal $15,000 consulting fees to Thailand on the same day in 2025 — one earned in 2023, the other earned in 2024. Both are remitted after the 1 January 2024 rule change; only one is taxable.',
+      taxYear: 2026,
+      assumptions: [
+        'Thai tax resident for the relevant years (180+ days in Thailand)',
+        'Both amounts (฿500,000 each) remitted to Thailand on 1 March 2025',
+        'No Thai-sourced income, foreign tax paid, or other deductions in this scenario, to isolate the earned-date effect',
+      ],
+      grossIncome: result.grossIncome,
+      taxableIncome: round2(result.taxableIncome),
+      totalDeductionsAndAllowances: round2(result.totalDeductions + result.totalAllowances),
+      taxOwed: round2(result.grossTaxBeforeCredits),
+      marginalRatePercent: getMarginalRate(result.taxableIncome) * 100,
+      effectiveRatePercent: round2((result.grossTaxBeforeCredits / result.grossIncome) * 100),
+      effectiveRateBasis: 'gross income',
+      bracketBreakdown: getTaxByBracket(result.taxableIncome),
+      flowSteps: [
+        { kind: 'start', label: 'Total foreign income remitted in 2025', amount: result.foreignIncomeTotal },
+        { kind: 'subtract', label: 'Exempt: earned before 1 Jan 2024', amount: exemptPortion, sublabel: 'Old same-year-remittance rule still applies to pre-2024 earnings' },
+        { kind: 'result', label: 'Taxable foreign income', amount: result.taxableForeignIncome },
+        { kind: 'subtract', label: 'Personal allowance', amount: result.totalAllowances, sublabel: 'Single filer, no dependents' },
+        { kind: 'result', label: 'Taxable income', amount: result.taxableIncome },
+        bracketFlowStep(result.taxableIncome),
+        { kind: 'result', label: 'Total tax owed', amount: result.grossTaxBeforeCredits },
+      ],
+      explanation:
+        'Both amounts are the same size, remitted on the same day, from the same country — the only difference is when the income was earned. Under Por. 161/2566, the 2023-earned amount keeps the pre-2024 same-year-remittance treatment and is never taxable no matter when it is later remitted; the 2024-earned amount falls under the new rule and is taxable when remitted, even in a later year. Half the total remittance ends up taxable, and half does not — see What Counts as Foreign Income in Thailand for the underlying rule and Transferring Money to Thailand for the full remittance mechanics.',
+      source: REMITTANCE_RULE_SOURCE,
+    };
+  })(),
+
+  // Example 10 — Foreign pension income: DTA exemption vs. taxable, with a foreign tax credit.
+  (() => {
+    const formData = freelancerBaseFormData({
+      isAge65OrOlder: true,
+      hasForeignIncome: true,
+      foreignIncomeEntries: [
+        {
+          id: 'us-social-security',
+          amount: 13700,
+          currency: 'USD',
+          amountThb: 500000,
+          dateEarned: '2026-01-01',
+          dateRemitted: '2026-06-01',
+          foreignTaxPaid: 0,
+          description: 'US Social Security retirement benefit',
+          country: 'United States',
+          isPension: true,
+          pensionType: 'social_security',
+        },
+        {
+          id: 'uk-private-pension',
+          amount: 19000,
+          currency: 'GBP',
+          amountThb: 900000,
+          dateEarned: '2026-01-01',
+          dateRemitted: '2026-06-01',
+          foreignTaxPaid: 30000,
+          foreignTaxPaidOriginal: 633,
+          foreignTaxPaidCurrency: 'GBP',
+          description: 'UK private occupational pension',
+          country: 'United Kingdom',
+          isPension: true,
+          pensionType: 'private_occupational',
+        },
+      ],
+      expenseMethod: 'force_flat',
+    });
+    const result = calculateFreelancerTax(formData);
+    return {
+      id: 'foreign-pension-dta-exemption',
+      title: 'Foreign Pension Income: One Exempt, One Taxable',
+      concept: 'How the pension type and country — not just "is it a pension" — decide DTA treatment',
+      scenario:
+        'A retired Thai tax resident remits two foreign pensions of comparable size in the same year: a US Social Security benefit and a UK private occupational pension. One is fully exempt from Thai tax under a specific DTA article; the other is taxable, with UK tax already paid credited against the Thai tax.',
+      taxYear: 2026,
+      assumptions: [
+        'Thai tax resident, age 65+ (qualifies for the senior exemption in addition to the personal allowance)',
+        'US Social Security (฿500,000): exempt under Article 20(2) of the US-Thailand DTA — taxable only in the US',
+        'UK private occupational pension (฿900,000): not a government/military pension, so the UK DTA\'s pension-exemption article does not apply — taxable in Thailand, with ฿30,000 of UK tax already paid claimed as a foreign tax credit',
+        'No Thai-sourced income in this scenario',
+      ],
+      grossIncome: result.grossIncome,
+      taxableIncome: round2(result.taxableIncome),
+      totalDeductionsAndAllowances: round2(result.totalDeductions + result.totalAllowances),
+      taxOwed: round2(result.grossTaxBeforeCredits),
+      marginalRatePercent: getMarginalRate(result.taxableIncome) * 100,
+      effectiveRatePercent: round2((result.grossTaxBeforeCredits / result.grossIncome) * 100),
+      effectiveRateBasis: 'gross income',
+      bracketBreakdown: getTaxByBracket(result.taxableIncome),
+      flowSteps: [
+        { kind: 'start', label: 'Total foreign pension income remitted', amount: result.foreignIncomeTotal },
+        { kind: 'subtract', label: 'Exempt: US Social Security (DTA Article 20(2))', amount: result.foreignIncomeTotal - result.taxableForeignIncome },
+        { kind: 'result', label: 'Taxable foreign income (UK pension)', amount: result.taxableForeignIncome },
+        { kind: 'subtract', label: 'Personal + senior allowance', amount: result.totalAllowances, sublabel: 'Single filer, age 65+' },
+        { kind: 'result', label: 'Taxable income', amount: result.taxableIncome },
+        bracketFlowStep(result.taxableIncome),
+        { kind: 'result', label: 'Tax before foreign tax credit', amount: result.grossTaxBeforeCredits },
+        { kind: 'subtract', label: 'Foreign tax credit (UK tax already paid)', amount: result.foreignTaxCredits, sublabel: 'Capped at the Thai tax attributable to that income' },
+        { kind: 'result', label: 'Net tax still owed to Thailand', amount: result.netTaxPayable },
+      ],
+      explanation: `Same pension concept, two different outcomes: the US Social Security payment is fully exempt because the US-Thailand treaty puts it outside Thai tax entirely (not a credit — it is simply not taxable here), while the UK private pension does not qualify for that DTA's narrower government-pension exemption, so it is taxed normally. The Thai tax bill before any credit is ${thb(result.grossTaxBeforeCredits)}; the ${thb(result.foreignTaxCredits)} of UK tax already paid reduces that to a final ${thb(result.netTaxPayable)} still owed to Thailand. The credit cannot exceed the Thai tax on that same income — see Thai Double Tax Treaties for how the cap works in general.`,
+      source: DTA_PENSION_SOURCE,
     };
   })(),
 ];

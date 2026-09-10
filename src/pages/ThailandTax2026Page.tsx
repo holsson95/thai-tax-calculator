@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import OfficialSource from '../components/OfficialSource';
 import TaxExampleCard from '../components/TaxExampleCard';
+import CalculateTaxCTA from '../components/CalculateTaxCTA';
 import { getTaxExampleById } from '../data/taxExamples';
 
 const SITE_URL = 'https://mythaitaxes.com';
@@ -347,30 +348,13 @@ const ThailandTax2026Page: React.FC = () => {
               classification is still yours to make, ideally with a qualified advisor. The calculator does
               not provide legal or tax advice.
             </p>
-            <div className="bg-blue-50 rounded-xl p-6 text-center">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Estimate your tax</h3>
-              <p className="text-gray-600 mb-4">
-                Enter your income, allowances, deductions, and (if applicable) foreign income to get your
-                taxable income, tax owed, and effective rate.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link
-                  to="/annual-tax/"
-                  className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-                >
-                  Annual Tax Calculator
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-                <Link
-                  to="/monthly-withholding/"
-                  className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-medium py-3 px-6 rounded-lg transition-colors"
-                >
-                  Monthly Withholding Estimator
-                </Link>
-              </div>
-            </div>
+            <CalculateTaxCTA
+              headingLevel="h3"
+              heading="Estimate your tax"
+              description="Enter your income, allowances, deductions, and (if applicable) foreign income to get your taxable income, tax owed, and effective rate."
+              primary={{ label: 'Annual Tax Calculator', to: '/annual-tax/' }}
+              secondary={{ label: 'Monthly Withholding Estimator', to: '/monthly-withholding/' }}
+            />
           </section>
 
           {/* 11. Methodology & sources */}

@@ -3,8 +3,8 @@ import { taxExamples } from '../taxExamples';
 import { calculateThaiTax, getMarginalRate } from '../../utils/tax';
 
 describe('taxExamples', () => {
-  it('has 8 examples (7 concepts; the bracket-threshold concept needs a below/above pair) with unique ids', () => {
-    expect(taxExamples).toHaveLength(8);
+  it('has 11 examples (10 concepts; the bracket-threshold concept needs a below/above pair) with unique ids', () => {
+    expect(taxExamples).toHaveLength(11);
     const ids = taxExamples.map((e) => e.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
@@ -94,5 +94,53 @@ describe('taxExamples', () => {
     expect(example.taxOwed).toBeCloseTo(87900, 2);
     expect(example.marginalRatePercent).toBe(20);
     expect(example.effectiveRatePercent).toBeCloseTo(7.32, 2);
+  });
+
+  it('freelancer business-income example (gross 900,000, flat-rate deduction) is computed via calculateFreelancerTax', () => {
+    const example = taxExamples.find((e) => e.id === 'freelancer-business-income')!;
+    expect(example.grossIncome).toBe(900000);
+    // 60% flat-rate deduction on Section 40(8) income: 900,000 - 540,000 - 60,000 personal allowance
+    expect(example.taxableIncome).toBeCloseTo(300000, 2);
+    expect(example.taxOwed).toBeCloseTo(7500, 2);
+    expect(example.marginalRatePercent).toBe(5);
+    expect(example.effectiveRatePercent).toBeCloseTo(0.83, 2);
+  });
+
+  it('foreign-income remittance-timing example shows only the post-2024-earned half as taxable', () => {
+    const example = taxExamples.find((e) => e.id === 'foreign-income-remittance-timing')!;
+    // Two ฿500,000 entries remitted the same day; only the one earned in 2024 is taxable.
+    expect(example.grossIncome).toBe(500000);
+    expect(example.taxableIncome).toBeCloseTo(440000, 2);
+    expect(example.taxOwed).toBeCloseTo(21500, 2);
+    expect(example.marginalRatePercent).toBe(10);
+
+    const exemptStep = example.flowSteps.find(
+      (s) => s.kind === 'subtract' && s.label.includes('Exempt: earned before')
+    );
+    expect(exemptStep).toBeDefined();
+    expect((exemptStep as { amount: number }).amount).toBe(500000);
+  });
+
+  it('foreign pension DTA-exemption example exempts US Social Security but taxes the UK private pension, with a capped foreign tax credit', () => {
+    const example = taxExamples.find((e) => e.id === 'foreign-pension-dta-exemption')!;
+    // US Social Security (฿500,000) exempt under DTA Article 20(2); UK private
+    // pension (฿900,000) is the only taxable foreign income in this example.
+    expect(example.grossIncome).toBe(900000);
+    expect(example.taxableIncome).toBeCloseTo(650000, 2);
+    expect(example.taxOwed).toBeCloseTo(50000, 2); // tax before the foreign tax credit
+    expect(example.marginalRatePercent).toBe(15);
+
+    const exemptStep = example.flowSteps.find(
+      (s) => s.kind === 'subtract' && s.label.includes('Exempt: US Social Security')
+    );
+    expect((exemptStep as { amount: number }).amount).toBe(500000);
+
+    const creditStep = example.flowSteps.find(
+      (s) => s.kind === 'subtract' && s.label.includes('Foreign tax credit')
+    );
+    expect((creditStep as { amount: number }).amount).toBe(30000);
+
+    const netStep = example.flowSteps.find((s) => s.label === 'Net tax still owed to Thailand');
+    expect((netStep as { amount: number }).amount).toBe(20000);
   });
 });
