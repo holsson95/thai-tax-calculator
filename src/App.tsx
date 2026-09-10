@@ -13,6 +13,8 @@ import AboutPage from './pages/AboutPage';
 import MethodologyPage from './pages/MethodologyPage';
 import SourcesPage from './pages/SourcesPage';
 import ContactPage from './pages/ContactPage';
+import TaxExamplesPage from './pages/TaxExamplesPage';
+import ThailandTax2026Page from './pages/ThailandTax2026Page';
 
 const AnnualTaxWizard = React.lazy(() => import('./components/AnnualTaxWizard'));
 
@@ -108,6 +110,8 @@ const App: React.FC = () => {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/methodology" element={<MethodologyPage />} />
         <Route path="/sources" element={<SourcesPage />} />
+        <Route path="/tax-examples" element={<TaxExamplesPage />} />
+        <Route path="/thailand-tax-2026" element={<ThailandTax2026Page />} />
         <Route path="/contact" element={<ContactPage />} />
       </Routes>
     </Layout>

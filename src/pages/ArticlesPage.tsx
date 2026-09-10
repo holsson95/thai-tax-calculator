@@ -34,7 +34,10 @@ const ArticlesPage: React.FC = () => {
             Thai Tax Guides for Expats
           </h1>
           <p className="text-gray-600">
-            Comprehensive guides to help you understand and navigate Thai taxation.
+            Comprehensive guides to help you understand and navigate Thai taxation. New here?{' '}
+            <Link to="/thailand-tax-2026/" className="text-blue-600 hover:underline">
+              Start with the 2026 tax overview
+            </Link>.
           </p>
         </div>
 

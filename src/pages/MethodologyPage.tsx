@@ -24,7 +24,10 @@ const MethodologyPage: React.FC = () => {
       </Helmet>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Calculator Methodology</h1>
-      <p className="text-sm text-gray-500 mb-8">Last reviewed: {LAST_REVIEWED}</p>
+      <p className="text-sm text-gray-500 mb-2">Last reviewed: {LAST_REVIEWED}</p>
+      <p className="text-sm text-gray-500 mb-8">
+        <Link to="/thailand-tax-2026/" className="text-blue-600 hover:underline">← Back to the 2026 tax overview</Link>
+      </p>
 
       <div className="space-y-8 text-gray-700 leading-relaxed">
 

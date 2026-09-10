@@ -1,13 +1,67 @@
+import { calculateThaiTax, getMarginalRate } from '../utils/tax';
+import { getTaxExampleById } from './taxExamples';
+
 export interface Article {
   slug: string;
   title: string;
   excerpt: string;
   content: string;
   publishedAt: string;
+  updatedAt?: string;
   readTime: number;
   category: string;
   sources?: { label: string; url: string }[];
 }
+
+/**
+ * Worked-example numbers for the "thai-tax-brackets-explained" article.
+ *
+ * For the five income levels/pairs that also appear as curated examples on
+ * /tax-examples/, this pulls the actual TaxExample record from
+ * src/data/taxExamples.ts — so the article and the examples page are reading
+ * the SAME computed object, not two independent calls that merely happen to
+ * agree today. If an example's income level or engine-computed numbers ever
+ * change, this article changes with it automatically.
+ *
+ * ฿600,000 and ฿2,000,000 have no corresponding curated TaxExample (the
+ * curated set covers 400k/1M/5M plus the threshold pair — see TAX_EXAMPLES.md),
+ * so those two are computed directly via the same calculateThaiTax /
+ * getMarginalRate engine calls instead. Still can't drift from the
+ * calculator; just not backed by a shared example object.
+ */
+function requireExample(id: string) {
+  const example = getTaxExampleById(id);
+  if (!example) {
+    throw new Error(`articles.ts: expected taxExamples entry "${id}" to exist`);
+  }
+  return {
+    taxableIncome: example.taxableIncome,
+    tax: example.taxOwed,
+    marginalRatePercent: example.marginalRatePercent,
+    effectiveRatePercent: example.effectiveRatePercent,
+  };
+}
+
+function bracketRateRow(taxableIncome: number) {
+  const tax = calculateThaiTax(taxableIncome);
+  return {
+    taxableIncome,
+    tax,
+    marginalRatePercent: getMarginalRate(taxableIncome) * 100,
+    effectiveRatePercent: (tax / taxableIncome) * 100,
+  };
+}
+
+const row400k = requireExample('lower-income-employee');
+const row1M = requireExample('middle-income-employee');
+const row5M = requireExample('high-income-employee');
+const rowBelowThreshold = requireExample('bracket-threshold-below');
+const rowAboveThreshold = requireExample('bracket-threshold-above');
+// No curated taxExamples entry for these two — see comment above.
+const row600k = bracketRateRow(600000);
+const row2M = bracketRateRow(2000000);
+const thb = (n: number) => `฿${Math.round(n).toLocaleString('en-US')}`;
+const pct = (n: number) => `${n.toFixed(2)}%`;
 
 export const articles: Article[] = [
   {
@@ -131,46 +185,88 @@ Tax laws can change. Always verify current rates and thresholds with the Thai Re
   },
   {
     slug: 'understanding-thai-tax-residency',
-    title: 'Am I a Thai Tax Resident? The 180-Day Rule Explained',
-    excerpt: "How Thailand's 180-day rule decides your tax residency status, what counts as a day in-country, and how residency changes which income gets taxed.",
+    title: 'Am I a Thai Tax Resident? The 180-Day Rule, Explained With Examples',
+    excerpt: "Thailand's 180-day residency test, worked day-count examples, why your visa type doesn't decide it, and what changes once you cross the threshold.",
     content: `
-## What is Tax Residency?
-
-Tax residency determines which country has the right to tax your income. In Thailand, the rules are straightforward but important to understand.
+Thai tax residency comes down to one test: how many days did you actually spend in Thailand during the calendar year? Not your visa type, not your nationality, not where your money is. This article walks through that test, shows how the day count works with real examples, and explains why the answer matters.
 
 ## The 180-Day Rule
 
-Thailand uses a simple test to determine tax residency: if you spend 180 days or more in Thailand during a calendar year, you are considered a Thai tax resident.
+Under **Section 41 of the Thai Revenue Code**, anyone who stays in Thailand for a period or periods adding up to 180 days or more during a tax year is a Thai tax resident for that year. The same Revenue Code section defines "tax year" as the calendar year — January 1 through December 31, not a 12-month period from your arrival date.
 
-### Key Points:
-- Days are counted per calendar year (January to December)
-- Partial days typically count as full days
-- The days don't need to be consecutive
+Two things follow directly from the statute's wording:
 
-## Tax Implications
+- **The days can be spread across multiple trips.** The law says "a period or periods aggregating" 180 days — it does not require one unbroken stay. Time in Thailand from separate visits in the same calendar year all adds together.
+- **The count resets every January 1.** Residency is determined year by year. Days from last year don't carry over, and neither does anything after December 31.
 
-**As a Thai Tax Resident:**
-- You are taxed on income earned in Thailand
-- You may be taxed on foreign-sourced income brought into Thailand
-- You must file an annual tax return if your income exceeds the filing threshold
+## How the Day Count Actually Works
 
-**As a Non-Resident:**
-- You are only taxed on income earned within Thailand
-- Different withholding rates may apply
-- You may still need to file depending on your income type
+Every day you count needs to fall inside the same calendar year. Beyond that, the Revenue Code itself doesn't spell out precisely how to count a single day of arrival or departure — that finer point is Revenue Department practice rather than a codified statutory rule. Our [FAQ page](/faq) covers this in more detail and recommends counting conservatively: if in doubt, count any day you were physically present in Thailand, even briefly, as a full day toward the 180-day total.
 
-## Planning Tips
+## Worked Examples
 
-1. Keep records of your travel in and out of Thailand
-2. Understand the timing of your income remittances
-3. Consider tax treaties between Thailand and your home country
-4. Consult with a tax professional for complex situations
+These examples apply the statutory rule directly — no edge cases beyond what Section 41 states.
+
+**Example A — One continuous stay.** Someone arrives on January 1 and leaves on August 15 without leaving the country in between: roughly 227 days in a single stretch. That's well past 180 days on its own, so this person is a Thai tax resident for that calendar year.
+
+**Example B — Multiple trips, non-consecutive.** Someone spends February–April in Thailand (60 days), leaves, then returns for July–December (184 days). Total: 244 days across two separate stays. Because the law aggregates "a period or periods," these two trips add together — the gap between them doesn't reset anything. This person is a resident.
+
+**Example C — Crossing the threshold mid-year.** Someone arrives January 1 and stays through the end of June — about 181 days — then leaves Thailand for the rest of the year. Once the running total reaches 180, residency for that calendar year is already determined; leaving afterward doesn't undo it. This person is a Thai tax resident for that year, even though they spent the second half of it elsewhere.
+
+**Example D — The visa-length trap.** A visitor holds a visa that allows stays of up to 180 days per entry, and makes three separate entries during one calendar year — 70, 60, and 65 days — totaling 195 days in Thailand for the year. Staying under the per-entry limit each time doesn't matter: the 180-day tax-residency test looks at cumulative days in the calendar year, not at any single visa's stay allowance. This person crosses the tax-residency threshold even though no individual visit came close to it.
+
+## Your Visa Doesn't Decide Your Tax Residency
+
+This is the most common misconception about the 180-day rule, and it's worth stating plainly: **Section 41 determines tax residency by physical presence alone — not by nationality, visa category, or immigration status.**
+
+It doesn't matter whether you're in Thailand on a retirement visa, a DTV, Thailand Privilege (Elite), a work permit, or a tourist visa. None of those change how the 180-day test is applied. A visa's own rules (how long you can stay per entry, when you must report to immigration, and so on) are immigration matters, separate from the tax-residency question. If you've spent 180+ days in Thailand in a calendar year, you meet the tax-residency test regardless of what your visa says — and if you haven't, holding a long-stay visa doesn't make you a tax resident either.
+
+The one narrow exception worth knowing about: certain [LTR visa categories](/articles/ltr-visa-tax-benefits) carry specific foreign-income tax exemptions written into a separate decree. That's a targeted exemption for qualifying LTR holders — it doesn't change how residency itself is determined, and it doesn't extend to other visa types.
+
+## Why Residency Actually Matters
+
+Residency status decides what income Thailand can tax:
+
+- **Non-residents** (under 180 days) are taxed only on Thai-sourced income — money earned from work, business, or assets inside Thailand.
+- **Thai tax residents** (180+ days) are taxed on Thai-sourced income *and*, since 1 January 2024, on foreign-sourced income they remit to Thailand.
+
+That second point is a separate rule from residency itself, so it's worth being precise about the relationship: **residency is the gate.** The 2024+ foreign-income rule only applies to you at all if you're a Thai tax resident for the year in question. Non-residents were never taxed on foreign income, before or after 2024, regardless of remittance.
+
+Under Revenue Department Order Por. 161/2566 (effective 1 January 2024), a Thai tax resident's foreign-sourced income earned on or after that date is assessable when remitted to Thailand — in the same year it was earned or any later year. This closed an older rule under which foreign income escaped Thai tax entirely if you waited to remit it in a later calendar year. Income earned before 1 January 2024 continues to follow the old same-year-remittance rule.
+
+This article only covers that rule at the level needed to understand why residency matters. For the full mechanics — what counts as a remittance, capital versus income, documentation — see [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules).
+
+Whether you need to file a return, and at what income threshold, depends on your residency status and income type — see [Thai Tax Return for Expats: PND 90/91 Guide](/articles/expat-guide-filing-thai-taxes) for the specific numbers. If a tax treaty between Thailand and your home country affects your situation, [Double Tax Agreements](/articles/double-tax-agreements-thailand) covers that separately.
+
+## Once You Know Your Residency Status
+
+The examples above are for working out whether you cross the 180-day line. Once you've determined your residency status, you can use the [Annual Tax Calculator](/annual-tax/) to estimate your Thai tax liability and see how residency affects the treatment of your foreign income. The calculator asks a straightforward yes/no residency question rather than a full day count, so it's a tool for calculating tax once you've settled the residency question yourself — not for resolving a borderline day count like the ones in Examples B or D above.
+
+## FAQs
+
+### Do the 180 days need to be consecutive?
+
+No. Section 41 counts "a period or periods aggregating" 180 days, so separate trips in the same calendar year add together toward the total — see Example B above.
+
+### Does my visa determine whether I'm a Thai tax resident?
+
+No. Tax residency is based solely on how many days you physically spent in Thailand during the calendar year, regardless of visa type, nationality, or immigration status. See "Your Visa Doesn't Decide Your Tax Residency" above.
+
+### What happens once I reach 180 days during the year?
+
+Once your cumulative days in Thailand for that calendar year reach 180, you're a Thai tax resident for the entire year — leaving the country afterward doesn't change your residency status for that year. See Example C above.
+
+### How does residency affect foreign income?
+
+Only Thai tax residents can be taxed on foreign-sourced income, and only when it's remitted to Thailand. Non-residents are never taxed on foreign income. For residents, foreign income earned on or after 1 January 2024 is taxable when remitted, in any year — see [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules) for the full explanation.
     `,
     publishedAt: '2024-01-15',
-    readTime: 5,
+    updatedAt: '2026-09-08',
+    readTime: 7,
     category: 'Tax Basics',
     sources: [
-      { label: 'Thai Revenue Department — Tax Residency & Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Thai Revenue Department — Revenue Code Section 41 (Tax Residency)', url: 'https://www.rd.go.th/english/37749.html' },
+      { label: 'Mahanakorn Partners Group — Overview of Orders Por. 161/2566 and Por. 162/2566 (secondary source on the 2024+ foreign-income remittance rule)', url: 'https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/' },
     ]
   },
   {
@@ -222,52 +318,110 @@ Interest on housing loans is deductible up to 100,000 THB annually.
   },
   {
     slug: 'thai-tax-brackets-explained',
-    title: 'Thai Income Tax Rates and Brackets 2025/2026',
-    excerpt: 'Understand how Thailand\'s progressive tax rates work, what each bracket means for your salary, and how to calculate your effective tax rate.',
+    title: 'Thai Income Tax Brackets 2025/2026: How Much You Actually Pay at Each Income Level',
+    excerpt: "Thailand's 2025/2026 tax brackets with worked examples at five income levels — see the real difference between your tax bracket and your effective tax rate.",
     content: `
-## Progressive Tax System
+Being "in the 25% bracket" does not mean 25% of your income goes to tax — that's one of the most common misunderstandings about how Thai income tax works. Thailand's personal income tax is progressive, which means each bracket's rate applies only to the slice of income that falls inside it, not to your entire income. The rate for your top slice is your **marginal rate**. What you actually pay overall, as a share of your income, is your **effective rate** — and it's never higher than your marginal rate, usually significantly lower.
 
-Thailand uses a progressive tax system where higher income is taxed at higher rates. Only the income within each bracket is taxed at that rate.
+This article shows both numbers side by side, at real income levels, so the difference is concrete rather than abstract.
 
-## 2024 Tax Brackets
+## Thailand's 2025/2026 Tax Brackets
+
+These brackets apply to **taxable income** — income after allowances and deductions, not your gross salary (more on that below).
 
 | Taxable Income (THB) | Tax Rate |
 |---------------------|----------|
-| 0 - 150,000 | Exempt |
-| 150,001 - 300,000 | 5% |
-| 300,001 - 500,000 | 10% |
-| 500,001 - 750,000 | 15% |
-| 750,001 - 1,000,000 | 20% |
-| 1,000,001 - 2,000,000 | 25% |
-| 2,000,001 - 5,000,000 | 30% |
+| 0 – 150,000 | 0% (exempt) |
+| 150,001 – 300,000 | 5% |
+| 300,001 – 500,000 | 10% |
+| 500,001 – 750,000 | 15% |
+| 750,001 – 1,000,000 | 20% |
+| 1,000,001 – 2,000,000 | 25% |
+| 2,000,001 – 5,000,000 | 30% |
 | Over 5,000,000 | 35% |
 
-## How It Works
+This table matches the bracket data used by this site's calculator. Our source for it is Sherrings, a Thailand-focused tax advisory (see Sources below), which reports these thresholds and rates as effective since the 2017 tax year — we treat that as a strong secondary source, not a primary government citation. We could not locate a working, current Thai Revenue Department page to confirm it directly: the Department's own English-language bracket page is outdated and still shows pre-2017 figures, so we don't cite it here.
 
-The first 150,000 THB of taxable income is always exempt. Then each subsequent bracket applies only to the income within that range.
+## From Gross Income to Taxable Income
 
-### Example Calculation
+The brackets above don't apply to your salary directly. Taxable income is what's left after:
 
-For a taxable income of 600,000 THB:
-- First 150,000: 0 THB (exempt)
-- 150,001 - 300,000: 7,500 THB (150,000 × 5%)
-- 300,001 - 500,000: 20,000 THB (200,000 × 10%)
-- 500,001 - 600,000: 15,000 THB (100,000 × 15%)
-- **Total Tax: 42,500 THB**
-- **Effective Rate: 7.08%**
+- **Expense deductions** — a standard deduction for employment income, or actual/flat-rate deductions for freelance and business income
+- **Personal and family allowances** — for yourself, a spouse, children, and dependent parents
+- **Other deductions** — social security contributions, insurance premiums, retirement fund contributions, and similar items you qualify for
 
-## Key Takeaways
+So someone earning ฿1,000,000 gross does not start their bracket calculation at ฿1,000,000 — their taxable income is whatever remains after their own eligible allowances and deductions. How much lower that is depends entirely on individual circumstances (marital status, dependents, insurance premiums, retirement contributions, and so on) — there's no single "typical" reduction. For the specific amounts and eligibility rules, see [Thailand Tax Deductions 2026: Full Guide for Expats](/articles/maximizing-tax-deductions-thailand). Everything below uses taxable income directly, so you can see the bracket mechanics clearly — for your own gross-to-taxable calculation, use the calculator linked at the end of this article.
 
-1. Your marginal rate applies only to income in that bracket
-2. The effective rate is always lower than your top bracket
-3. Deductions reduce your taxable income before applying brackets
-4. Use our calculator to see your exact breakdown
+## Worked Example: ฿600,000 Taxable Income
+
+Here's how ฿600,000 of taxable income moves through the brackets:
+
+| Bracket | Amount in this bracket | Rate | Tax on this slice |
+|---|---|---|---|
+| 0 – 150,000 | 150,000 | 0% | 0 THB |
+| 150,001 – 300,000 | 150,000 | 5% | 7,500 THB |
+| 300,001 – 500,000 | 200,000 | 10% | 20,000 THB |
+| 500,001 – 600,000 | 100,000 | 15% | 15,000 THB |
+
+**Total tax: ${thb(row600k.tax)}**
+**Marginal rate: ${row600k.marginalRatePercent}%** (the rate on the last slice of income)
+**Effective rate: ${pct(row600k.effectiveRatePercent)}** (${thb(row600k.tax)} ÷ 600,000)
+
+Notice the gap: this person's marginal rate is ${row600k.marginalRatePercent}%, but they're only handing over ${pct(row600k.effectiveRatePercent)} of their taxable income overall — because most of it was taxed at 0%, 5%, and 10% before the 15% rate ever applied.
+
+## Marginal Rate vs. Effective Rate: Five Income Levels
+
+The gap between marginal and effective rate grows wider as income rises. Here's the same calculation run at five taxable-income levels:
+
+| Taxable income | Estimated tax | Marginal rate | Effective rate |
+|---|---:|---:|---:|
+| ${thb(row400k.taxableIncome)} | ${thb(row400k.tax)} | ${row400k.marginalRatePercent}% | ${pct(row400k.effectiveRatePercent)} |
+| ${thb(row600k.taxableIncome)} | ${thb(row600k.tax)} | ${row600k.marginalRatePercent}% | ${pct(row600k.effectiveRatePercent)} |
+| ${thb(row1M.taxableIncome)} | ${thb(row1M.tax)} | ${row1M.marginalRatePercent}% | ${pct(row1M.effectiveRatePercent)} |
+| ${thb(row2M.taxableIncome)} | ${thb(row2M.tax)} | ${row2M.marginalRatePercent}% | ${pct(row2M.effectiveRatePercent)} |
+| ${thb(row5M.taxableIncome)} | ${thb(row5M.tax)} | ${row5M.marginalRatePercent}% | ${pct(row5M.effectiveRatePercent)} |
+
+Even at ${thb(row5M.taxableIncome)} of taxable income — deep into the 30% bracket — the effective rate is only ${pct(row5M.effectiveRatePercent)}, because every bracket below still applies at its own, lower rate. These are estimates based on taxable income alone, using only the brackets above (no other credits or special cases applied). See more worked examples, including the full gross-income-to-tax flow, on the [Thailand Income Tax Examples](/tax-examples/) page.
+
+## Does Crossing a Bracket Tax Your Whole Income at the Higher Rate?
+
+No — and this is worth showing directly, because it's the source of most "should I turn down this bonus?" anxiety.
+
+Compare ฿999,000 of taxable income to ฿1,001,000 — just ฿2,000 apart, but on opposite sides of the ฿1,000,000 line between the 20% and 25% brackets:
+
+- **฿999,000 taxable income:** tax = ${thb(rowBelowThreshold.tax)} (effective rate ${pct(rowBelowThreshold.effectiveRatePercent)})
+- **฿1,001,000 taxable income:** tax = ${thb(rowAboveThreshold.tax)} (effective rate ${pct(rowAboveThreshold.effectiveRatePercent)})
+
+Earning ฿2,000 more costs ${thb(rowAboveThreshold.tax - rowBelowThreshold.tax)} more in tax — not ฿500 (25% of ฿2,000), and nowhere close to pushing the whole ฿1,001,000 into the 25% bracket. That's because only the ฿1,000 above the ฿1,000,000 threshold is taxed at the new 25% rate; the ฿1,000 below it is still taxed at 20%. Crossing into a higher bracket only ever affects the income above the threshold — never the income you'd already earned before it.
+
+## Why Your Tax Bracket Isn't Your Tax Rate
+
+Your "tax bracket" is really just a label for the highest-taxed slice of your income — it tells you the rate that applies to the top portion of what you earn, not the rate applied to your income as a whole. In the examples above, someone with ${thb(row2M.taxableIncome)} of taxable income is "in the ${row2M.marginalRatePercent}% bracket," but their real, blended tax burden is ${pct(row2M.effectiveRatePercent)}. That's the number that matters for budgeting what you actually take home, and it's always lower than your bracket rate for anyone above the first bracket.
+
+## Calculate Your Own Thai Income Tax
+
+Every example above starts from taxable income, not gross salary — your own taxable income depends on your allowances, deductions, and income type. The [Annual Tax Calculator](/annual-tax/) walks through your actual numbers and shows your effective tax rate along with a full bracket-by-bracket breakdown, so you can see exactly which bracket — and which rate — your own income reaches. See [How to Use the Thai Tax Calculator](/articles/how-to-use-the-thai-tax-calculator) for a full walkthrough.
+
+## FAQs
+
+### What's the difference between my marginal tax rate and my effective tax rate?
+
+Your marginal rate is the tax rate on your last (highest) slice of taxable income — it's what "your bracket" refers to. Your effective rate is your total tax divided by your total taxable income, blending every bracket rate that applied along the way. Effective rate is always lower than marginal rate for anyone earning above the first bracket, as shown in the table above.
+
+### Does getting a raise or bonus push my entire salary into a higher tax bracket?
+
+No. A raise or bonus that crosses into a higher bracket only increases the rate on the portion of income above that threshold — everything you were already earning below it keeps being taxed at the same rates as before. See the ฿999,000 vs. ฿1,001,000 example above for the exact numbers.
+
+### Have Thailand's income tax brackets changed for 2026?
+
+As of our last review (September 2026), we haven't found any indication that these brackets have changed — they've applied unchanged since the 2017 tax year, per the secondary source cited below. We don't have a 2026-dated primary government confirmation that no amendment has occurred, so treat this as our best current understanding rather than a guarantee, and check with the Revenue Department or a licensed Thai tax advisor before filing.
     `,
     publishedAt: '2024-02-15',
-    readTime: 4,
+    updatedAt: '2026-09-07',
+    readTime: 6,
     category: 'Tax Basics',
     sources: [
-      { label: 'Thai Revenue Department — Personal Income Tax Rates', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Sherrings — Thailand Personal Income Tax Rates (secondary source; the Revenue Department\'s own English bracket page is outdated and not cited)', url: 'https://sherrings.com/personal-income-tax-rates-thailand.html' },
     ]
   },
   {
@@ -332,66 +486,111 @@ Online filing via the RD Smart Tax app may extend this deadline by 8 days.
   },
   {
     slug: 'foreign-income-thailand-tax',
-    title: 'Foreign Income in Thailand: When Is It Taxable?',
-    excerpt: 'Learn when foreign-sourced income is taxable in Thailand under the 2024 remittance rule, and how to determine what you need to declare and pay tax on.',
+    title: 'What Counts as Foreign Income in Thailand — and When Does It Become Taxable?',
+    excerpt: 'What foreign income actually means under Thai tax law — employment, investment, rental, and business income — and how residency, the 2024 remittance rule, and specific exemptions decide what you owe.',
     content: `
-## The Remittance Rule
+"Foreign income" is not simply money sitting in a foreign bank account — whether Thailand can tax it depends on three separate questions: where the income was sourced, whether you're a Thai tax resident, and when it was earned versus when it was remitted to Thailand. This article walks through those three questions at a conceptual level. It doesn't replace personalized tax advice for your specific situation.
 
-Thailand historically taxed foreign-sourced income only if:
-1. You are a Thai tax resident
-2. The income is remitted (brought) into Thailand
-3. The income is remitted in the same year it was earned
+## Which Article Do I Need?
 
-## Recent Changes
+This topic spans several pages on this site, each covering a different part of it:
 
-The Revenue Department has announced changes to foreign income taxation. Starting from 2024, foreign-sourced income brought into Thailand may be taxable regardless of when it was earned.
+- **Trying to work out whether you're a Thai tax resident?** See [Am I a Thai Tax Resident? The 180-Day Rule, Explained With Examples](/articles/understanding-thai-tax-residency).
+- **Trying to understand the 2024+ remittance rule in detail — what counts as a remittance, capital vs. income, practical timing examples?** See [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules).
+- **Trying to estimate your actual tax?** Use the [Annual Tax Calculator](/annual-tax/).
 
-### Key Changes:
-- Income earned in prior years may now be taxable when remitted
-- Stricter enforcement expected
-- Some exemptions still apply
+This page is the conceptual starting point: what foreign income is, what types exist, and at a high level when it becomes a Thai tax question.
 
-## Types of Foreign Income
+## What Counts as Foreign Income?
 
-### Employment Income
-Income from work performed outside Thailand while employed by a foreign company.
+"Foreign-sourced" income means the income itself was generated outside Thailand — as opposed to "Thai-sourced" income, generated from work, assets, or business activity inside Thailand. The distinction matters because it's the first of the three questions above, before residency or remittance timing even come into play.
 
-### Investment Income
-Dividends, interest, and capital gains from foreign investments.
+| Type | Example of foreign-sourced income | Example of Thai-sourced income |
+|---|---|---|
+| Employment | Salary for work performed outside Thailand for a foreign employer | Salary for employment services performed in Thailand |
+| Investment | Dividends or interest from foreign investments | Dividends or interest from Thai investments |
+| Rental | Rent from property located outside Thailand | Rent from property located in Thailand |
+| Business | Income from a business carried on outside Thailand | Income from business activities carried on in Thailand |
 
-### Rental Income
-Income from properties located outside Thailand.
+These examples illustrate the general concept, not an exhaustive legal test. Sourcing can depend on specific facts — for example, where the work was physically performed, where a company is managed, or how a particular treaty defines a type of income — and some situations are genuinely fact-specific rather than a simple lookup. If your situation is not a clear-cut case, that's a reason to get advice on your specific facts rather than to assume a category applies.
 
-### Business Income
-Profits from businesses operated outside Thailand.
+**Employment income needs special care.** The employer's country alone does not necessarily determine the source of employment income — where the work is physically performed can matter. Someone who works remotely from Thailand for a foreign employer is not automatically earning "foreign income" just because the paycheck comes from abroad; income for services performed in Thailand can be Thai-sourced even when the employer is not. This is one of the most common misconceptions about foreign income.
 
-## Tax Treaties
+## Quick Test: Is This Foreign-Sourced Income?
 
-Thailand has tax treaties with many countries that may:
-- Reduce withholding rates
-- Provide exemptions for certain income types
-- Allow foreign tax credits
+The table below is a practical orientation tool for common situations — not a substitute for applying the full rules to your own facts, and not a database of every possible scenario.
 
-### Common Treaty Partners:
-- United States
-- United Kingdom
-- Australia
-- Singapore
-- Japan
-- Germany
+| Scenario | Category | What to check next |
+|---|---|---|
+| Dividends or interest from a foreign brokerage account | Generally foreign-sourced | Once foreign-sourced, whether it's taxable depends on residency and remittance — see below |
+| Rent from a property located outside Thailand | Generally foreign-sourced | Same as above |
+| Interest from a Thai bank account | Generally Thai-sourced | Taxable in Thailand regardless of residency or remittance — the 2024+ rule doesn't apply, because it was never foreign income |
+| Salary from a foreign employer, work performed physically in Thailand | Fact-specific | Where the work was performed can matter more than where the employer is based — see the employment income note above |
+| Savings accumulated before you became a Thai tax resident | Not necessarily income — capital/income distinction matters | This isn't a sourcing question at all; see the capital vs. income point below and the [remittance rules article](/articles/transferring-money-to-thailand-tax-rules) |
+| Foreign pension income | Treaty-specific | Depends on the pension type and the specific DTA — see the exceptions section below |
+| Foreign income earned before 1 January 2024, remitted in a later year | Foreign-sourced, but the old timing rule applies | See "What Changed on 1 January 2024" below |
+| Income from a business carried on outside Thailand | Generally foreign-sourced | Same as the first two rows — residency and remittance decide taxability from there |
 
-## Planning Strategies
+### The Three Questions
 
-1. **Timing:** Consider when to remit foreign income
-2. **Documentation:** Keep records of income sources and dates
-3. **Tax Credits:** Claim credits for taxes paid abroad
-4. **Professional Advice:** Complex situations require expert guidance
+Once you have a sense of whether income is foreign-sourced, three questions decide whether Thailand can tax it:
+
+1. **Where did the income come from?** Foreign-sourced or Thai-sourced — the table above is a starting point.
+2. **Were you a Thai tax resident when it mattered?** The foreign-income remittance rules only apply to Thai tax residents. See [Am I a Thai Tax Resident?](/articles/understanding-thai-tax-residency)
+3. **When was it earned, and when was it remitted?** The 1 January 2024 dividing line decides which timing rule applies. See [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules)
+
+## Why Thai Tax Residency Matters
+
+Foreign income only becomes a Thai tax question at all if you're a Thai tax resident. Under **Section 41 of the Thai Revenue Code**, a person who stays in Thailand for 180 days or more in a calendar year is treated as a Thai tax resident for that year. Physical presence is the relevant test for this rule — it is not the only thing that can matter for every possible tax question, but it is what determines residency under Section 41, regardless of visa type or nationality.
+
+Non-residents are taxed only on Thai-sourced income, never on foreign income, regardless of remittance. For the full 180-day test, worked day-count examples, and why visa type doesn't decide residency, see [Am I a Thai Tax Resident?](/articles/understanding-thai-tax-residency)
+
+## What Changed on 1 January 2024
+
+**Before 1 January 2024**, foreign-sourced income of a Thai tax resident generally became subject to Thai tax only when it was remitted to Thailand in the same calendar year it was earned. Income earned one year and brought into Thailand the following year escaped this rule entirely.
+
+**From 1 January 2024**, under **Por. 161/2566**, foreign-sourced income earned by a Thai tax resident on or after that date can be subject to Thai tax when remitted to Thailand — even if the remittance happens in a later year. A clarifying order, Por. 162/2566, confirms that income earned before 1 January 2024 keeps the old same-year-remittance treatment, even if it's remitted in 2024 or later.
+
+In short: the earned date decides which rule applies, and remittance is still what triggers the tax. Whether the current English legal terminology for Por. 161/2566 is best described as an "Order" or a "Circular" varies between sources; this article uses the instrument number rather than guessing at a label.
+
+For what actually counts as a "remittance," how capital is distinguished from income, and worked timing examples, see [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules) — that article covers the mechanics in full; this one only needs the rule itself.
+
+## Exceptions Worth Knowing About
+
+A blanket "some exemptions apply" isn't useful on its own, so here are the specific ones this project has verified:
+
+- **Qualifying LTR visa holders.** The Wealthy Global Citizen, Wealthy Pensioner, and Work-from-Thailand Professional LTR visa categories are exempt from Thai tax on foreign-sourced income that is remitted to Thailand, subject to maintaining the visa's BOI-prescribed qualifications. This is specific to these three LTR categories — it does not extend to other visa types, and it applies to remitted income, not to foreign income regardless of remittance.
+- **Certain treaty pension provisions.** Some pensions are taxable only in the country paying them, under the pension article of the relevant Double Tax Agreement — but this is not uniform. Under the US-Thailand treaty, for example, government and social-security pensions are taxable only in the source country, while ordinary private pensions are taxable only in the country of residence (Thailand, for a Thai resident) — the opposite treatment. Whether a given pension is exempt depends on the pension type and the specific treaty. See [How Foreign Pensions Are Taxed in Thailand](/articles/foreign-pension-income-thailand-tax) for country- and pension-type-specific detail.
+- **Capital, as distinct from income.** Money that is capital rather than income was never subject to income tax in the first place — this isn't an exemption, it's a different concept. Savings accumulated before you became a Thai tax resident, for instance, are capital. Whether a specific amount is capital or income can require factual analysis and documentation; the [remittance rules article](/articles/transferring-money-to-thailand-tax-rules) covers this distinction in more depth.
+
+## Foreign Tax Credits
+
+Where a Double Tax Agreement between Thailand and the source country applies, foreign tax already paid on the same income may reduce the Thai tax owed on it, subject to that treaty's specific rules and limitations — you generally shouldn't end up paying full tax on the same income twice, though the mechanism and limits vary by treaty rather than working identically for every country. Under the US-Thailand treaty, for example, the credit is capped at the lesser of the foreign tax actually paid and the Thai tax attributable to that same income. That specific formula is a feature of that treaty's text, not a rule that automatically applies the same way under every DTA Thailand has. See [Thai Double Tax Treaties: Protecting Expats](/articles/double-tax-agreements-thailand) for how DTAs and foreign tax credits work in general.
+
+## If You Answered...
+
+- **"I don't know whether I'm a Thai tax resident."** → [Am I a Thai Tax Resident?](/articles/understanding-thai-tax-residency)
+- **"I know it's foreign income, but I'm confused about bringing it into Thailand."** → [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules)
+- **"I paid tax overseas and want to know about credits."** → [Thai Double Tax Treaties: Protecting Expats](/articles/double-tax-agreements-thailand)
+- **"I want to estimate my actual Thai tax."** → [Annual Tax Calculator](/annual-tax/)
+
+## Worked Example: LTR vs. an Ordinary Visa
+
+Two Thai tax residents each remit foreign pension income. One holds a qualifying LTR Wealthy Pensioner visa and is exempt on that remitted income. The other holds an ordinary long-stay visa (for example, a retirement visa) with no such exemption, and the general residency-and-remittance rules apply. The exemption follows from the specific LTR visa category — not from being a long-term resident or retiree in general, and not from holding any particular non-LTR visa.
+
+## Using the Calculator
+
+Once you know which of your income is foreign-sourced and have a sense of whether the rules above apply to it, the [Annual Tax Calculator](/annual-tax/) can estimate your Thai tax position. It accepts foreign-income entries with the country, date earned, date remitted, and foreign tax paid, and applies the 2024+ earned-date rule, DTA foreign tax credit logic, and the LTR exemption where applicable, automatically. The calculator computes tax on what you tell it is income — it doesn't determine for you whether a particular transfer is capital or income, and it doesn't resolve treaty pension classification beyond the country/pension-type combinations it already recognizes. Those judgment calls are yours to make first.
     `,
     publishedAt: '2024-03-15',
-    readTime: 8,
+    updatedAt: '2026-09-08',
+    readTime: 7,
     category: 'International',
     sources: [
-      { label: 'Thai Revenue Department — Foreign Income & Tax Treaties', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Thai Revenue Department — Revenue Code Section 41 (Tax Residency)', url: 'https://www.rd.go.th/english/37749.html' },
+      { label: 'Mahanakorn Partners Group — Overview of Orders Por. 161/2566 and Por. 162/2566', url: 'https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/' },
+      { label: 'Royal Decree No. 743 B.E. 2565 — LTR Visa Tax Provisions', url: 'https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf' },
+      { label: 'US–Thailand Double Taxation Convention (treaty text)', url: 'https://www.irs.gov/pub/irs-trty/thailand.pdf' },
     ]
   },
   {
@@ -480,6 +679,8 @@ Social security contributions are:
 ## Freelancing in Thailand
 
 Whether you're a digital nomad, consultant, or independent professional, understanding your tax obligations is essential for compliance and financial planning.
+
+For the broader 2026 system this guide fits into — brackets, residency, foreign income, and filing — see [Thailand Personal Income Tax 2026: The Complete Overview](/thailand-tax-2026/).
 
 ## Income Categories for Freelancers
 
@@ -1283,6 +1484,8 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
 ## Introduction
 
 Thailand is one of the world's most popular retirement destinations, drawing tens of thousands of retirees each year with its low cost of living, warm climate, and welcoming culture. But retiring here comes with tax obligations that many expat pensioners don't fully understand — including rules that changed significantly in 2024.
+
+For the broader 2026 system this guide fits into — brackets, residency, foreign income, and filing — see [Thailand Personal Income Tax 2026: The Complete Overview](/thailand-tax-2026/).
 
 The good news: Thailand offers a generous tax exemption specifically for people aged 65 and over, and there are several legal ways to reduce your tax burden further.
 
@@ -2171,6 +2374,8 @@ The LTR visa is particularly valuable for:
 ## Do Foreigners Pay Tax in Thailand?
 
 Yes — if you live in Thailand for 180 or more days in a calendar year, you are a Thai tax resident and are subject to Thai personal income tax. This applies regardless of your nationality, visa type, or where your employer is based.
+
+For a shorter, topic-by-topic overview of the whole 2026 system before diving into this guide, see [Thailand Personal Income Tax 2026: The Complete Overview](/thailand-tax-2026/).
 
 If you spend fewer than 180 days in Thailand in a given year, you are a non-resident for tax purposes. Non-residents are only taxed on income earned within Thailand, not on foreign income.
 

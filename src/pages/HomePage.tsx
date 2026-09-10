@@ -105,6 +105,28 @@ const HomePage: React.FC = () => {
             </div>
           </Link>
         </div>
+
+        <Link
+          to="/tax-examples/"
+          className="mt-4 flex items-center justify-between gap-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border-2 border-transparent hover:border-blue-500"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900">Not sure what this means for your income?</p>
+              <p className="text-gray-600 text-sm">
+                See worked examples at real income levels — from a simple salary to a full calculator walkthrough.
+              </p>
+            </div>
+          </div>
+          <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
 
       {/* Ad Slot */}
@@ -127,6 +149,22 @@ const HomePage: React.FC = () => {
           foreign income remitted into the country. Non-residents are taxed only on Thai-sourced income.
           The annual filing deadline is <strong>31 March</strong> each year (or 8 April for online filings).
         </p>
+
+        <Link
+          to="/thailand-tax-2026/"
+          className="flex items-center justify-between gap-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border-2 border-transparent hover:border-blue-500 mb-6"
+        >
+          <div>
+            <p className="font-semibold text-gray-900">New to Thai tax? Start with the 2026 overview</p>
+            <p className="text-gray-600 text-sm">
+              Brackets, allowances, residency, foreign income, and filing — one page that explains how it
+              all fits together and links to the full guide on each topic.
+            </p>
+          </div>
+          <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
 
         {/* Key facts */}
         <div className="grid sm:grid-cols-3 gap-4 mb-6">
@@ -196,6 +234,10 @@ const HomePage: React.FC = () => {
               The calculator above applies your personal deductions before reaching these brackets.{' '}
               <Link to="/articles/thai-tax-brackets-explained/" className="text-blue-500 hover:underline">
                 See full breakdown →
+              </Link>
+              {' '}·{' '}
+              <Link to="/tax-examples/" className="text-blue-500 hover:underline">
+                See worked examples →
               </Link>
             </p>
           </div>

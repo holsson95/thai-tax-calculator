@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateThaiTax } from '../tax';
+import { calculateThaiTax, getTaxByBracket, getMarginalRate } from '../tax';
 
 describe('calculateThaiTax', () => {
   it('returns 0 for zero or negative income', () => {
@@ -68,5 +68,52 @@ describe('calculateThaiTax', () => {
       3000000 * 0.3;
     expect(calculateThaiTax(5000001)).toBeCloseTo(taxAt5M + 0.35, 5);
     expect(calculateThaiTax(10000000)).toBeCloseTo(taxAt5M + 5000000 * 0.35, 5);
+  });
+});
+
+describe('getTaxByBracket', () => {
+  it('returns an empty array for zero or negative income', () => {
+    expect(getTaxByBracket(0)).toEqual([]);
+    expect(getTaxByBracket(-1000)).toEqual([]);
+  });
+
+  it('returns a single zero-rate line for income fully within the exempt bracket', () => {
+    const result = getTaxByBracket(100000);
+    expect(result).toEqual([
+      { label: '0-150k', rate: 0, taxableAmount: 100000, tax: 0 },
+    ]);
+  });
+
+  it('only includes brackets with a nonzero taxable amount, in order', () => {
+    const result = getTaxByBracket(600000);
+    expect(result).toEqual([
+      { label: '0-150k', rate: 0, taxableAmount: 150000, tax: 0 },
+      { label: '150k-300k', rate: 0.05, taxableAmount: 150000, tax: 7500 },
+      { label: '300k-500k', rate: 0.1, taxableAmount: 200000, tax: 20000 },
+      { label: '500k-750k', rate: 0.15, taxableAmount: 100000, tax: 15000 },
+    ]);
+  });
+
+  it('sums to the same total as calculateThaiTax for a range of incomes', () => {
+    for (const income of [0, 1, 150000, 400000, 999000, 1001000, 2000000, 5000000, 12345678]) {
+      const sum = getTaxByBracket(income).reduce((acc, b) => acc + b.tax, 0);
+      expect(sum).toBeCloseTo(calculateThaiTax(income), 5);
+    }
+  });
+});
+
+describe('getMarginalRate', () => {
+  it('returns 0 for income at or below the exempt threshold', () => {
+    expect(getMarginalRate(0)).toBe(0);
+    expect(getMarginalRate(150000)).toBe(0);
+  });
+
+  it('returns the rate of the bracket containing the last baht of income', () => {
+    expect(getMarginalRate(150001)).toBe(0.05);
+    expect(getMarginalRate(600000)).toBe(0.15);
+    expect(getMarginalRate(1000000)).toBe(0.2);
+    expect(getMarginalRate(1000001)).toBe(0.25);
+    expect(getMarginalRate(5000000)).toBe(0.3);
+    expect(getMarginalRate(5000001)).toBe(0.35);
   });
 });

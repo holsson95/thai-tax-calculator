@@ -21,6 +21,8 @@ const routes = [
   '/about',
   '/methodology',
   '/sources',
+  '/tax-examples',
+  '/thailand-tax-2026',
   '/contact',
   ...articles.map((a) => `/articles/${a.slug}`),
 ];
@@ -52,7 +54,7 @@ for (const route of routes) {
 // --- Generate sitemap.xml ---
 const today = new Date().toISOString().split('T')[0];
 
-const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/', '/methodology/', '/sources/', '/contact/'];
+const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/', '/methodology/', '/sources/', '/tax-examples/', '/thailand-tax-2026/', '/contact/'];
 const articleRoutes = articles.map((a) => `/articles/${a.slug}/`);
 
 const sitemapEntries = [
@@ -62,7 +64,7 @@ const sitemapEntries = [
   ),
   ...articles.map(
     (a) =>
-      `  <url>\n    <loc>${SITE_URL}/articles/${a.slug}/</loc>\n    <lastmod>${a.publishedAt}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+      `  <url>\n    <loc>${SITE_URL}/articles/${a.slug}/</loc>\n    <lastmod>${a.updatedAt || a.publishedAt}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
   ),
 ].join('\n');
 

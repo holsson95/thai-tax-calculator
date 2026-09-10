@@ -87,6 +87,15 @@ const ArticleDetailPage: React.FC = () => {
               month: 'long',
               day: 'numeric'
             })}
+            {article.updatedAt && article.updatedAt !== article.publishedAt && (
+              <>
+                {' '}· Updated: {new Date(article.updatedAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </>
+            )}
           </p>
         </header>
 
@@ -220,6 +229,8 @@ function formatContent(content: string): string {
     // Headers
     .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h2>')
     .replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">$1</h3>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
     // Bold
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 

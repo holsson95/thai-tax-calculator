@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData, TAX_BRACKETS } from '../../types/taxForm';
-import { calculateThaiTax } from '../../utils/tax';
+import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData } from '../../types/taxForm';
+import { calculateThaiTax, getTaxByBracket } from '../../utils/tax';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
 
@@ -128,28 +128,10 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
     };
   }, [formData]);
 
-  const taxBrackets: TaxFlowBracket[] = useMemo(() => {
-    const brackets: TaxFlowBracket[] = [];
-    let remainingIncome = calculateResult.taxableIncome;
-    let previousLimit = 0;
-
-    for (const bracket of TAX_BRACKETS) {
-      if (remainingIncome <= 0) break;
-
-      const bracketSize = bracket.upTo - previousLimit;
-      const taxableInBracket = Math.min(remainingIncome, bracketSize);
-      const taxInBracket = taxableInBracket * bracket.rate;
-
-      if (taxableInBracket > 0) {
-        brackets.push({ label: bracket.label, rate: bracket.rate * 100, tax: taxInBracket });
-      }
-
-      remainingIncome -= taxableInBracket;
-      previousLimit = bracket.upTo;
-    }
-
-    return brackets;
-  }, [calculateResult.taxableIncome]);
+  const taxBrackets: TaxFlowBracket[] = useMemo(
+    () => getTaxByBracket(calculateResult.taxableIncome).map((b) => ({ label: b.label, rate: b.rate * 100, tax: b.tax })),
+    [calculateResult.taxableIncome]
+  );
 
   const takeHomeIncome = calculateResult.annualIncome - calculateResult.annualTax;
 

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { pdf } from '@react-pdf/renderer';
 import { FreelancerFormData, IncomeType } from '../../types/freelancerForm';
-import { TAX_BRACKETS } from '../../types/taxForm';
 import { calculateFreelancerTax, formatThb, formatPercent } from '../../utils/taxCalculations';
+import { getTaxByBracket } from '../../utils/tax';
 import { ObligationAlerts, ObligationSummary } from '../ObligationAlerts';
 import { checkAllObligations } from '../../utils/obligationChecks';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
@@ -59,35 +59,12 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
   const refundOrOwedBg = isRefund ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
 
   // Calculate tax by bracket for breakdown
-  const getTaxByBracket = () => {
-    const brackets = [];
-    let remainingIncome = result.taxableIncome;
-    let previousLimit = 0;
-
-    for (const bracket of TAX_BRACKETS) {
-      if (remainingIncome <= 0) break;
-
-      const bracketSize = bracket.upTo - previousLimit;
-      const taxableInBracket = Math.min(remainingIncome, bracketSize);
-      const taxInBracket = taxableInBracket * bracket.rate;
-
-      if (taxableInBracket > 0) {
-        brackets.push({
-          label: bracket.label,
-          rate: bracket.rate * 100,
-          taxableAmount: taxableInBracket,
-          tax: taxInBracket,
-        });
-      }
-
-      remainingIncome -= taxableInBracket;
-      previousLimit = bracket.upTo;
-    }
-
-    return brackets;
-  };
-
-  const taxBrackets = getTaxByBracket();
+  const taxBrackets = getTaxByBracket(result.taxableIncome).map((b) => ({
+    label: b.label,
+    rate: b.rate * 100,
+    taxableAmount: b.taxableAmount,
+    tax: b.tax,
+  }));
 
   // Get expense deduction display
   const getExpenseDeductionLabel = () => {

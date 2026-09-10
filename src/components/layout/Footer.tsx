@@ -23,6 +23,9 @@ const Footer: React.FC = () => {
             <Link to="/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Calculator
             </Link>
+            <Link to="/thailand-tax-2026/" className="text-gray-600 hover:text-blue-500 transition-colors">
+              2026 Tax Guide
+            </Link>
             <Link to="/articles/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Articles
             </Link>
@@ -37,6 +40,9 @@ const Footer: React.FC = () => {
             </Link>
             <Link to="/sources/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Sources
+            </Link>
+            <Link to="/tax-examples/" className="text-gray-600 hover:text-blue-500 transition-colors">
+              Examples
             </Link>
             <Link to="/about/#for-developers" className="text-gray-600 hover:text-blue-500 transition-colors">
               API
