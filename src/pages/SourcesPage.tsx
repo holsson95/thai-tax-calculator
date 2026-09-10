@@ -8,45 +8,62 @@ import {
   REGISTRY_LAST_REVIEWED,
   topicsWithSources,
   sourcesByTopic,
+  getCitingArticles,
 } from '../data/sources';
 
 const SITE_URL = 'https://mythaitaxes.com';
 const CONTACT_EMAIL = 'info@mythaitaxes.com';
 
-const SourceCard: React.FC<{ source: (typeof TAX_SOURCES)[number] }> = ({ source }) => (
-  <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col gap-1.5">
-    <div className="flex items-start justify-between gap-2">
-      <p className="font-semibold text-gray-900 text-sm">{source.organization}</p>
-      <span
-        className={`shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full ${
-          source.type === 'official'
-            ? 'bg-blue-50 text-blue-700'
-            : 'bg-gray-100 text-gray-600'
-        }`}
+const SourceCard: React.FC<{ source: (typeof TAX_SOURCES)[number] }> = ({ source }) => {
+  const citingArticles = getCitingArticles(source);
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col gap-1.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-semibold text-gray-900 text-sm">{source.organization}</p>
+        <span
+          className={`shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+            source.type === 'official'
+              ? 'bg-blue-50 text-blue-700'
+              : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          {source.type === 'official' ? 'Official source' : 'Professional tax advisory'}
+        </span>
+      </div>
+      <a
+        href={source.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 hover:underline text-sm break-words"
       >
-        {source.type === 'official' ? 'Official source' : 'Professional tax advisory'}
-      </span>
+        {source.title}
+      </a>
+      <dl className="mt-1 text-xs text-gray-500 space-y-0.5">
+        <div>
+          <dt className="inline">Tax year: </dt>
+          <dd className="inline">{REGISTRY_TAX_YEAR}</dd>
+        </div>
+        <div>
+          <dt className="inline">Last reviewed: </dt>
+          <dd className="inline">{REGISTRY_LAST_REVIEWED}</dd>
+        </div>
+      </dl>
+      {citingArticles.length > 0 && (
+        <p className="mt-1 text-xs text-gray-500">
+          Cited in:{' '}
+          {citingArticles.map((a, i) => (
+            <React.Fragment key={a.slug}>
+              {i > 0 && ', '}
+              <Link to={`/articles/${a.slug}/`} className="text-blue-600 hover:underline">
+                {a.title}
+              </Link>
+            </React.Fragment>
+          ))}
+        </p>
+      )}
     </div>
-    <a
-      href={source.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:underline text-sm break-words"
-    >
-      {source.title}
-    </a>
-    <dl className="mt-1 text-xs text-gray-500 space-y-0.5">
-      <div>
-        <dt className="inline">Tax year: </dt>
-        <dd className="inline">{REGISTRY_TAX_YEAR}</dd>
-      </div>
-      <div>
-        <dt className="inline">Last reviewed: </dt>
-        <dd className="inline">{REGISTRY_LAST_REVIEWED}</dd>
-      </div>
-    </dl>
-  </div>
-);
+  );
+};
 
 const SourcesPage: React.FC = () => {
   const title = 'Tax Sources & References | MyThaiTaxes';

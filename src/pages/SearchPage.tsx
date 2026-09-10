@@ -102,6 +102,8 @@ const SearchPage: React.FC = () => {
                       key={i}
                       question={item.question}
                       answer={item.answer}
+                      relatedArticleSlug={item.relatedArticleSlug}
+                      sourceId={item.sourceId}
                       defaultOpen={i === 0}
                     />
                   ))}

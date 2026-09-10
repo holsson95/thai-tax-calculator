@@ -7,6 +7,8 @@
 // any source; it only gives the registry's entries clean display labels and
 // groups them by topic for the public /sources/ page.
 
+import { articles } from './articles';
+
 export type SourceType = 'official' | 'secondary';
 
 export interface TaxSource {
@@ -219,3 +221,25 @@ export function topicsWithSources(): string[] {
 }
 
 export const OFFICIAL_SOURCES = TAX_SOURCES.filter((s) => s.type === 'official');
+
+export function getSourceById(id: string): TaxSource | undefined {
+  return TAX_SOURCES.find((s) => s.id === id);
+}
+
+export interface CitingArticle {
+  slug: string;
+  title: string;
+}
+
+/**
+ * Articles whose own `sources` array cites the exact same URL as this
+ * registry entry — an exact match, not a topic-based guess. Most articles
+ * cite a generic Revenue Department URL rather than the specific page listed
+ * here, so most sources will have no citing articles; that's an accurate
+ * reflection of the data, not a bug to paper over with fuzzy matching.
+ */
+export function getCitingArticles(source: TaxSource): CitingArticle[] {
+  return articles
+    .filter((article) => article.sources?.some((s) => s.url === source.url))
+    .map((article) => ({ slug: article.slug, title: article.title }));
+}

@@ -93,6 +93,8 @@ const FAQPage: React.FC = () => {
                         key={index}
                         question={item.question}
                         answer={item.answer}
+                        relatedArticleSlug={item.relatedArticleSlug}
+                        sourceId={item.sourceId}
                         defaultOpen={index === 0}
                       />
                     ))}
@@ -117,6 +119,8 @@ const FAQPage: React.FC = () => {
                           key={itemIndex}
                           question={item.question}
                           answer={item.answer}
+                          relatedArticleSlug={item.relatedArticleSlug}
+                          sourceId={item.sourceId}
                         />
                       ))}
                     </div>

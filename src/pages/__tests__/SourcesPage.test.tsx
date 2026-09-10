@@ -52,4 +52,12 @@ describe('SourcesPage', () => {
     renderPage();
     expect(screen.getByText('info@mythaitaxes.com')).toHaveAttribute('href', 'mailto:info@mythaitaxes.com');
   });
+
+  it('links a source back to the article(s) that cite the same URL', () => {
+    renderPage();
+    // rd-section-41 is cited (exact URL match) by understanding-thai-tax-residency
+    // and foreign-income-thailand-tax — both should render a "Cited in" link.
+    const links = screen.getAllByRole('link', { name: 'Am I a Thai Tax Resident? The 180-Day Rule, Explained With Examples' });
+    expect(links.some((l) => l.getAttribute('href') === '/articles/understanding-thai-tax-residency/')).toBe(true);
+  });
 });
