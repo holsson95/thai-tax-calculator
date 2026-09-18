@@ -26,6 +26,7 @@ const ArticleDetailPage: React.FC = () => {
     description: article.excerpt,
     url: canonicalUrl,
     datePublished: article.publishedAt,
+    dateModified: article.updatedAt || article.publishedAt,
     publisher: {
       '@type': 'Organization',
       name: 'Thai Tax Calculator',
