@@ -2389,8 +2389,8 @@ The LTR visa is particularly valuable for:
   },
   {
     slug: 'thailand-tax-guide-for-expats',
-    title: 'Thailand Tax for Expats: Complete Guide (2025)',
-    excerpt: 'Everything foreigners need to know about Thai income tax — who pays, what income is taxed, how to file, and how to avoid double taxation.',
+    title: 'Thailand Tax for Expats: Complete Guide',
+    excerpt: 'The general starting point for expat tax in Thailand — who counts as a resident, what income is taxed, how to file, and how double taxation is avoided — with links to the specialist guide for each topic.',
     content: `
 ## Do Foreigners Pay Tax in Thailand?
 

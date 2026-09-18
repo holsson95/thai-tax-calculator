@@ -15,28 +15,9 @@ import SourcesPage from './pages/SourcesPage';
 import ContactPage from './pages/ContactPage';
 import TaxExamplesPage from './pages/TaxExamplesPage';
 import ThailandTax2026Page from './pages/ThailandTax2026Page';
+import { ANNUAL_TAX_META, ANNUAL_TAX_SCHEMA } from './data/calculatorMeta';
 
 const AnnualTaxWizard = React.lazy(() => import('./components/AnnualTaxWizard'));
-
-const annualTaxCalculatorSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'Thai Annual Tax Calculator',
-  applicationCategory: 'FinanceApplication',
-  operatingSystem: 'Web',
-  url: 'https://mythaitaxes.com/annual-tax/',
-  description: 'Free calculator that estimates annual Thai personal income tax liability for salaried employees, freelancers, sole proprietors, and company owners, including deductions and allowances.',
-  offers: {
-    '@type': 'Offer',
-    price: '0',
-    priceCurrency: 'USD',
-  },
-  featureList: [
-    'Supports salaried employees, freelancers, sole proprietors, and company owners',
-    'Covers standard allowances, deductions, and progressive tax brackets',
-    'Downloadable PDF summary of results',
-  ],
-};
 
 // Main App component with routing
 const App: React.FC = () => {
@@ -49,10 +30,14 @@ const App: React.FC = () => {
           <Suspense fallback={
             <div className="bg-gray-100 min-h-screen py-8 px-4">
               <Helmet>
-                <title>Annual Tax Calculator | Thai Tax Calculator</title>
-                <meta name="description" content="Calculate your annual Thai income tax liability. Free calculator for salaried employees, freelancers, sole proprietors, and company owners in Thailand." />
-                <link rel="canonical" href="https://mythaitaxes.com/annual-tax/" />
-                <script type="application/ld+json">{JSON.stringify(annualTaxCalculatorSchema)}</script>
+                <title>{ANNUAL_TAX_META.title}</title>
+                <meta name="description" content={ANNUAL_TAX_META.description} />
+                <link rel="canonical" href={ANNUAL_TAX_META.canonicalUrl} />
+                <meta property="og:title" content={ANNUAL_TAX_META.title} />
+                <meta property="og:description" content={ANNUAL_TAX_META.description} />
+                <meta property="og:url" content={ANNUAL_TAX_META.canonicalUrl} />
+                <meta property="og:type" content="website" />
+                <script type="application/ld+json">{JSON.stringify(ANNUAL_TAX_SCHEMA)}</script>
               </Helmet>
               <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full mx-auto">
                 <div className="flex justify-between items-center mb-6">

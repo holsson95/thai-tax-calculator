@@ -27,16 +27,16 @@ const HomePage: React.FC = () => {
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="canonical" href={SITE_URL} />
+        <link rel="canonical" href={`${SITE_URL}/`} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:url" content={SITE_URL} />
+        <meta property="og:url" content={`${SITE_URL}/`} />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'WebApplication',
           name: 'Thai Tax Calculator',
-          url: SITE_URL,
+          url: `${SITE_URL}/`,
           description,
           applicationCategory: 'FinanceApplication',
           operatingSystem: 'All',

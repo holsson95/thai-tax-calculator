@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { ANNUAL_TAX_META, ANNUAL_TAX_SCHEMA } from '../data/calculatorMeta';
 import { TaxFormData } from '../types/taxForm';
 import { FreelancerFormData, createDefaultFreelancerFormData } from '../types/freelancerForm';
 import { SoleProprietorFormData, createDefaultSoleProprietorFormData } from '../types/soleProprietorForm';
@@ -542,9 +543,14 @@ const AnnualTaxWizard: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen py-8 px-4">
       <Helmet>
-        <title>Annual Tax Calculator | My Thai Taxes</title>
-        <meta name="description" content="Calculate your annual Thai personal income tax liability. Step-by-step calculator for salaried employees, freelancers, sole proprietors, and company owners in Thailand." />
-        <link rel="canonical" href="https://mythaitaxes.com/annual-tax/" />
+        <title>{ANNUAL_TAX_META.title}</title>
+        <meta name="description" content={ANNUAL_TAX_META.description} />
+        <link rel="canonical" href={ANNUAL_TAX_META.canonicalUrl} />
+        <meta property="og:title" content={ANNUAL_TAX_META.title} />
+        <meta property="og:description" content={ANNUAL_TAX_META.description} />
+        <meta property="og:url" content={ANNUAL_TAX_META.canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(ANNUAL_TAX_SCHEMA)}</script>
       </Helmet>
       <div className="max-w-2xl mx-auto">
         <div className="mb-5">

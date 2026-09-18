@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { MONTHLY_WITHHOLDING_META, MONTHLY_WITHHOLDING_SCHEMA } from '../data/calculatorMeta';
 import { MonthlyFormData, MonthlyIncomeEntry } from '../types/taxForm';
 import EstimateTypeStep from './steps/EstimateTypeStep';
 import IncomeTypeStep from './steps/IncomeTypeStep';
@@ -219,12 +220,14 @@ const MonthlyWithholding: React.FC = () => {
   return (
     <div className="bg-gray-100 min-h-screen py-8 px-4">
       <Helmet>
-        <title>Monthly Tax Withholding Estimator | My Thai Taxes</title>
-        <meta
-          name="description"
-          content="Estimate how much Thai income tax should be withheld from your monthly salary. Free calculator for salaried employees and freelancers in Thailand."
-        />
-        <link rel="canonical" href="https://mythaitaxes.com/monthly-withholding/" />
+        <title>{MONTHLY_WITHHOLDING_META.title}</title>
+        <meta name="description" content={MONTHLY_WITHHOLDING_META.description} />
+        <link rel="canonical" href={MONTHLY_WITHHOLDING_META.canonicalUrl} />
+        <meta property="og:title" content={MONTHLY_WITHHOLDING_META.title} />
+        <meta property="og:description" content={MONTHLY_WITHHOLDING_META.description} />
+        <meta property="og:url" content={MONTHLY_WITHHOLDING_META.canonicalUrl} />
+        <meta property="og:type" content="website" />
+        <script type="application/ld+json">{JSON.stringify(MONTHLY_WITHHOLDING_SCHEMA)}</script>
       </Helmet>
       <div className="max-w-2xl mx-auto">
         <div className="mb-5">
