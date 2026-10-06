@@ -145,7 +145,7 @@
       "conditions": "Combined ceiling across pension insurance fund, provident fund, RMF, and SSF contributions (also, per research, the National Savings Fund, Government Pension Fund, and private teachers' aid fund contribute to the same combined ceiling). This combined cap does NOT include life or health insurance, which have their own separate caps (100,000 and 25,000 respectively).",
       "source": {
         "label": "Forvis Mazars (secondary, strong convergence with SCB and other sources); scope confirmed against RD Guide p.7",
-        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
       "verification_notes": "Combined cap and scope (retirement instruments only, excludes life/health insurance) confirmed via strong convergence of secondary sources plus partial primary corroboration. STILL UNRESOLVED: this combined cap is defined in DEDUCTION_CAPS but is NOT referenced/enforced anywhere in src/utils/taxCalculations.ts — the calculation only applies the individual per-fund caps, which could let a user's combined retirement deductions exceed 500,000 THB in the app when they legally cannot. This is a functional gap, not just a sourcing gap, flagged in the original audit and still open.",
@@ -184,7 +184,7 @@
       "conditions": "POTENTIAL MISMATCH FOUND: research suggests the INDIVIDUAL sub-cap for pension/annuity insurance specifically is 200,000 THB (also subject to a 15%-of-income limit), and it only reaches 500,000 THB when combined with RMF/SSF/provident fund contributions under the shared combined-retirement-cap. The app currently applies 500,000 THB as the pension fund's OWN individual cap, which may be double-counting the combined ceiling as an individual one.",
       "source": {
         "label": "Forvis Mazars (secondary)",
-        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
       "verification_notes": "IMPORTANT: if this reading is correct, this is a real calculation issue — allowing up to 500,000 THB in pension-fund deduction ALONE, when combined with the individual RMF (500,000) and SSF (200,000) caps already in the code plus the (currently-unenforced) combined 500,000 cap, could let a user's app-calculated deductions substantially exceed what's legally allowed. This interacts directly with the combined-retirement-cap enforcement gap noted above. Needs review alongside that item before any code change.",
@@ -210,7 +210,7 @@
       "conditions": "Individual cap on RMF contributions, also subject to a 30%-of-assessable-income overlay limit. Also bounded by the combined-retirement-cap.",
       "source": {
         "label": "Forvis Mazars (secondary, high confidence)",
-        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
       "verification_notes": "Confirmed via a reputable secondary source. The additional 30%-of-income overlay limit is NOT modeled in the app's DEDUCTION_CAPS.MAX_RMF (which only applies the flat 500,000 THB cap) — a potential functional gap for high earners with modest RMF contributions relative to income, though it would only matter in edge cases where 30% of income is below 500,000 THB.",
@@ -223,7 +223,7 @@
       "conditions": "Individual cap on SSF contributions, also subject to a 30%-of-assessable-income overlay limit. Also bounded by the combined-retirement-cap.",
       "source": {
         "label": "Forvis Mazars (secondary, high confidence)",
-        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax"
+        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
       "verification_notes": "Confirmed via a reputable secondary source. Same 30%-of-income overlay caveat as max-rmf — not modeled in the app's flat cap.",

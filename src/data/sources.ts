@@ -142,7 +142,7 @@ export const TAX_SOURCES: TaxSource[] = [
     id: 'forvis-personal-income-tax',
     organization: 'Forvis Mazars',
     title: 'Personal Income Tax in Thailand',
-    url: 'https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/tax/personal-income-tax',
+    url: 'https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax',
     type: 'secondary',
     topics: ['Deductions & Allowances'],
   },
