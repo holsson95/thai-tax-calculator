@@ -1,0 +1,31 @@
+name = "mythaitaxes-leads"
+main = "src/index.ts"
+compatibility_date = "2026-05-03"
+
+# Free plan: Workers + D1 + Turnstile + Access (Zero Trust free tier) are all $0.
+# Setup steps: see cloudflare-worker/leads-api/README.md
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mythaitaxes-leads"
+database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+migrations_dir = "migrations"
+
+[vars]
+# Comma-separated list of site origins allowed to call /api/*
+ALLOWED_ORIGINS = "https://mythaitaxes.com,https://www.mythaitaxes.com"
+SITE_URL = "https://mythaitaxes.com"
+# Must be on a domain verified in Resend (DNS records added at your DNS host)
+FROM_EMAIL = "My Thai Taxes <hello@mythaitaxes.com>"
+REPLY_TO_EMAIL = "info@mythaitaxes.com"
+# Cloudflare Access (protects /admin/*). Leave empty and the admin stays locked (503).
+ACCESS_TEAM_DOMAIN = ""   # e.g. "yourteam.cloudflareaccess.com"
+ACCESS_AUD = ""           # the Application Audience (AUD) tag of the Access application
+
+# Secrets — set with `npx wrangler secret put NAME` (never commit):
+#   RESEND_API_KEY         Resend API key
+#   APP_SECRET             random 32+ chars; hashes IPs for rate limiting and signs unsubscribe links
+#   PARTNER_EMAILS         comma-separated partner inbox(es) that receive leads
+#   PARTNER_WEBHOOK_URL    optional: partner CRM webhook
+#   WEBHOOK_SIGNING_SECRET optional: HMAC-SHA256 signature sent in X-MTT-Signature
+#   TURNSTILE_SECRET_KEY   optional: enables Turnstile verification

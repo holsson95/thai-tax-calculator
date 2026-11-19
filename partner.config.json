@@ -1,0 +1,11 @@
+{
+  "_comment": "Non-secret partner settings, read by BOTH the website build (src/config/partner.ts) and the leads Worker (cloudflare-worker/leads-api). Partner email addresses, webhook URL and API keys are Worker secrets — never put them here (this repo is public). After changing this file, rebuild the site AND redeploy the Worker.",
+  "enabled": false,
+  "partnerName": "[PARTNER_NAME]",
+  "bookingUrl": "[PARTNER_BOOKING_URL]",
+  "leadCtaTaxThresholdThb": 50000,
+  "duplicateWindowDays": 90,
+  "deliverDuplicatesToPartner": false,
+  "leadsApiBaseUrl": "",
+  "turnstileSiteKey": ""
+}
