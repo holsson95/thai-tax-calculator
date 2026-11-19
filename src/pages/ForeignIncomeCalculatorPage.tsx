@@ -15,7 +15,11 @@ import {
 const ForeignIncomeCalculator = React.lazy(() => import('../components/foreignIncome/ForeignIncomeCalculator'));
 
 const CalculatorPlaceholder: React.FC = () => (
-  <div className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500" aria-busy="true">
+  // Reserves roughly the form's height so the content below does not jump when it loads (CLS).
+  <div
+    className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500 min-h-[1400px] sm:min-h-[1000px]"
+    aria-busy="true"
+  >
     Loading calculator…
   </div>
 );
