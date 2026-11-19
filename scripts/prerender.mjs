@@ -14,6 +14,7 @@ const routes = [
   '/',
   '/monthly-withholding',
   '/annual-tax',
+  '/foreign-income-tax-calculator',
   '/articles',
   '/faq',
   '/search',
@@ -54,7 +55,7 @@ for (const route of routes) {
 // --- Generate sitemap.xml ---
 const today = new Date().toISOString().split('T')[0];
 
-const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/articles/', '/faq/', '/about/', '/methodology/', '/sources/', '/tax-examples/', '/thailand-tax-2026/', '/contact/'];
+const staticRoutes = ['/', '/monthly-withholding/', '/annual-tax/', '/foreign-income-tax-calculator/', '/articles/', '/faq/', '/about/', '/methodology/', '/sources/', '/tax-examples/', '/thailand-tax-2026/', '/contact/'];
 const articleRoutes = articles.map((a) => `/articles/${a.slug}/`);
 
 const sitemapEntries = [

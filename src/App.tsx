@@ -15,6 +15,7 @@ import ContactPage from './pages/ContactPage';
 import TaxExamplesPage from './pages/TaxExamplesPage';
 import ThailandTax2026Page from './pages/ThailandTax2026Page';
 import NotFoundPage from './pages/NotFoundPage';
+import ForeignIncomeCalculatorPage from './pages/ForeignIncomeCalculatorPage';
 import LastUpdated from './components/LastUpdated';
 import { PAGE_LAST_UPDATED } from './config/contentDates';
 import {
@@ -196,6 +197,7 @@ const App: React.FC = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/monthly-withholding" element={<MonthlyWithholdingRoute />} />
         <Route path="/annual-tax" element={<AnnualTaxRoute />} />
+        <Route path="/foreign-income-tax-calculator" element={<ForeignIncomeCalculatorPage />} />
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/articles/:slug" element={<ArticleDetailPage />} />
         <Route path="/faq" element={<FAQPage />} />

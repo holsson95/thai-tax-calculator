@@ -10,6 +10,7 @@ export const PAGE_LAST_UPDATED = {
   home: '2026-11-19',
   annualTax: '2026-11-19',
   monthlyWithholding: '2026-11-19',
+  foreignIncomeCalculator: '2026-11-19',
   // Guide pages: date of the last content change
   thailandTax2026: '2026-09-10',
   taxExamples: '2026-09-10',

@@ -37,6 +37,7 @@ const Header: React.FC = () => {
 
   const navLinks = [
     { path: '/', label: 'Calculator' },
+    { path: '/foreign-income-tax-calculator/', label: 'Foreign Income' },
     { path: '/articles/', label: 'Articles' },
     { path: '/tax-examples/', label: 'Examples' },
     { path: '/faq/', label: 'FAQ' },

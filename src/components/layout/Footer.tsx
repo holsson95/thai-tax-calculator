@@ -23,6 +23,9 @@ const Footer: React.FC = () => {
             <Link to="/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Calculator
             </Link>
+            <Link to="/foreign-income-tax-calculator/" className="text-gray-600 hover:text-blue-500 transition-colors">
+              Foreign Income Calculator
+            </Link>
             <Link to="/thailand-tax-2026/" className="text-gray-600 hover:text-blue-500 transition-colors">
               2026 Tax Guide
             </Link>
