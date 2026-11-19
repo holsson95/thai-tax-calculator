@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
 
       {/* 2024 foreign-income remittance rule */}
       <section className="max-w-3xl mx-auto px-4 mb-8" aria-labelledby="remittance-rule-heading">
-        <div className="bg-white rounded-xl shadow-md border-l-4 border-amber-500 p-5 md:p-6">
+        <div className="bg-amber-50 rounded-xl border border-amber-200 p-5 md:p-6">
           <h2 id="remittance-rule-heading" className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
             Bringing foreign income into Thailand? The rules changed in 2024
           </h2>
