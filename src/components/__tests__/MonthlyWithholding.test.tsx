@@ -206,6 +206,53 @@ describe('MonthlyWithholding', () => {
     });
   });
 
+  describe('Next button disabled state (parity with AnnualTaxWizard)', () => {
+    it('disables Next when the current step is invalid', () => {
+      renderWithRouter(<MonthlyWithholding />);
+
+      // Estimate Type -> Basic
+      fireEvent.click(screen.getByText('Basic Estimate'));
+      // Income Type -> Fixed
+      fireEvent.click(screen.getByText('Fixed Monthly Income'));
+      // Assessable Income: no salary entered yet, step is invalid
+      expect(screen.getByText('Next')).toBeDisabled();
+    });
+
+    it('enables Next once the current step becomes valid', () => {
+      renderWithRouter(<MonthlyWithholding />);
+
+      fireEvent.click(screen.getByText('Basic Estimate'));
+      fireEvent.click(screen.getByText('Fixed Monthly Income'));
+
+      const salaryInputs = screen.getAllByPlaceholderText('0');
+      fireEvent.change(salaryInputs[0], { target: { value: '50000' } });
+
+      expect(screen.getByText('Next')).not.toBeDisabled();
+    });
+
+    it('disables Next again when a checked deduction has no amount entered', () => {
+      renderWithRouter(<MonthlyWithholding />);
+
+      // Estimate Type -> Detailed
+      fireEvent.click(screen.getByText('Detailed Estimate'));
+      // Income Type -> Fixed
+      fireEvent.click(screen.getByText('Fixed Monthly Income'));
+      // Assessable Income -> enter salary, continue
+      const salaryInputs = screen.getAllByPlaceholderText('0');
+      fireEvent.change(salaryInputs[0], { target: { value: '50000' } });
+      fireEvent.click(screen.getByText('Next'));
+      // Marital Status -> Single (auto-advances)
+      fireEvent.click(screen.getByText('Single'));
+      // Dependents -> no dependents, valid by default, continue
+      fireEvent.click(screen.getByText('Next'));
+      // Deductions step: check Life Insurance without entering an amount
+      expect(screen.getByText('Life Insurance')).toBeInTheDocument();
+      fireEvent.click(screen.getByLabelText(/life insurance/i));
+
+      expect(screen.getByText('Next')).toBeDisabled();
+    });
+  });
+
   describe('Step Titles', () => {
     it('displays correct title for each step', () => {
       renderWithRouter(<MonthlyWithholding />);

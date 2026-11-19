@@ -175,4 +175,43 @@ describe('MonthlyIncomeStep', () => {
     expect(screen.getByText('Expected annual bonus amount')).toBeInTheDocument();
     expect(screen.getByText('Housing allowance, overtime, commissions, etc.')).toBeInTheDocument();
   });
+
+  it('sets inputMode="numeric" on the salary, bonus, and other income fields', () => {
+    const formData = createBaseFormData();
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <MonthlyIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    const inputs = screen.getAllByPlaceholderText('0');
+    inputs.forEach((input) => {
+      expect(input).toHaveAttribute('inputMode', 'numeric');
+    });
+  });
+
+  it('sets inputMode="numeric" on the social security contribution field', () => {
+    const formData = createBaseFormData({ includeSocialSecurity: true });
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <MonthlyIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    const inputs = screen.getAllByPlaceholderText('0');
+    expect(inputs).toHaveLength(4);
+    inputs.forEach((input) => {
+      expect(input).toHaveAttribute('inputMode', 'numeric');
+    });
+  });
 });

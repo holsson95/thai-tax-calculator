@@ -147,4 +147,39 @@ describe('AnnualIncomeStep', () => {
       annualIncome: 1000000,
     });
   });
+
+  it('sets inputMode="decimal" on the annual income field for a better mobile keyboard', () => {
+    const formData = createBaseFormData();
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <AnnualIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    expect(screen.getByLabelText(/annual income/i)).toHaveAttribute('inputMode', 'decimal');
+  });
+
+  it('sets inputMode="decimal" on the social security contribution field', () => {
+    const formData = createBaseFormData({ includeSocialSecurity: true });
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <AnnualIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    expect(screen.getByLabelText(/total social security contributions/i)).toHaveAttribute(
+      'inputMode',
+      'decimal'
+    );
+  });
 });

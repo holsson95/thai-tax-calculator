@@ -28,6 +28,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
   const incomeTypeInfo = INCOME_TYPE_INFO[entry.incomeType];
   const incomeTypeOptions = getIncomeTypeOptions();
 
+  const fieldId = (field: string) => `income-entry-${entry.id}-${field}`;
+  const headerLabel = `${incomeTypeInfo?.shortLabel || 'New Income Source'}${
+    entry.payerName ? ` - ${entry.payerName}` : ''
+  }, Income source ${index + 1}`;
+
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
   };
@@ -60,16 +65,24 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
     >
       {/* Entry Header */}
       <div
-        className={`p-4 cursor-pointer flex justify-between items-center ${
+        className={`p-4 flex justify-between items-center ${
           isExpanded ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'
         }`}
-        onClick={onToggle}
       >
-        <div className="flex items-center gap-3">
-          <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={isExpanded}
+          aria-controls={isExpanded ? fieldId('details') : undefined}
+          className="flex items-center gap-3 flex-1 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+        >
+          <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium" aria-hidden="true">
             {index + 1}
           </span>
-          <div>
+          <span className="sr-only">
+            {isExpanded ? 'Collapse' : 'Expand'} {headerLabel}
+          </span>
+          <span aria-hidden="true">
             <p className="font-medium text-gray-800">
               {incomeTypeInfo?.shortLabel || 'New Income Source'}
               {entry.payerName && ` - ${entry.payerName}`}
@@ -87,10 +100,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
                 </span>
               )}
             </div>
-          </div>
-        </div>
+          </span>
+        </button>
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onRemove();
@@ -107,6 +121,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
@@ -115,7 +130,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
       {/* Entry Details (Expanded) */}
       {isExpanded && (
-        <div className="p-4 border-t border-gray-200 bg-white space-y-4">
+        <div id={fieldId('details')} className="p-4 border-t border-gray-200 bg-white space-y-4">
           {/* Error Messages */}
           {errors.length > 0 && showError && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
@@ -129,10 +144,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Income Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('incomeType')} className="block text-sm font-medium text-gray-700 mb-1">
               Income Type *
             </label>
             <select
+              id={fieldId('incomeType')}
               value={entry.incomeType}
               onChange={(e) => onUpdate('incomeType', e.target.value as IncomeType)}
               onBlur={() => handleBlur('incomeType')}
@@ -173,13 +189,15 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Gross Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('grossAmount')} className="block text-sm font-medium text-gray-700 mb-1">
               Gross Amount (THB) *
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
               <input
+                id={fieldId('grossAmount')}
                 type="number"
+                inputMode="decimal"
                 value={entry.grossAmount || ''}
                 onChange={(e) => onUpdate('grossAmount', parseFloat(e.target.value) || 0)}
                 onBlur={() => handleBlur('grossAmount')}
@@ -195,13 +213,15 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Withholding Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('withholdingAmount')} className="block text-sm font-medium text-gray-700 mb-1">
               Withholding Tax Deducted (THB)
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
               <input
+                id={fieldId('withholdingAmount')}
                 type="number"
+                inputMode="decimal"
                 value={entry.withholdingAmount || ''}
                 onChange={(e) => onUpdate('withholdingAmount', parseFloat(e.target.value) || 0)}
                 onBlur={() => handleBlur('withholdingAmount')}
@@ -217,10 +237,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Month Received */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('monthReceived')} className="block text-sm font-medium text-gray-700 mb-1">
               Month Received *
             </label>
             <select
+              id={fieldId('monthReceived')}
               value={entry.monthReceived}
               onChange={(e) => onUpdate('monthReceived', parseInt(e.target.value, 10))}
               onBlur={() => handleBlur('monthReceived')}
@@ -240,10 +261,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Payer Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('payerName')} className="block text-sm font-medium text-gray-700 mb-1">
               Payer/Client Name
             </label>
             <input
+              id={fieldId('payerName')}
               type="text"
               value={entry.payerName}
               onChange={(e) => onUpdate('payerName', e.target.value)}
@@ -255,10 +277,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('description')} className="block text-sm font-medium text-gray-700 mb-1">
               Description (Optional)
             </label>
             <input
+              id={fieldId('description')}
               type="text"
               value={entry.description}
               onChange={(e) => onUpdate('description', e.target.value)}

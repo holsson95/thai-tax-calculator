@@ -107,6 +107,22 @@ describe('DeductionsStepAnnual', () => {
     });
   });
 
+  it('sets inputMode="decimal" on the deduction amount field', () => {
+    const formData = createBaseFormData({ hasLifeInsurance: true, lifeInsurance: 0 });
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <DeductionsStepAnnual
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    expect(screen.getByRole('textbox')).toHaveAttribute('inputMode', 'decimal');
+  });
+
   it('shows max deduction limit in label', () => {
     const formData = createBaseFormData();
     const setFormData = vi.fn();

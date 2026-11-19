@@ -113,6 +113,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={formatNumber(monthlyData[index].salary)}
                       onChange={(e) => handleMonthChange(index, 'salary', e.target.value)}
                       className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
@@ -128,6 +129,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={formatNumber(monthlyData[index].bonus)}
                       onChange={(e) => handleMonthChange(index, 'bonus', e.target.value)}
                       className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
@@ -143,6 +145,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={formatNumber(monthlyData[index].housingAllowance)}
                       onChange={(e) => handleMonthChange(index, 'housingAllowance', e.target.value)}
                       className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
@@ -158,6 +161,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
                     <input
                       type="text"
+                      inputMode="numeric"
                       value={formatNumber(monthlyData[index].otherIncome)}
                       onChange={(e) => handleMonthChange(index, 'otherIncome', e.target.value)}
                       className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
@@ -197,6 +201,7 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={ssContribution ? parseInt(ssContribution).toLocaleString() : ''}
                 onChange={handleSSContributionChange}
                 className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"

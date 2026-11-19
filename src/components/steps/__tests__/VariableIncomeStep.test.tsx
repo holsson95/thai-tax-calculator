@@ -120,6 +120,28 @@ describe('VariableIncomeStep', () => {
     expect(screen.getByText('Other Taxable Income')).toBeInTheDocument();
   });
 
+  it('sets inputMode="numeric" on the per-month income fields', () => {
+    const formData = createBaseFormData();
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <VariableIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    fireEvent.click(screen.getByText('January'));
+
+    const inputs = screen.getAllByPlaceholderText('0');
+    expect(inputs).toHaveLength(4);
+    inputs.forEach((input) => {
+      expect(input).toHaveAttribute('inputMode', 'numeric');
+    });
+  });
+
   it('renders social security checkbox', () => {
     const formData = createBaseFormData();
     const setFormData = vi.fn();
@@ -182,5 +204,21 @@ describe('VariableIncomeStep', () => {
     );
 
     expect(screen.getByText('Estimated annual contribution (THB)')).toBeInTheDocument();
+  });
+
+  it('sets inputMode="numeric" on the social security contribution field', () => {
+    const formData = createBaseFormData({ includeSocialSecurity: true });
+    const setFormData = vi.fn();
+    const nextStep = vi.fn();
+
+    render(
+      <VariableIncomeStep
+        formData={formData}
+        setFormData={setFormData}
+        nextStep={nextStep}
+      />
+    );
+
+    expect(screen.getByPlaceholderText('0')).toHaveAttribute('inputMode', 'numeric');
   });
 });

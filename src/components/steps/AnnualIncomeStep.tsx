@@ -49,6 +49,7 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
           <input
             type="text"
+            inputMode="decimal"
             id="annualIncome"
             value={formatNumber(formData.annualIncome)}
             onChange={handleChange}
@@ -115,6 +116,7 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
               <input
                 type="text"
+                inputMode="decimal"
                 id="socialSecurity"
                 value={formData.socialSecurityContribution === 0 ? '' : formData.socialSecurityContribution.toLocaleString('en-US')}
                 onChange={(e) => {

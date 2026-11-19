@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import { TaxFormData, TaxCalculationResult } from '../../types/taxForm';
 import { calculateAnnualTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import { getTaxByBracket } from '../../utils/tax';
-import TaxPacketPDF from '../../pdf/TaxPacketPDF';
 import { generatePdfFilename } from '../../utils/pdfFilename';
 import TaxFlowDiagram, { TaxFlowStep } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
@@ -22,6 +20,10 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
+      const [{ pdf }, { default: TaxPacketPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('../../pdf/TaxPacketPDF'),
+      ]);
       const blob = await pdf(<TaxPacketPDF formData={formData} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

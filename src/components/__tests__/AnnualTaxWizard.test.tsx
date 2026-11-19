@@ -504,4 +504,33 @@ describe('AnnualTaxWizard', () => {
     nextButton = screen.getByLabelText(/go to next step/i);
     expect(nextButton).not.toBeDisabled();
   });
+
+  it('moves focus into the step content container when advancing to a new step', () => {
+    renderWithRouter(<AnnualTaxWizard />);
+
+    fireEvent.click(screen.getByText('Salaried Employee'));
+
+    expect(screen.getByText('What is your annual income?')).toBeInTheDocument();
+    // The step content wrapper should receive focus so screen-reader/keyboard
+    // users are announced into the new step rather than staying on the
+    // now-stale Next button position.
+    expect(document.activeElement).toHaveAttribute('tabIndex', '-1');
+    expect(document.activeElement).toContainElement(screen.getByText('What is your annual income?'));
+  });
+
+  it('moves focus into the step content container when going back to a previous step', () => {
+    renderWithRouter(<AnnualTaxWizard />);
+
+    fireEvent.click(screen.getByText('Salaried Employee'));
+    fireEvent.click(screen.getByLabelText(/go to previous step/i));
+
+    expect(screen.getByText('What type of employment do you have?')).toBeInTheDocument();
+    expect(document.activeElement).toHaveAttribute('tabIndex', '-1');
+  });
+
+  it('does not move focus on initial mount (only actual step transitions do)', () => {
+    renderWithRouter(<AnnualTaxWizard />);
+
+    expect(document.activeElement).toBe(document.body);
+  });
 });

@@ -208,7 +208,17 @@ const MonthlyWithholding: React.FC = () => {
     });
 
     return stepList;
-  }, [formData, currentStep]);
+    // Note: currentStep is kept in the dependency list even though the step
+    // list itself doesn't branch on it — advanceStep/handleNextStep close
+    // over currentStep, and each step element is created holding a reference
+    // to whichever closure was current at the last recompute. Dropping
+    // currentStep here would leave step components holding a stale
+    // nextStep/prevStep closure after a step transition, breaking
+    // navigation. showValidationErrors is included because DeductionsStepMonthly
+    // and DependentsStepMonthly read it directly to decide whether to show
+    // inline validation errors; without it, clicking Next on an invalid step
+    // does not re-render those steps with the error now visible.
+  }, [formData, currentStep, showValidationErrors]);
 
   const totalSteps = steps.length;
   const isResultStep = currentStep === totalSteps - 1;
@@ -344,7 +354,12 @@ const MonthlyWithholding: React.FC = () => {
             </button>
             <button
               onClick={handleNextStep}
-              className="px-6 py-2 rounded-lg transition-colors flex items-center gap-2 bg-blue-500 text-white hover:bg-blue-600"
+              disabled={!isStepValid()}
+              className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                isStepValid()
+                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
               aria-label="Go to next step"
             >
               Next

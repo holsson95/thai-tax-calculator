@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import { pdf } from '@react-pdf/renderer';
 import { FreelancerFormData, IncomeType } from '../../types/freelancerForm';
 import { calculateFreelancerTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import { getTaxByBracket } from '../../utils/tax';
 import { ObligationAlerts, ObligationSummary } from '../ObligationAlerts';
 import { checkAllObligations } from '../../utils/obligationChecks';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
-import TaxPacketPDF from '../../pdf/TaxPacketPDF';
 import { generatePdfFilename } from '../../utils/pdfFilename';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
@@ -30,6 +28,10 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
     try {
+      const [{ pdf }, { default: TaxPacketPDF }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('../../pdf/TaxPacketPDF'),
+      ]);
       const blob = await pdf(<TaxPacketPDF formData={formData} />).toBlob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

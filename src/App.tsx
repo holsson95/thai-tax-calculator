@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Layout from './components/layout/Layout';
-import MonthlyWithholding from './components/MonthlyWithholding';
 import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
@@ -16,9 +15,15 @@ import ContactPage from './pages/ContactPage';
 import TaxExamplesPage from './pages/TaxExamplesPage';
 import ThailandTax2026Page from './pages/ThailandTax2026Page';
 import NotFoundPage from './pages/NotFoundPage';
-import { ANNUAL_TAX_META, ANNUAL_TAX_SCHEMA } from './data/calculatorMeta';
+import {
+  ANNUAL_TAX_META,
+  ANNUAL_TAX_SCHEMA,
+  MONTHLY_WITHHOLDING_META,
+  MONTHLY_WITHHOLDING_SCHEMA,
+} from './data/calculatorMeta';
 
 const AnnualTaxWizard = React.lazy(() => import('./components/AnnualTaxWizard'));
+const MonthlyWithholding = React.lazy(() => import('./components/MonthlyWithholding'));
 
 // Static fallback/pre-load content for /annual-tax/. Shared between the pre-hydration render
 // (server AND initial client render, so they match) and the Suspense fallback shown while the
@@ -81,6 +86,56 @@ const AnnualTaxFallback: React.FC = () => (
   </div>
 );
 
+// Static fallback/pre-load content for /monthly-withholding/. Same role as
+// AnnualTaxFallback above — shared between the pre-hydration render (server AND
+// initial client render, so they match) and the Suspense fallback shown while the
+// lazy MonthlyWithholding chunk is loading after hydration.
+const MonthlyWithholdingFallback: React.FC = () => (
+  <div className="bg-gray-100 min-h-screen py-8 px-4">
+    <Helmet>
+      <title>{MONTHLY_WITHHOLDING_META.title}</title>
+      <meta name="description" content={MONTHLY_WITHHOLDING_META.description} />
+      <link rel="canonical" href={MONTHLY_WITHHOLDING_META.canonicalUrl} />
+      <meta property="og:title" content={MONTHLY_WITHHOLDING_META.title} />
+      <meta property="og:description" content={MONTHLY_WITHHOLDING_META.description} />
+      <meta property="og:url" content={MONTHLY_WITHHOLDING_META.canonicalUrl} />
+      <meta property="og:type" content="website" />
+      <script type="application/ld+json">{JSON.stringify(MONTHLY_WITHHOLDING_SCHEMA)}</script>
+    </Helmet>
+    <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
+      </div>
+      <h1 className="text-2xl font-bold text-gray-900 mb-3">Monthly Withholding Estimator</h1>
+      <p className="text-gray-600 mb-4">
+        Check whether the right amount of tax is being deducted from your monthly paycheck.
+        Enter your salary, bonuses, and deductions to see what your employer should be
+        withholding — useful for verifying payslips, planning for a salary change, or
+        estimating the tax impact of a bonus.
+      </p>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
+      <div className="space-y-3 mb-6">
+        <div>
+          <p className="text-sm font-medium text-gray-800">Is this the same as my annual tax liability?</p>
+          <p className="text-sm text-gray-600">
+            No — this estimates what should be withheld from a given month's pay. For your
+            full year's tax liability across all income sources, use the{' '}
+            <Link to="/annual-tax/" className="text-blue-600 hover:underline">annual tax calculator</Link>.
+          </p>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
+          <p className="text-sm text-gray-600">
+            No. The calculation runs entirely in your browser and nothing you enter is sent
+            to a server.
+          </p>
+        </div>
+      </div>
+      <p className="text-center text-gray-500">Loading calculator…</p>
+    </div>
+  </div>
+);
+
 // Renders the plain fallback (no Suspense boundary at all) until the first client-side effect
 // has run, then switches to the real Suspense + React.lazy boundary. Because renderToString()
 // (used by scripts/prerender.mjs via src/entry-server.tsx) cannot resolve Suspense boundaries, it
@@ -109,13 +164,33 @@ const AnnualTaxRoute: React.FC = () => {
   );
 };
 
+// Same hydration-gate pattern as AnnualTaxRoute above, for the same reason:
+// avoids a renderToString()/Suspense mismatch for /monthly-withholding/.
+const MonthlyWithholdingRoute: React.FC = () => {
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) {
+    return <MonthlyWithholdingFallback />;
+  }
+
+  return (
+    <Suspense fallback={<MonthlyWithholdingFallback />}>
+      <MonthlyWithholding />
+    </Suspense>
+  );
+};
+
 // Main App component with routing
 const App: React.FC = () => {
   return (
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/monthly-withholding" element={<MonthlyWithholding />} />
+        <Route path="/monthly-withholding" element={<MonthlyWithholdingRoute />} />
         <Route path="/annual-tax" element={<AnnualTaxRoute />} />
         <Route path="/articles" element={<ArticlesPage />} />
         <Route path="/articles/:slug" element={<ArticleDetailPage />} />

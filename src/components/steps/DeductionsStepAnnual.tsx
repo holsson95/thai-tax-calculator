@@ -71,6 +71,7 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
             <input
               type="text"
+              inputMode="decimal"
               id={id}
               value={formatNumber(amount)}
               onChange={handleAmountChange}

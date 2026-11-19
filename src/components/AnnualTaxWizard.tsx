@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ANNUAL_TAX_META, ANNUAL_TAX_SCHEMA } from '../data/calculatorMeta';
@@ -193,6 +193,21 @@ const AnnualTaxWizard: React.FC = () => {
   // Auto-save current step
   useEffect(() => {
     sessionStorage.setItem(STORAGE_STEP_KEY, currentStep.toString());
+  }, [currentStep]);
+
+  // Move focus into the new step's content on step transitions (Next/Previous/
+  // step-dot navigation), so keyboard and screen-reader users are announced
+  // into the new step instead of staying on the now-stale Next/Previous
+  // button position. Skipped on initial mount so the page doesn't steal focus
+  // away from the browser default on first load.
+  const stepContentRef = useRef<HTMLDivElement>(null);
+  const isFirstRenderRef = useRef(true);
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+    stepContentRef.current?.focus();
   }, [currentStep]);
 
   // Handle switching flows when employment type changes
@@ -710,7 +725,7 @@ const AnnualTaxWizard: React.FC = () => {
         )}
 
         {/* Step Content */}
-        <div className="min-h-[300px]">
+        <div className="min-h-[300px] outline-none" ref={stepContentRef} tabIndex={-1}>
           {renderStep()}
         </div>
 
