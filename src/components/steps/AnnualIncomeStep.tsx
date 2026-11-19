@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { StepProps, TAX_CONSTANTS } from '../../types/taxForm';
+import { TAX_YEAR_CONFIG } from '../../config/taxConfig';
 
 const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
   const [error, setError] = useState<string>('');
@@ -102,7 +103,7 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
               I made social security contributions
             </span>
             <p className="text-xs text-gray-500 mt-1">
-              If you paid into the Social Security Office (SSO), you can deduct up to ฿{TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()} for 2025.
+              If you paid into the Social Security Office (SSO), you can deduct up to ฿{TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()} for {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR}.
             </p>
           </div>
         </label>

@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Page, Text, View } from '@react-pdf/renderer';
 import { TaxCalculationResult, TAX_BRACKETS } from '../types/taxForm';
 import { FreelancerTaxResult } from '../types/freelancerForm';
@@ -58,7 +59,7 @@ const PageFooter: React.FC = () => (
   </View>
 );
 
-const PDFTaxCalculation: React.FC<PDFTaxCalculationProps> = ({ result, taxYear = 2025 }) => {
+const PDFTaxCalculation: React.FC<PDFTaxCalculationProps> = ({ result, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const isBase = isTaxCalculationResult(result);
   const taxableIncome = result.taxableIncome;
   const brackets = getBrackets(taxableIncome);

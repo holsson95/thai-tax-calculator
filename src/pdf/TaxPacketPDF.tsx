@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Document } from '@react-pdf/renderer';
 import { TaxFormData, TaxCalculationResult } from '../types/taxForm';
 import { FreelancerFormData, FreelancerTaxResult } from '../types/freelancerForm';
@@ -31,7 +32,7 @@ function isFreelancerLike(data: AnyFormData): data is FreelancerFormData {
     data.employmentType === 'business';
 }
 
-const TaxPacketPDF: React.FC<TaxPacketPDFProps> = ({ formData, taxYear = 2025 }) => {
+const TaxPacketPDF: React.FC<TaxPacketPDFProps> = ({ formData, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const isFreelancer = isFreelancerLike(formData);
 
   let result: TaxCalculationResult | FreelancerTaxResult;

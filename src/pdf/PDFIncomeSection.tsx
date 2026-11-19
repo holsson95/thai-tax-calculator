@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Page, Text, View } from '@react-pdf/renderer';
 import { TaxFormData } from '../types/taxForm';
 import { FreelancerFormData, IncomeType } from '../types/freelancerForm';
@@ -48,7 +49,7 @@ const PageFooter: React.FC<{ page: string }> = ({ page }) => (
   </View>
 );
 
-const PDFIncomeSection: React.FC<PDFIncomeSectionProps> = ({ formData, taxYear = 2025 }) => {
+const PDFIncomeSection: React.FC<PDFIncomeSectionProps> = ({ formData, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const isFreelancer = 'thaiIncomeEntries' in formData;
   const isCompanyOwner = 'companyInfo' in formData;
   const isSoleProprietor = 'businessProfile' in formData;

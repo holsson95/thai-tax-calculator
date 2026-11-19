@@ -3,7 +3,7 @@
 // The underlying facts (which sources exist, what they support, and when they
 // were reviewed) live in TAX_RULES.md and tax-data/2026/*.json at the repo
 // root — that JSON registry is the single source of truth, built from a
-// documented research pass on 2026-09-07. This file does not add or invent
+// documented research pass on 2026-09-07 and updated 2026-11-19. This file does not add or invent
 // any source; it only gives the registry's entries clean display labels and
 // groups them by topic for the public /sources/ page.
 
@@ -23,7 +23,7 @@ export interface TaxSource {
 // Every entry in the registry shares this snapshot date — recorded once here
 // instead of repeated per source.
 export const REGISTRY_TAX_YEAR = 2026;
-export const REGISTRY_LAST_REVIEWED = 'September 2026';
+export const REGISTRY_LAST_REVIEWED = 'November 2026';
 
 export const TOPICS = [
   'Personal Income Tax',
@@ -47,6 +47,30 @@ export const TAX_SOURCES: TaxSource[] = [
     url: 'https://www.rd.go.th/english/37749.html',
     type: 'official',
     topics: ['Tax Residency'],
+  },
+  {
+    id: 'rd-pit-rates',
+    organization: 'Thai Revenue Department',
+    title: 'Personal Income Tax Rate Table (Thai, in force from tax year 2017)',
+    url: 'https://www.rd.go.th/59670.html',
+    type: 'official',
+    topics: ['Personal Income Tax', 'Tax Rates & Brackets'],
+  },
+  {
+    id: 'rd-por-161',
+    organization: 'Thai Revenue Department',
+    title: 'Order Por. 161/2566 on foreign income brought into Thailand (Thai, incl. Por. 162/2566 amendment)',
+    url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf',
+    type: 'official',
+    topics: ['Foreign Income', 'Tax Residency'],
+  },
+  {
+    id: 'rd-section-41-qna',
+    organization: 'Thai Revenue Department',
+    title: 'Q&A on tax under Section 41 paragraph 2 — foreign income remittance (Thai)',
+    url: 'https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf',
+    type: 'official',
+    topics: ['Foreign Income', 'Tax Residency', 'Tax Treaties'],
   },
   {
     id: 'rd-dta-list',

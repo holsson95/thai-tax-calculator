@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import TaxExampleCard from '../components/TaxExampleCard';
 import { taxExamples, getTaxExampleById } from '../data/taxExamples';
+import LastUpdated from '../components/LastUpdated';
+import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
@@ -81,6 +83,7 @@ const TaxExamplesPage: React.FC = () => {
             — not typed by hand — so these examples can't drift from what the calculator would actually
             show you.
           </p>
+          <LastUpdated date={PAGE_LAST_UPDATED.taxExamples} className="mt-3" />
         </header>
 
         <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-10 text-sm text-amber-800">

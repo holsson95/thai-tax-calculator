@@ -12,6 +12,8 @@ import MaritalStatusStep from './MaritalStatusStep';
 import DependentsStepMonthly from './steps/DependentsStepMonthly';
 import DeductionsStepMonthly from './steps/DeductionsStepMonthly';
 import MonthlyResultsStep from './steps/MonthlyResultsStep';
+import LastUpdated from './LastUpdated';
+import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 interface Step {
   id: string;
@@ -242,6 +244,7 @@ const MonthlyWithholding: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div className="mb-5">
           <h1 className="text-xl font-bold text-gray-900 mb-1">Monthly Withholding Estimator</h1>
+          <LastUpdated date={PAGE_LAST_UPDATED.monthlyWithholding} className="mb-1" />
           <p className="text-sm text-gray-600">
             Check whether the right amount of tax is being deducted from your monthly paycheck. Enter
             your salary, bonuses, and deductions to see what your employer should be withholding —

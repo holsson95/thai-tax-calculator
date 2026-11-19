@@ -125,7 +125,7 @@ export interface TaxFormData {
   // Step 2: Annual Income
   annualIncome: number;
   includeSocialSecurity: boolean;
-  socialSecurityContribution: number; // Max 10,500 for 2025/2026 (was 9,000 in 2024) — see TAX_CONSTANTS.MAX_SOCIAL_SECURITY
+  socialSecurityContribution: number; // Max 10,500 for 2026 (9,000 for 2024–2025) — see TAX_CONSTANTS.MAX_SOCIAL_SECURITY
 
   // Step 3: Marital Status + Spouse Income + Senior Status
   maritalStatus: 'single' | 'married' | '';
@@ -232,7 +232,7 @@ export const TAX_CONSTANTS = {
   // Standard expense deduction for employment income (50% of income, max 100,000)
   STANDARD_DEDUCTION_RATE: 0.5,
   MAX_STANDARD_DEDUCTION: 100000,
-  MAX_SOCIAL_SECURITY: 10500, // SSO ceiling — confirmed for both 2025 and 2026
+  MAX_SOCIAL_SECURITY: 10500, // SSO ceiling for 2026 (was 9,000 for 2024–2025) — see tax-data/2026/social-security.json
   PERSONAL_ALLOWANCE: 60000,
   SPOUSE_ALLOWANCE: 60000,
   SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
@@ -253,9 +253,9 @@ export const TAX_CONSTANTS = {
 /**
  * Progressive personal income tax brackets.
  * These rates/thresholds have been unchanged since the 2017 tax year.
- * Source: Thai Revenue Department — Personal Income Tax Rates
- * https://www.rd.go.th/english/index-eng.html (same source cited in src/data/articles.ts
- * for the equivalent bracket table — see "Personal Income Tax Rates" article)
+ * Source: Thai Revenue Department rate table (Thai), in force from tax year 2017 onward
+ * under Section 12, Revenue Code Amendment Act No. 44 B.E. 2560:
+ * https://www.rd.go.th/59670.html — verified 2026-11-19, see tax-data/2026/income-tax-brackets.json
  */
 export const TAX_BRACKETS: TaxBracket[] = [
   { upTo: 150000, rate: 0, label: '0-150k' },

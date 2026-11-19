@@ -6,6 +6,8 @@ import AdSlot from '../components/ads/AdSlot';
 import QuickTaxCalculator from '../components/QuickTaxCalculator';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
+import LastUpdated from '../components/LastUpdated';
+import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
@@ -56,6 +58,7 @@ const HomePage: React.FC = () => {
           Enter your income details below to get an instant estimate — salaried employees, freelancers,
           sole proprietors, and company owners are all supported.
         </p>
+        <LastUpdated date={PAGE_LAST_UPDATED.home} className="mt-2" />
       </div>
 
       <QuickTaxCalculator />
@@ -129,6 +132,45 @@ const HomePage: React.FC = () => {
         </Link>
       </div>
 
+      {/* 2024 foreign-income remittance rule */}
+      <section className="max-w-3xl mx-auto px-4 mb-8" aria-labelledby="remittance-rule-heading">
+        <div className="bg-white rounded-xl shadow-md border-l-4 border-amber-500 p-5 md:p-6">
+          <h2 id="remittance-rule-heading" className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
+            Bringing foreign income into Thailand? The rules changed in 2024
+          </h2>
+          <p className="text-sm text-gray-700 leading-relaxed mb-3">
+            Under Revenue Department Order Por. 161/2566 (as amended by Por. 162/2566), foreign income
+            earned on or after 1 January 2024 in a year you were a Thai tax resident (180+ days) may be
+            taxable when you bring it into Thailand, whether in that year or any later year. Income earned
+            before 2024 and the original capital of savings or investments are treated differently, so
+            what you remit and when it was earned matter.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <Link
+              to="/foreign-income-tax-calculator/"
+              className="inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+            >
+              Estimate tax on money you remit
+            </Link>
+            <Link to="/articles/foreign-income-thailand-tax/" className="text-sm text-blue-600 hover:underline">
+              Read the foreign income guide
+            </Link>
+          </div>
+          <p className="text-xs text-gray-500 mt-3">
+            Source:{' '}
+            <a
+              href="https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+              className="underline hover:text-gray-700"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Revenue Department Q&amp;A on Section 41 paragraph 2 (Thai)
+            </a>
+            . Estimates only, not tax advice.
+          </p>
+        </div>
+      </section>
+
       {/* Ad Slot */}
       <div className="flex justify-center mb-8 px-4">
         <div className="hidden md:block">
@@ -197,7 +239,7 @@ const HomePage: React.FC = () => {
         {/* Tax brackets table */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4">
           <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">2025 Personal Income Tax Rates</h3>
+            <h3 className="font-semibold text-gray-900">2026 Personal Income Tax Rates</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -239,6 +281,18 @@ const HomePage: React.FC = () => {
               <Link to="/tax-examples/" className="text-blue-500 hover:underline">
                 See worked examples →
               </Link>
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Source:{' '}
+              <a
+                href="https://www.rd.go.th/59670.html"
+                className="underline hover:text-gray-700"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Revenue Department rate table (Thai)
+              </a>
+              , in force from tax year 2017 under Revenue Code Amendment Act No. 44. No later change found as of the last-updated date above.
             </p>
           </div>
         </div>

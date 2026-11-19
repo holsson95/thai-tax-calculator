@@ -5,6 +5,8 @@ import OfficialSource from '../components/OfficialSource';
 import TaxExampleCard from '../components/TaxExampleCard';
 import CalculateTaxCTA from '../components/CalculateTaxCTA';
 import { getTaxExampleById } from '../data/taxExamples';
+import LastUpdated from '../components/LastUpdated';
+import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
@@ -65,6 +67,7 @@ const ThailandTax2026Page: React.FC = () => {
             the picture, and what filing involves. Each section below gives you the key facts and links to
             the site's full guide on that topic, so you can go as deep as you need to.
           </p>
+          <LastUpdated date={PAGE_LAST_UPDATED.thailandTax2026} className="mt-3" />
         </header>
 
         <nav className="mb-10 bg-gray-50 border border-gray-200 rounded-lg p-4">

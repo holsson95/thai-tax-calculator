@@ -16,6 +16,20 @@ then a further 3 independent follow-up passes (2026-09-07) that fetched
 primary documents directly to confirm or refute the highest-stakes findings —
 see Methodology below.
 
+## 2026-11-19 primary-source pass
+
+| Area | Result | Primary source |
+|---|---|---|
+| All 8 PIT brackets | **Now verified.** RD's Thai rate table states it applies from tax year 2560 (2017) onward (Section 12, Amendment Act No. 44); no later change found. | https://www.rd.go.th/59670.html |
+| Personal 60,000 / spouse 60,000 / parent 30,000 / 65+ exemption 190,000 | Values match RD's primary summary table, **but that table is for tax year 2560** — still unverified *for 2026*. | https://www.rd.go.th/59674.html |
+| 50% / 100,000 standard deduction, 25,000 health insurance cap | Not found on readable RD pages — **still unverified** (secondary only). | — |
+| Foreign income (Por. 161/162) | Order text and RD Legal Affairs Q&A (Jan 2024) read directly: residency tested in the year income arises; principal not assessable; capital gains = realised gain per transaction; mixed funds = taxpayer self-assesses (no ordering rule); FX at remittance date; FTC via DTA. | Por. 161 consolidated text; RD Q&A PDF — see `tax-data/2026/foreign-income.json` |
+| Proposed same-year/next-year remittance exemption | **Not law** as of the latest sources found (July 2026). Recorded with `is_law: false`. | secondary only |
+| SSO cap 10,500 | Registry says 10,500 applies from 2026 (9,000 for 2024–2025). Code comment claiming "confirmed for 2025" was wrong and has been corrected; value unchanged. | BDO (secondary) |
+
+Also fixed: homepage table label "2025 Personal Income Tax Rates" → 2026, and PDF/file-name
+default tax year 2025 → `TAX_YEAR_CONFIG.CURRENT_TAX_YEAR` (2026). No calculation changed.
+
 ## ✅ 3 confirmed calculation bugs — fixed 2026-09-07 (user-approved, tested)
 
 A follow-up verification pass **confirmed** three real bugs found in the

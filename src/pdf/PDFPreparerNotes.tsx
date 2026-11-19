@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Page, Text, View } from '@react-pdf/renderer';
 import { FreelancerFormData, FreelancerTaxResult } from '../types/freelancerForm';
 import { styles, COLORS } from './pdfStyles';
@@ -39,7 +40,7 @@ function visaLabel(visaType: string): string {
   return labels[visaType] ?? visaType;
 }
 
-const PDFPreparerNotes: React.FC<PDFPreparerNotesProps> = ({ formData, result, taxYear = 2025 }) => {
+const PDFPreparerNotes: React.FC<PDFPreparerNotesProps> = ({ formData, result, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const hasPND94 = result.pnd94.required;
   const hasVAT = result.vat.required;
   const hasLTR = result.ltrBenefitApplied;

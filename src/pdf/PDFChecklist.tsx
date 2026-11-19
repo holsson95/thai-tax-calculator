@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Page, Text, View } from '@react-pdf/renderer';
 import { ChecklistItem, groupChecklistBySection } from '../utils/checklistGenerator';
 import { styles, COLORS } from './pdfStyles';
@@ -21,7 +22,7 @@ const PageFooter: React.FC = () => (
   </View>
 );
 
-const PDFChecklist: React.FC<PDFChecklistProps> = ({ items, taxYear = 2025 }) => {
+const PDFChecklist: React.FC<PDFChecklistProps> = ({ items, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const grouped = groupChecklistBySection(items);
   const sections = Object.keys(grouped);
 

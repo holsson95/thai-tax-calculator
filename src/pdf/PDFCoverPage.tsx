@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Page, Text, View } from '@react-pdf/renderer';
 import { TaxFormData, TaxCalculationResult } from '../types/taxForm';
 import { FreelancerFormData, FreelancerTaxResult } from '../types/freelancerForm';
@@ -62,7 +63,7 @@ function getResultValues(result: TaxCalculationResult | FreelancerTaxResult) {
   };
 }
 
-const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ formData, result, taxYear = 2025 }) => {
+const PDFCoverPage: React.FC<PDFCoverPageProps> = ({ formData, result, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
   const vals = getResultValues(result);
   const isRefund = vals.refundOrOwed > 0;
   const resultColor = isRefund ? COLORS.green : COLORS.red;

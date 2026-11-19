@@ -1,7 +1,7 @@
 {
   "category": "foreign-income",
   "tax_year": 2026,
-  "last_reviewed": "2026-09-07",
+  "last_reviewed": "2026-11-19",
   "description": "Foreign-sourced income remittance rules, DTA foreign tax credit logic, and LTR visa-related exemptions/flat rates.",
   "rules": [
     {
@@ -59,7 +59,11 @@
     {
       "id": "ltr-foreign-income-exemption-visas",
       "rule": "LTR visa categories exempt from Thai tax on foreign income remitted to Thailand",
-      "value": ["ltr_wealthy_global", "ltr_wealthy_pensioner", "ltr_work_from_thailand"],
+      "value": [
+        "ltr_wealthy_global",
+        "ltr_wealthy_pensioner",
+        "ltr_work_from_thailand"
+      ],
       "conditions": "Holders of these three LTR (Long-Term Resident) visa categories are exempt from Thai PIT on foreign-sourced income (from employment, foreign business, or foreign property) for the PRIOR tax year's income, WHEN THAT INCOME IS BROUGHT INTO (REMITTED TO) THAILAND. Also requires maintaining BOI-prescribed LTR qualifications and filing a return declaring the exempt income; benefits are suspended for any year of non-compliance.",
       "source": {
         "label": "Royal Decree No. 743, B.E. 2565 (2022), Section 5 — primary source, hosted officially by BOI",
@@ -81,6 +85,155 @@
       "verified": true,
       "verification_notes": "Fully verified against primary legal text (full decree PDF read directly, Sections 3-4). Corroborated by Price Sanond law firm, Sherrings, and the Australian-Thai Chamber of Commerce, which additionally note a Revenue Department Notification (No. 427 per Price Sanond) prescribing implementation procedures. This resolves what was previously the single largest citation gap in the registry (the app had zero citation for this rule before 2026-09-07).",
       "used_in": "src/utils/taxCalculations.ts:31 (LTR_HIGHLY_SKILLED_FLAT_RATE)"
+    },
+    {
+      "id": "por161-text",
+      "rule": "Por. 161/2566 operative text",
+      "value": {
+        "effective_for_remittances_from": "2024-01-01",
+        "pre_2024_income_excluded": true
+      },
+      "conditions": "A Thai resident (Section 41 para 3) with assessable income from foreign employment, business or property must include it in the tax year it is brought into Thailand, whatever year that is (Clause 1). Por. 162/2566 (20 Nov 2023) added: does not apply to assessable income arising before 1 Jan 2024. Clause 3: applies to income brought in from 1 Jan 2024.",
+      "source": {
+        "label": "Revenue Department Order Por. 161/2566 (consolidated with Por. 162/2566 amendment)",
+        "url": "https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "residency-tested-in-year-earned",
+      "rule": "Residency is tested in the year the income arises",
+      "value": {
+        "days": 180
+      },
+      "conditions": "RD Q&A Q1 and table: taxable only if the income arose from 1 Jan 2024 in a tax year when the person was in Thailand 180+ days, and it is remitted that year or later. Q5: not taxable if the person was under 180 days in the year the income arose, even if remitted. Q4: 180 days counted per calendar year, any nationality.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A on Section 41 para 2 (Q1, Q4, Q5)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "remitted-principal-not-assessable",
+      "rule": "Remitted capital/principal is not assessable",
+      "value": null,
+      "conditions": "RD Q&A Q10–Q11: bringing back invested/deposited principal is not assessable income; only the interest/gain portion is (interest under Section 40(4)(a)).",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q10, Q11)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "savings-from-non-resident-years",
+      "rule": "Savings accumulated in non-resident years",
+      "value": null,
+      "conditions": "RD Q&A Q14: savings from work/business abroad that arose in years the person was not a Thai resident are not taxable when brought in.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q14)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "capital-gains-computation",
+      "rule": "Foreign capital gains: realised gain only",
+      "value": null,
+      "conditions": "RD Q&A Q7: computed per transaction, only the excess over cost (sale price minus cost at acquisition date). Q13: unrealised gains are not assessable; realised gains (Section 40(4)(g)) arising from 2024 are taxable when remitted.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q7, Q13)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "mixed-funds-no-ordering-rule",
+      "rule": "Mixed accounts: taxpayer self-assesses",
+      "value": null,
+      "conditions": "RD Q&A Q9: where money is partly principal and partly profit, the taxpayer must self-assess from the facts which part was remitted. No ordering rule is given — treat as a complexity flag, not something the calculator can resolve.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q9)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "exchange-rate-at-remittance",
+      "rule": "Exchange rate",
+      "value": null,
+      "conditions": "RD Q&A Q12: use the exchange rate on the date the income is brought into Thailand.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q12)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "foreign-tax-credit-via-dta",
+      "rule": "Foreign tax credit",
+      "value": null,
+      "conditions": "RD Q&A Q15: a Thai resident may credit foreign tax paid against Thai tax in the year of remittance, under the terms of the applicable double tax agreement.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q15)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "exempt-family-support-and-inheritance",
+      "rule": "Exempt receipts",
+      "value": {
+        "family_support_cap_thb_per_year": 20000000
+      },
+      "conditions": "RD Q&A Q6: taxable foreign income means Section 40(1)–(8) income; exempt income stays exempt, e.g. inheritance, and support from ascendants, descendants or spouse up to 20 million baht per tax year.",
+      "source": {
+        "label": "RD Legal Affairs Division Q&A (Q6)",
+        "url": "https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
+      },
+      "verified": true,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+    },
+    {
+      "id": "proposed-remittance-grace-period",
+      "rule": "PROPOSED (not law): exempt foreign income remitted in the year earned or the following year",
+      "value": {
+        "is_law": false
+      },
+      "conditions": "As of the most recent sources found (July 2026), a draft exemption had not been published in the Royal Gazette; progress stalled with the dissolution of the House before the Feb 2026 election. Sources disagree on its exact form.",
+      "source": {
+        "label": "Brer Rabbit Legal — remittance exemption status 2026 (secondary)",
+        "url": "https://brerrabbitlegal.co.th/insights/thailand-remittance-tax-exemption-2026-status/"
+      },
+      "verified": false,
+      "last_verified": "2026-11-19",
+      "verification_notes": "Status only; check the Royal Gazette (ratchakitcha.soc.go.th) before changing is_law.",
+      "used_in": "src/config/remittanceRules.ts (Phase 2)"
     }
   ]
 }

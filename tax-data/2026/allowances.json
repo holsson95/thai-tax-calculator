@@ -1,7 +1,7 @@
 {
   "category": "allowances",
   "tax_year": 2026,
-  "last_reviewed": "2026-09-07",
+  "last_reviewed": "2026-11-19",
   "description": "Personal allowances that reduce taxable income before deductions.",
   "known_issue": "Thai Revenue Department's own English-language page (rd.go.th/english/6045.html) is STALE for these figures too — see income-tax-brackets.json known_issue. Do not use it as a source here.",
   "rules": [
@@ -15,8 +15,14 @@
         "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
       },
       "verified": false,
-      "verification_notes": "Two independent reputable secondary sources agree, and the legal basis (Amendment Act No. 44) is named, but no working primary RD/Revenue Code page was found stating this figure directly during the 2026-09-07 research pass — RD's own English page is stale.",
-      "used_in": "src/types/taxForm.ts:236,76 (TAX_CONSTANTS.PERSONAL_ALLOWANCE, MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE)"
+      "verification_notes": "Two independent reputable secondary sources agree, and the legal basis (Amendment Act No. 44) is named, but no working primary RD/Revenue Code page was found stating this figure directly during the 2026-09-07 research pass — RD's own English page is stale. | 2026-11-19: value matches the primary RD summary table, but that table is labelled for tax year 2560 (2017), not 2026. Still unverified for 2026 until a current-year RD source (e.g. the latest PND90 instructions) is read.",
+      "used_in": "src/types/taxForm.ts:236,76 (TAX_CONSTANTS.PERSONAL_ALLOWANCE, MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE)",
+      "primary_source_tax_year_2017": {
+        "label": "Thai Revenue Department — ตารางสรุปการหักลดหย่อนและยกเว้นภาษี ปีภาษี 2560",
+        "url": "https://www.rd.go.th/59674.html",
+        "states": "60,000 (item 1.1)"
+      },
+      "last_verified": "2026-11-19"
     },
     {
       "id": "spouse-allowance",
@@ -28,8 +34,14 @@
         "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
       },
       "verified": false,
-      "verification_notes": "Same sourcing status as personal-allowance.",
-      "used_in": "src/types/taxForm.ts:237,77 (TAX_CONSTANTS.SPOUSE_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE)"
+      "verification_notes": "Same sourcing status as personal-allowance. | 2026-11-19: value matches the primary RD summary table, but that table is labelled for tax year 2560 (2017), not 2026. Still unverified for 2026 until a current-year RD source (e.g. the latest PND90 instructions) is read.",
+      "used_in": "src/types/taxForm.ts:237,77 (TAX_CONSTANTS.SPOUSE_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE)",
+      "primary_source_tax_year_2017": {
+        "label": "Thai Revenue Department — ตารางสรุปการหักลดหย่อนและยกเว้นภาษี ปีภาษี 2560",
+        "url": "https://www.rd.go.th/59674.html",
+        "states": "60,000, spouse with no income only (item 1.2)"
+      },
+      "last_verified": "2026-11-19"
     },
     {
       "id": "senior-allowance",
@@ -41,8 +53,14 @@
         "url": "https://sherrings.com/personal-tax-deductions-allowances-thailand.html"
       },
       "verified": false,
-      "verification_notes": "IMPORTANT CORRECTION: the codebase and articles.ts previously cited this as 'Revenue Code Section 42(17)' but the 2026-09-07 research pass could NOT confirm that section number from any source fetched — no page explicitly cites Section 42(17). That citation should be treated as unconfirmed, not fact, until a primary source is found. Recommend the app's copy describe this as 'an income exemption for taxpayers 65+' rather than asserting a specific Revenue Code section number it hasn't verified.",
-      "used_in": "src/types/taxForm.ts:238,78 (TAX_CONSTANTS.SENIOR_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE); also cited (with the now-unconfirmed section number) in src/data/articles.ts:1474"
+      "verification_notes": "IMPORTANT CORRECTION: the codebase and articles.ts previously cited this as 'Revenue Code Section 42(17)' but the 2026-09-07 research pass could NOT confirm that section number from any source fetched — no page explicitly cites Section 42(17). That citation should be treated as unconfirmed, not fact, until a primary source is found. Recommend the app's copy describe this as 'an income exemption for taxpayers 65+' rather than asserting a specific Revenue Code section number it hasn't verified. | 2026-11-19: value matches the primary RD summary table, but that table is labelled for tax year 2560 (2017), not 2026. Still unverified for 2026 until a current-year RD source (e.g. the latest PND90 instructions) is read.",
+      "used_in": "src/types/taxForm.ts:238,78 (TAX_CONSTANTS.SENIOR_ALLOWANCE, MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE); also cited (with the now-unconfirmed section number) in src/data/articles.ts:1474",
+      "primary_source_tax_year_2017": {
+        "label": "Thai Revenue Department — ตารางสรุปการหักลดหย่อนและยกเว้นภาษี ปีภาษี 2560",
+        "url": "https://www.rd.go.th/59674.html",
+        "states": "Exemption (not a deduction) of assessable income up to 190,000 for a Thai resident aged 65+ in the tax year (item 1.13)"
+      },
+      "last_verified": "2026-11-19"
     },
     {
       "id": "child-allowance-base",
@@ -80,8 +98,14 @@
         "url": "https://msnagroup.com/parents-allowance-for-computation-of-thai-personal-income-tax/"
       },
       "verified": false,
-      "verification_notes": "Partially verified across three sources for the 30,000 THB figure and eligibility mechanics, but no primary RD/Revenue Code citation was located.",
-      "used_in": "src/types/taxForm.ts:241,84 (PARENT_ALLOWANCE)"
+      "verification_notes": "Partially verified across three sources for the 30,000 THB figure and eligibility mechanics, but no primary RD/Revenue Code citation was located. | 2026-11-19: value matches the primary RD summary table, but that table is labelled for tax year 2560 (2017), not 2026. Still unverified for 2026 until a current-year RD source (e.g. the latest PND90 instructions) is read.",
+      "used_in": "src/types/taxForm.ts:241,84 (PARENT_ALLOWANCE)",
+      "primary_source_tax_year_2017": {
+        "label": "Thai Revenue Department — ตารางสรุปการหักลดหย่อนและยกเว้นภาษี ปีภาษี 2560",
+        "url": "https://www.rd.go.th/59674.html",
+        "states": "30,000 per parent aged 60+ with assessable income not over 30,000 in the year; also the non-earning spouse's parents (item 1.4)"
+      },
+      "last_verified": "2026-11-19"
     },
     {
       "id": "max-parents",

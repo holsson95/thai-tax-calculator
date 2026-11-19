@@ -27,6 +27,8 @@ import FreelancerResultsStep from './steps/FreelancerResultsStep';
 import BusinessProfileStep from './steps/BusinessProfileStep';
 // Company owner-specific steps
 import CompanyIncomeStep from './steps/CompanyIncomeStep';
+import LastUpdated from './LastUpdated';
+import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 const STORAGE_KEY = 'thai_tax_annual_wizard_data';
 const STORAGE_STEP_KEY = 'thai_tax_annual_wizard_step';
@@ -570,6 +572,7 @@ const AnnualTaxWizard: React.FC = () => {
       <div className="max-w-2xl mx-auto">
         <div className="mb-5">
           <h1 className="text-xl font-bold text-gray-900 mb-1">Annual Tax Calculator</h1>
+          <LastUpdated date={PAGE_LAST_UPDATED.annualTax} className="mb-1" />
           <p className="text-sm text-gray-600">
             Walk through a step-by-step form to estimate your Thai personal income tax for the full
             calendar year. Covers salaried employees, freelancers, sole proprietors, and company owners —

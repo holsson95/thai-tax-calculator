@@ -90,15 +90,11 @@ const ArticleDetailPage: React.FC = () => {
               month: 'long',
               day: 'numeric'
             })}
-            {article.updatedAt && article.updatedAt !== article.publishedAt && (
-              <>
-                {' '}· Updated: {new Date(article.updatedAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </>
-            )}
+            {' '}· Last updated: {new Date(article.updatedAt || article.publishedAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
           </p>
         </header>
 

@@ -1,3 +1,4 @@
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { EmploymentType } from '../types/taxForm';
 
 const EMPLOYMENT_TYPE_SLUG: Record<string, string> = {
@@ -9,7 +10,7 @@ const EMPLOYMENT_TYPE_SLUG: Record<string, string> = {
   company_owner: 'company-owner',
 };
 
-export function generatePdfFilename(employmentType: EmploymentType, taxYear = 2025): string {
+export function generatePdfFilename(employmentType: EmploymentType, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR): string {
   const slug = EMPLOYMENT_TYPE_SLUG[employmentType] ?? 'tax';
   const today = new Date();
   const datePart =

@@ -15,6 +15,8 @@ import ContactPage from './pages/ContactPage';
 import TaxExamplesPage from './pages/TaxExamplesPage';
 import ThailandTax2026Page from './pages/ThailandTax2026Page';
 import NotFoundPage from './pages/NotFoundPage';
+import LastUpdated from './components/LastUpdated';
+import { PAGE_LAST_UPDATED } from './config/contentDates';
 import {
   ANNUAL_TAX_META,
   ANNUAL_TAX_SCHEMA,
@@ -44,7 +46,8 @@ const AnnualTaxFallback: React.FC = () => (
       <div className="flex justify-between items-center mb-6">
         <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
       </div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-3">Annual Tax Calculator</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Annual Tax Calculator</h1>
+      <LastUpdated date={PAGE_LAST_UPDATED.annualTax} className="mb-3" />
       <p className="text-gray-600 mb-4">
         Estimate your annual Thai personal income tax liability for free. Walk through a
         guided form covering income, deductions, and allowances, and get a full breakdown
@@ -106,7 +109,8 @@ const MonthlyWithholdingFallback: React.FC = () => (
       <div className="flex justify-between items-center mb-6">
         <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
       </div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-3">Monthly Withholding Estimator</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-1">Monthly Withholding Estimator</h1>
+      <LastUpdated date={PAGE_LAST_UPDATED.monthlyWithholding} className="mb-3" />
       <p className="text-gray-600 mb-4">
         Check whether the right amount of tax is being deducted from your monthly paycheck.
         Enter your salary, bonuses, and deductions to see what your employer should be
