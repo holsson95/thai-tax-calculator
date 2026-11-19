@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import LeadCTA from '../leads/LeadCTA';
+import { leadContextFromSalary } from '../../utils/leadContext';
+import { track, taxBand } from '../../utils/analytics';
 import { TaxFormData, TaxCalculationResult } from '../../types/taxForm';
 import { calculateAnnualTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import { getTaxByBracket } from '../../utils/tax';
@@ -16,6 +19,16 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const result = resultProp ?? calculateAnnualTax(formData);
+  const leadContext = useMemo(
+    () => leadContextFromSalary('annual', result.taxOwed, result.taxableIncome),
+    [result.taxOwed, result.taxableIncome]
+  );
+
+  useEffect(() => {
+    track('calculator_completed', { calculator: 'annual', tax_band: taxBand(result.taxOwed) });
+    // fire once when the results step is shown
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
@@ -307,6 +320,9 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
           </div>
         </div>
       </div>
+
+      <LeadCTA context={leadContext} />
+      <div className="mt-6" />
 
       {/* Download PDF Button */}
       <button

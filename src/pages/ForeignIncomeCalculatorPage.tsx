@@ -63,8 +63,8 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
           <p className="text-gray-700 leading-relaxed">
             Estimate Thai tax on foreign income you bring into Thailand in {RULES_TAX_YEAR}. The calculator checks each transfer
             against the 2024 remittance rules (when it was earned, whether you were resident that year, and whether it is
-            savings or income) and shows the estimated tax with a bracket breakdown. It runs in your browser and nothing is
-            sent to us.
+            savings or income) and shows the estimated tax with a bracket breakdown. It runs in your browser; nothing is sent
+            to us unless you choose to request a specialist review or email yourself the breakdown.
           </p>
         </header>
 

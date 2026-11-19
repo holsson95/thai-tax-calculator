@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import LeadCTA from '../leads/LeadCTA';
+import { leadContextFromFreelancer } from '../../utils/leadContext';
+import { track, taxBand } from '../../utils/analytics';
 import { FreelancerFormData, IncomeType } from '../../types/freelancerForm';
 import { calculateFreelancerTax, formatThb, formatPercent } from '../../utils/taxCalculations';
 import { getTaxByBracket } from '../../utils/tax';
@@ -24,6 +27,18 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
   const result = calculateFreelancerTax(formData);
   const obligations = checkAllObligations(formData);
+  const leadContext = useMemo(() => leadContextFromFreelancer(formData, result), [formData, result]);
+
+  useEffect(() => {
+    track('calculator_completed', {
+      calculator: 'annual',
+      is_resident: formData.isThaiResident,
+      flag_count: leadContext.flags.length,
+      tax_band: taxBand(result.grossTaxBeforeCredits),
+    });
+    // fire once when the results step is shown
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true);
@@ -472,6 +487,9 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
           </div>
         </div>
       </div>
+
+      <LeadCTA context={leadContext} />
+      <div className="mt-6" />
 
       {/* Download PDF Button */}
       <button

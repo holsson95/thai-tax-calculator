@@ -16,6 +16,9 @@ import TaxExamplesPage from './pages/TaxExamplesPage';
 import ThailandTax2026Page from './pages/ThailandTax2026Page';
 import NotFoundPage from './pages/NotFoundPage';
 import ForeignIncomeCalculatorPage from './pages/ForeignIncomeCalculatorPage';
+import FundingPage from './pages/FundingPage';
+import ThankYouPage from './pages/ThankYouPage';
+import AdminLeadsPage from './pages/AdminLeadsPage';
 import LastUpdated from './components/LastUpdated';
 import { PAGE_LAST_UPDATED } from './config/contentDates';
 import {
@@ -80,8 +83,8 @@ const AnnualTaxFallback: React.FC = () => (
         <div>
           <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
           <p className="text-sm text-gray-600">
-            No. Your answers are kept only in your browser's session storage and nothing
-            is transmitted to a server.
+            No. Your answers are kept only in your browser's session storage and are not sent
+            to a server unless you choose to request a specialist review or email yourself a breakdown.
           </p>
         </div>
       </div>
@@ -132,7 +135,7 @@ const MonthlyWithholdingFallback: React.FC = () => (
           <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
           <p className="text-sm text-gray-600">
             No. The calculation runs entirely in your browser and nothing you enter is sent
-            to a server.
+            to a server unless you choose to request a specialist review or email yourself a breakdown.
           </p>
         </div>
       </div>
@@ -209,6 +212,9 @@ const App: React.FC = () => {
         <Route path="/tax-examples" element={<TaxExamplesPage />} />
         <Route path="/thailand-tax-2026" element={<ThailandTax2026Page />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/how-this-site-is-funded" element={<FundingPage />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
+        <Route path="/admin/leads" element={<AdminLeadsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>

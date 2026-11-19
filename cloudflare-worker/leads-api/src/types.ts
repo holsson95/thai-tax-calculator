@@ -84,6 +84,8 @@ export interface Store {
   getSubscriber(emailNorm: string): Promise<SubscriberRecord | null>;
   listSubscribers(): Promise<SubscriberRecord[]>;
   unsubscribe(emailNorm: string, at: string): Promise<boolean>;
+  /** Retention: delete leads not updated since `beforeIso`, and breakdown-only subscribers not updated since then. */
+  purgeOlderThan(beforeIso: string): Promise<{ leads: number; subscribers: number }>;
 }
 
 export interface EmailMessage {

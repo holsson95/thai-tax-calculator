@@ -5,6 +5,10 @@ compatibility_date = "2026-05-03"
 # Free plan: Workers + D1 + Turnstile + Access (Zero Trust free tier) are all $0.
 # Setup steps: see cloudflare-worker/leads-api/README.md
 
+# Daily retention job (deletes data older than the Privacy Policy's retention period)
+[triggers]
+crons = ["17 3 * * *"]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "mythaitaxes-leads"

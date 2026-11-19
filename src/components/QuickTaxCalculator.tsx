@@ -1,4 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { isLeadsApiConfigured } from '../config/partner';
+import { leadContextFromSalary } from '../utils/leadContext';
+import { track, taxBand } from '../utils/analytics';
 import { calculateThaiTax } from '../utils/tax';
 import { TAX_CONSTANTS } from '../types/taxForm';
 
@@ -29,6 +32,10 @@ const PERIOD_LABELS: Record<Period, string> = {
   weekly: 'Weekly',
 };
 
+// Loaded only after a result exists and only if the leads API is configured,
+// so the homepage bundle does not grow.
+const LeadCTA = React.lazy(() => import('./leads/LeadCTA'));
+
 const QuickTaxCalculator: React.FC = () => {
   const [period, setPeriod] = useState<Period>('monthly');
   const [rawInput, setRawInput] = useState('');
@@ -38,6 +45,20 @@ const QuickTaxCalculator: React.FC = () => {
   const annualIncome = toAnnual(inputAmount, period);
   const hasIncome = inputAmount > 0;
   const result = hasIncome ? computeTax(annualIncome, includeSS) : null;
+  const annualTax = result?.annualTax ?? 0;
+  const taxable = result?.taxableIncome ?? 0;
+  const leadContext = useMemo(() => leadContextFromSalary('quick', annualTax, taxable), [annualTax, taxable]);
+  const [settled, setSettled] = useState(false);
+
+  // calculator_completed fires once, after the result has stopped changing for 2s (not on every keystroke).
+  useEffect(() => {
+    if (!hasIncome || settled) return;
+    const t = setTimeout(() => {
+      setSettled(true);
+      track('calculator_completed', { calculator: 'quick', tax_band: taxBand(annualTax) });
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [hasIncome, annualTax, settled]);
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/[^0-9.]/g, '');
@@ -124,7 +145,13 @@ const QuickTaxCalculator: React.FC = () => {
           </div>
         )}
 
-        <p className="text-xs text-gray-400">
+        {result && settled && isLeadsApiConfigured() && (
+          <Suspense fallback={null}>
+            <LeadCTA context={leadContext} />
+          </Suspense>
+        )}
+
+        <p className="text-xs text-gray-400 mt-4">
           Need deductions for insurance, provident fund, dependents, or detailed withholding? Use the full calculators below.
         </p>
       </div>

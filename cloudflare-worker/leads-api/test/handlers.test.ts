@@ -38,6 +38,7 @@ class MemoryStore implements Store {
   async getSubscriber(e: string) { return this.subs.get(e) ?? null; }
   async listSubscribers() { return [...this.subs.values()]; }
   async unsubscribe(e: string, at: string) { const s = this.subs.get(e); if (!s) return false; s.marketing_opt_in = 0; s.unsubscribed_at = at; return true; }
+  async purgeOlderThan() { return { leads: 0, subscribers: 0 }; }
 }
 
 const PARTNER: PartnerConfig = {
@@ -347,5 +348,20 @@ describe('email helpers', () => {
     const m = partnerLeadEmail(lead, ['p@x.co']);
     expect(m.subject).toBe('New Thai tax lead L-1');
     expect(m.html).toContain('repeat enquiry');
+  });
+});
+
+describe('retention', () => {
+  it('cutoff is 24 months before now', async () => {
+    const { retentionCutoff } = await import('../src/handlers');
+    expect(retentionCutoff(new Date('2026-11-19T10:00:00Z'))).toBe('2024-11-19T10:00:00.000Z');
+  });
+
+  it('runRetention passes the cutoff to the store', async () => {
+    const { runRetention } = await import('../src/handlers');
+    let seen = '';
+    const d = { ...deps(), store: { ...store, purgeOlderThan: async (iso: string) => { seen = iso; return { leads: 2, subscribers: 1 }; } } as unknown as Store };
+    expect(await runRetention(d)).toEqual({ leads: 2, subscribers: 1 });
+    expect(seen).toBe('2024-11-19T10:00:00.000Z');
   });
 });

@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
           <div className="text-gray-600 text-sm">
             {new Date().getFullYear()} Thai Tax Calculator. For informational purposes only.
           </div>
-          <nav className="flex gap-6 text-sm">
+          <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
             <Link to="/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Calculator
             </Link>
@@ -49,6 +49,9 @@ const Footer: React.FC = () => {
             </Link>
             <Link to="/about/#for-developers" className="text-gray-600 hover:text-blue-500 transition-colors">
               API
+            </Link>
+            <Link to="/how-this-site-is-funded/" className="text-gray-600 hover:text-blue-500 transition-colors">
+              How this site is funded
             </Link>
             <Link to="/privacy/" className="text-gray-600 hover:text-blue-500 transition-colors">
               Privacy

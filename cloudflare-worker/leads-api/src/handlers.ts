@@ -274,6 +274,21 @@ export function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+// ---------------------------------------------------------------- retention
+
+/** Months a lead / breakdown-only subscriber is kept after its last update (stated in the Privacy Policy). */
+export const RETENTION_MONTHS = 24;
+
+export function retentionCutoff(now: Date, months = RETENTION_MONTHS): string {
+  const d = new Date(now.getTime());
+  d.setUTCMonth(d.getUTCMonth() - months);
+  return d.toISOString();
+}
+
+export async function runRetention(deps: Deps): Promise<{ leads: number; subscribers: number }> {
+  return deps.store.purgeOlderThan(retentionCutoff(deps.now()));
+}
+
 // ---------------------------------------------------------------- admin
 
 export const LEAD_CSV_COLUMNS = [

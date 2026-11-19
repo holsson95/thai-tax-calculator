@@ -1,4 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import LeadCTA from '../leads/LeadCTA';
+import { leadContextFromSalary } from '../../utils/leadContext';
+import { track, taxBand } from '../../utils/analytics';
 import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData } from '../../types/taxForm';
 import { calculateThaiTax, getTaxByBracket } from '../../utils/tax';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
@@ -127,6 +130,17 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       effectiveRate: annualIncome > 0 ? (annualTax / annualIncome) * 100 : 0,
     };
   }, [formData]);
+
+  const leadContext = useMemo(
+    () => leadContextFromSalary('monthly', calculateResult.annualTax, calculateResult.taxableIncome),
+    [calculateResult.annualTax, calculateResult.taxableIncome]
+  );
+
+  useEffect(() => {
+    track('calculator_completed', { calculator: 'monthly', tax_band: taxBand(calculateResult.annualTax) });
+    // fire once when the results step is shown
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const taxBrackets: TaxFlowBracket[] = useMemo(
     () => getTaxByBracket(calculateResult.taxableIncome).map((b) => ({ label: b.label, rate: b.rate * 100, tax: b.tax })),
@@ -433,6 +447,9 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
           </div>
         </div>
       )}
+
+      <LeadCTA context={leadContext} />
+      <div className="mt-6" />
 
       {/* Start Over Button */}
       <button

@@ -26,6 +26,7 @@ import {
   handleSubscribe,
   handleUnsubscribe,
   HandlerResult,
+  runRetention,
 } from './handlers';
 import { D1Store } from './store';
 import type { Deps, EmailMessage, Env } from './types';
@@ -217,5 +218,11 @@ export default {
     }
 
     return new Response('Not found', { status: 404, headers: SECURITY_HEADERS });
+  },
+
+  /** Daily cron (wrangler.toml [triggers]): deletes data past the retention period in the Privacy Policy. */
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+    const r = await runRetention(makeDeps(env, ctx));
+    console.log(`retention: deleted ${r.leads} leads, ${r.subscribers} subscribers`);
   },
 };

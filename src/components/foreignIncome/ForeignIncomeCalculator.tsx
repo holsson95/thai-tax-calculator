@@ -14,10 +14,13 @@ import { RULES_TAX_YEAR, TAX_RULES } from '../../config/taxRules';
 import { REMITTANCE_CALCULATOR_CONFIG } from '../../config/remittanceCalculator';
 import { ALL_COUNTRIES } from '../../data/dtaCountries';
 import RemittanceResults from './RemittanceResults';
+import LeadCTA from '../leads/LeadCTA';
+import { leadContextFromRemittance } from '../../utils/leadContext';
+import { track, taxBand } from '../../utils/analytics';
 
 const STORAGE_KEY = 'mtt-foreign-income-calculator-v1';
 
-export const INCOME_TYPE_LABELS: Record<ForeignIncomeType, string> = {
+const INCOME_TYPE_LABELS: Record<ForeignIncomeType, string> = {
   employment: 'Employment / freelance',
   pension: 'Pension',
   dividends_interest: 'Dividends / interest',
@@ -26,7 +29,7 @@ export const INCOME_TYPE_LABELS: Record<ForeignIncomeType, string> = {
   other: 'Other',
 };
 
-export const VISA_LABELS: Record<RemittanceVisaType, string> = {
+const VISA_LABELS: Record<RemittanceVisaType, string> = {
   regular: 'Standard / work visa',
   retirement: 'Retirement (Non-O / O-A / O-X)',
   dtv: 'Destination Thailand Visa (DTV)',
@@ -64,7 +67,7 @@ const emptyRemittance = (): RemittanceInput => ({
   residentInYearEarned: 'yes',
 });
 
-export const DEFAULT_INPUT: RemittanceEstimateInput = {
+const DEFAULT_INPUT: RemittanceEstimateInput = {
   daysInThailand: 0,
   visaType: 'regular',
   nationality: '',
@@ -153,6 +156,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
   }, [input]);
 
   const result = useMemo(() => estimateRemittanceTax(input), [input]);
+  const leadContext = useMemo(() => leadContextFromRemittance(input, result), [input, result]);
   const isResident = input.daysInThailand >= TAX_RULES.residencyDays.value;
 
   const set = <K extends keyof RemittanceEstimateInput>(key: K, value: RemittanceEstimateInput[K]) =>
@@ -186,6 +190,12 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
     }
     setError(null);
     setSubmitted(true);
+    track('foreign_calc_completed', {
+      calculator: 'foreign_income',
+      is_resident: result.residency.isResident,
+      flag_count: result.flags.length,
+      tax_band: taxBand(result.estimatedTaxThb),
+    });
     onEstimate?.(input, result);
     requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
@@ -484,7 +494,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
       {submitted && (
         <div ref={resultsRef} className="mt-8 scroll-mt-4">
           <RemittanceResults result={result} />
-          {renderAfterResults?.(input, result)}
+          {renderAfterResults ? renderAfterResults(input, result) : <LeadCTA context={leadContext} />}
         </div>
       )}
     </div>

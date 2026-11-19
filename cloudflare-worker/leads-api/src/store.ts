@@ -92,6 +92,15 @@ export class D1Store implements Store {
     return res.results ?? [];
   }
 
+  async purgeOlderThan(beforeIso: string) {
+    const l = await this.db.prepare('DELETE FROM leads WHERE updated_at < ?').bind(beforeIso).run();
+    const s = await this.db
+      .prepare('DELETE FROM subscribers WHERE marketing_opt_in = 0 AND updated_at < ?')
+      .bind(beforeIso)
+      .run();
+    return { leads: l.meta?.changes ?? 0, subscribers: s.meta?.changes ?? 0 };
+  }
+
   async unsubscribe(emailNorm: string, at: string) {
     const res = await this.db
       .prepare('UPDATE subscribers SET marketing_opt_in = 0, unsubscribed_at = ?, updated_at = ? WHERE email_norm = ?')
