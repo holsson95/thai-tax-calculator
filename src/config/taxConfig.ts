@@ -1,5 +1,6 @@
 import { IncomeType, ExpenseCategory } from '../types/freelancerForm';
 import { BusinessCategory } from '../types/soleProprietorForm';
+import { TAX_RULES as R, RULES_TAX_YEAR } from './taxRules';
 
 /**
  * Flat-rate deduction percentages per income type (Revenue Code sections)
@@ -9,13 +10,13 @@ import { BusinessCategory } from '../types/soleProprietorForm';
  * See TAX_RULES.md / tax-data/2026/deductions.json for full sourcing detail.
  */
 export const FLAT_RATE_DEDUCTIONS: Record<IncomeType, number> = {
-  salary_40_1: 0.50, // 50% capped at 100,000 THB (handled separately)
-  liberal_profession_40_6: 0.30, // 30% default, medical practice gets 60% (see LIBERAL_PROFESSION_RATES)
-  contractor_40_7: 0.60, // 60% — corrected 2026-09-07 from an incorrect 40%; RD guide directly confirms 60% for hire-of-work income where the contractor supplies essential materials
-  business_sales_40_8: 0.60, // 60%
-  rental_40_5: 0.30, // 30% (applies to houses/buildings/vehicles; RD's table has lower rates for land — not modeled here)
-  dividend: 0, // No expense deduction for dividends
-  other: 0, // No default deduction for unclassified income
+  salary_40_1: R.standardDeductionRate.value, // 50% capped at 100,000 THB (handled separately)
+  liberal_profession_40_6: R.flatRateLiberal40_6.value, // 30% default, medical practice gets 60% (see LIBERAL_PROFESSION_RATES)
+  contractor_40_7: R.flatRateContractor40_7.value, // 60% — corrected 2026-09-07 from an incorrect 40%; RD guide directly confirms 60% for hire-of-work income where the contractor supplies essential materials
+  business_sales_40_8: R.flatRateBusiness40_8.value, // 60%
+  rental_40_5: R.flatRateRental40_5.value, // 30% (applies to houses/buildings/vehicles; RD's table has lower rates for land — not modeled here)
+  dividend: R.flatRateDividend.value, // No expense deduction for dividends
+  other: 0, // App choice, not a tax rule: no default deduction for unclassified income
 };
 
 /**
@@ -44,16 +45,16 @@ export const FLAT_RATE_DEDUCTIONS: Record<IncomeType, number> = {
  */
 export const LIBERAL_PROFESSION_RATES: Record<string, number> = {
   // 60% deduction professions
-  medical_practice: 0.60,
+  medical_practice: R.flatRateMedical40_6.value,
 
   // 30% deduction professions
-  legal: 0.30,
-  engineering: 0.30,
-  architecture: 0.30,
-  accounting: 0.30,
-  fine_arts: 0.30,
-  consulting: 0.30,
-  other_liberal: 0.30,
+  legal: R.flatRateLiberal40_6.value,
+  engineering: R.flatRateLiberal40_6.value,
+  architecture: R.flatRateLiberal40_6.value,
+  accounting: R.flatRateLiberal40_6.value,
+  fine_arts: R.flatRateLiberal40_6.value,
+  consulting: R.flatRateLiberal40_6.value,
+  other_liberal: R.flatRateLiberal40_6.value,
 };
 
 /**
@@ -61,17 +62,17 @@ export const LIBERAL_PROFESSION_RATES: Record<string, number> = {
  */
 export const TAX_THRESHOLDS = {
   // VAT registration threshold (annual turnover)
-  VAT_REGISTRATION: 1800000,
+  VAT_REGISTRATION: R.vatRegistrationThreshold.value,
 
   // PND94 mid-year filing thresholds (Jan-Jun income)
-  PND94_SINGLE: 60000,
-  PND94_MARRIED_SPOUSE_NO_INCOME: 120000,
+  PND94_SINGLE: R.pnd94ThresholdSingle.value,
+  PND94_MARRIED_SPOUSE_NO_INCOME: R.pnd94ThresholdMarriedSpouseNoIncome.value,
 
   // Thai tax residency (days in Thailand per calendar year)
-  THAI_RESIDENCY_DAYS: 180,
+  THAI_RESIDENCY_DAYS: R.residencyDays.value,
 
   // Foreign income tax year start (2024+ remittance rule)
-  FOREIGN_INCOME_TAX_YEAR_START: '2024-01-01',
+  FOREIGN_INCOME_TAX_YEAR_START: R.foreignIncomeRuleStart.value,
 };
 
 /**
@@ -79,18 +80,15 @@ export const TAX_THRESHOLDS = {
  * Only sections 40(5) through 40(8) are subject to PND94
  */
 export const PND94_QUALIFYING_INCOME_TYPES: IncomeType[] = [
-  'rental_40_5',
-  'liberal_profession_40_6',
-  'contractor_40_7',
-  'business_sales_40_8',
+  ...R.pnd94QualifyingIncomeTypes.value,
 ];
 
 /**
  * VAT rates and settings
  */
 export const VAT_CONFIG = {
-  STANDARD_RATE: 0.07, // 7% VAT
-  REGISTRATION_DEADLINE_DAYS: 30, // Days to register after exceeding threshold
+  STANDARD_RATE: R.vatStandardRate.value, // 7% VAT (time-limited reduced rate — see taxRules.ts)
+  REGISTRATION_DEADLINE_DAYS: R.vatRegistrationDeadlineDays.value, // Days to register after exceeding threshold
 };
 
 /**
@@ -168,11 +166,11 @@ export const EXTENDED_CURRENCIES = [
  * Tax year configuration
  */
 export const TAX_YEAR_CONFIG = {
-  CURRENT_TAX_YEAR: 2026,
-  TAX_YEAR_START: '2026-01-01',
-  TAX_YEAR_END: '2026-12-31',
-  PND94_DUE_DATE: '2026-09-30', // September 30 of tax year
-  PND90_91_DUE_DATE: '2027-03-31', // March 31 of following year
+  CURRENT_TAX_YEAR: RULES_TAX_YEAR,
+  TAX_YEAR_START: `${RULES_TAX_YEAR}-01-01`,
+  TAX_YEAR_END: `${RULES_TAX_YEAR}-12-31`,
+  PND94_DUE_DATE: `${RULES_TAX_YEAR}-09-30`, // September 30 of tax year (registry: pnd94-due-date)
+  PND90_91_DUE_DATE: `${RULES_TAX_YEAR + 1}-03-31`, // March 31 of following year (registry: pnd90-91-due-date)
 };
 
 /**
@@ -180,18 +178,18 @@ export const TAX_YEAR_CONFIG = {
  */
 export const DEDUCTION_CAPS = {
   // Salary income (40(1)) has special cap
-  SALARY_EXPENSE_CAP: 100000,
+  SALARY_EXPENSE_CAP: R.maxStandardDeduction.value,
 
   // Combined retirement fund cap (pension + provident + RMF + SSF)
-  COMBINED_RETIREMENT_CAP: 500000,
+  COMBINED_RETIREMENT_CAP: R.combinedRetirementCap.value,
 
   // Individual caps (from existing TAX_CONSTANTS)
-  MAX_LIFE_INSURANCE: 100000,
-  MAX_HEALTH_INSURANCE: 25000,
-  MAX_PENSION_FUND: 500000,
-  MAX_PROVIDENT_FUND: 500000,
-  MAX_RMF: 500000,
-  MAX_SSF: 200000,
+  MAX_LIFE_INSURANCE: R.maxLifeInsurance.value,
+  MAX_HEALTH_INSURANCE: R.maxHealthInsurance.value,
+  MAX_PENSION_FUND: R.maxPensionFund.value,
+  MAX_PROVIDENT_FUND: R.maxProvidentFund.value,
+  MAX_RMF: R.maxRmf.value,
+  MAX_SSF: R.maxSsf.value,
 };
 
 /**
@@ -274,14 +272,14 @@ export const BUSINESS_CATEGORY_DESCRIPTIONS: Record<BusinessCategory, string> = 
  * Kept here as documentation-of-record; correct the data even though unused.
  */
 export const BUSINESS_FLAT_RATE_DEDUCTIONS: Record<BusinessCategory, number> = {
-  retail_trade: 0.60,
-  manufacturing: 0.60,
-  service_business: 0.60,
-  restaurant_food: 0.60,
-  transportation: 0.60,
-  construction: 0.60,
-  professional_service: 0.30,
-  rental_property: 0.30,
-  agriculture: 0.60,
-  other_business: 0.60,
+  retail_trade: R.flatRateBusiness40_8.value,
+  manufacturing: R.flatRateBusiness40_8.value,
+  service_business: R.flatRateBusiness40_8.value,
+  restaurant_food: R.flatRateBusiness40_8.value,
+  transportation: R.flatRateBusiness40_8.value,
+  construction: R.flatRateBusiness40_8.value,
+  professional_service: R.flatRateLiberal40_6.value,
+  rental_property: R.flatRateRental40_5.value,
+  agriculture: R.flatRateBusiness40_8.value,
+  other_business: R.flatRateBusiness40_8.value,
 };

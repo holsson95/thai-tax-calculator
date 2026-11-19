@@ -14,6 +14,7 @@ import {
   EXPENSE_CATEGORY_LABELS,
 } from '../config/taxConfig';
 import { INCOME_TYPE_INFO } from '../data/incomeTypes';
+import { getMarginalRate } from './tax';
 
 /**
  * Calculate flat-rate deduction for a single income entry
@@ -248,14 +249,8 @@ export function getTotalGrossIncome(entries: ThaiIncomeEntry[]): number {
  * Calculate estimated tax bracket based on taxable income
  */
 export function estimateTaxBracketRate(taxableIncome: number): number {
-  if (taxableIncome <= 150000) return 0;
-  if (taxableIncome <= 300000) return 0.05;
-  if (taxableIncome <= 500000) return 0.10;
-  if (taxableIncome <= 750000) return 0.15;
-  if (taxableIncome <= 1000000) return 0.20;
-  if (taxableIncome <= 2000000) return 0.25;
-  if (taxableIncome <= 5000000) return 0.30;
-  return 0.35;
+  // Delegates to the bracket table in src/config/taxRules.ts (was a hand-typed copy).
+  return getMarginalRate(taxableIncome);
 }
 
 /**

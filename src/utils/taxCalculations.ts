@@ -1,3 +1,4 @@
+import { TAX_RULES } from '../config/taxRules';
 import { TaxFormData, TaxCalculationResult, TaxBreakdown, TAX_CONSTANTS } from '../types/taxForm';
 import {
   FreelancerFormData,
@@ -28,7 +29,7 @@ import { checkPND94Obligation, checkVATRegistration } from './obligationChecks';
 /**
  * LTR Highly Skilled Professional flat tax rate (17%)
  */
-const LTR_HIGHLY_SKILLED_FLAT_RATE = 0.17;
+const LTR_HIGHLY_SKILLED_FLAT_RATE = TAX_RULES.ltrHighlySkilledFlatRate.value;
 
 /**
  * Calculate child allowance based on birth year

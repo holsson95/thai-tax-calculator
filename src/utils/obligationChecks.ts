@@ -10,6 +10,7 @@ import {
   TAX_YEAR_CONFIG,
 } from '../config/taxConfig';
 import { TAX_BRACKETS } from '../types/taxForm';
+import { TAX_RULES } from '../config/taxRules';
 
 /**
  * Calculate half-year (Jan-Jun) income from Thai income entries
@@ -33,7 +34,7 @@ export function calculateHalfYearIncome(entries: ThaiIncomeEntry[]): number {
  */
 export function calculateProvisionalTax(
   halfYearIncome: number,
-  personalAllowance: number = 60000,
+  personalAllowance: number = TAX_RULES.personalAllowance.value,
   spouseAllowance: number = 0
 ): number {
   // Project full-year income (double the half-year)
@@ -84,10 +85,10 @@ export function checkPND94Obligation(
 
   // Calculate spouse allowance if applicable
   const spouseAllowance =
-    formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? 60000 : 0;
+    formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_RULES.spouseAllowance.value : 0;
 
   const provisionalTax = required
-    ? calculateProvisionalTax(halfYearIncome, 60000, spouseAllowance)
+    ? calculateProvisionalTax(halfYearIncome, TAX_RULES.personalAllowance.value, spouseAllowance)
     : 0;
 
   // PND94 due date is September 30 of the tax year

@@ -5,16 +5,13 @@ import {
   VisaType,
 } from '../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../config/taxConfig';
+import { TAX_RULES } from '../config/taxRules';
 import { hasDTAWithThailand, getPensionDTAExemption } from '../data/dtaCountries';
 
 /**
  * LTR visa types that grant foreign income tax exemption
  */
-const LTR_FOREIGN_INCOME_EXEMPT_VISAS: VisaType[] = [
-  'ltr_wealthy_global',
-  'ltr_wealthy_pensioner',
-  'ltr_work_from_thailand',
-];
+const LTR_FOREIGN_INCOME_EXEMPT_VISAS: VisaType[] = [...TAX_RULES.ltrForeignIncomeExemptVisas.value];
 
 /**
  * Check if a visa type grants foreign income tax exemption

@@ -1,5 +1,6 @@
 import { IncomeType } from '../types/freelancerForm';
 import { FLAT_RATE_DEDUCTIONS } from '../config/taxConfig';
+import { TAX_RULES as R } from '../config/taxRules';
 
 /**
  * Detailed information about each income type
@@ -28,7 +29,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
     section: '40(1)',
     description: 'Regular employment income from an employer including wages, bonuses, and benefits',
     flatRate: FLAT_RATE_DEDUCTIONS.salary_40_1,
-    flatRateCap: 100000,
+    flatRateCap: R.maxStandardDeduction.value,
     examples: [
       'Monthly salary',
       'Annual bonus',
@@ -54,7 +55,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Accounting services',
       'Architecture fees',
     ],
-    withholdingRate: 0.03, // 3% withholding typical
+    withholdingRate: R.whtLiberal40_6.value, // 3% withholding typical
     // Corrected 2026-09-07: entertainment, sports, and author-royalty income were
     // removed from this list — they are not Section 40(6) liberal profession income.
     // Entertainers/athletes are Section 40(8) with a tiered/capped rate; author
@@ -77,7 +78,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Installation services',
       'Custom product creation',
     ],
-    withholdingRate: 0.03,
+    withholdingRate: R.whtContractor40_7.value,
     notes: '40% flat deduction rate applies',
   },
 
@@ -96,7 +97,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Agency fees',
       'Online platform income',
     ],
-    withholdingRate: 0.03,
+    withholdingRate: R.whtBusiness40_8.value,
     notes: '60% flat deduction rate - highest among business income types',
   },
 
@@ -114,7 +115,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Equipment rental',
       'Land lease income',
     ],
-    withholdingRate: 0.05, // 5% for rental
+    withholdingRate: R.whtRental40_5.value, // 5% for rental
     notes: '30% flat deduction rate, or actual expenses with documentation',
   },
 
@@ -130,7 +131,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Dividends from private companies',
       'Investment fund distributions',
     ],
-    withholdingRate: 0.10, // 10% final withholding
+    withholdingRate: R.whtDividend.value, // 10% final withholding
     notes: 'No expense deduction. May elect final 10% withholding or include in PIT calculation.',
   },
 

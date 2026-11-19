@@ -16,6 +16,20 @@ then a further 3 independent follow-up passes (2026-09-07) that fetched
 primary documents directly to confirm or refute the highest-stakes findings —
 see Methodology below.
 
+## Where tax values live (since 2026-11-19)
+
+**`src/config/taxRules.ts` is the single source of truth for every value the calculators use.**
+Each rule carries its value, source (label, URL, primary/secondary), `verified` flag and
+`lastVerified` date. `TAX_BRACKETS`, `TAX_CONSTANTS`, `MONTHLY_TAX_CONSTANTS`, everything in
+`src/config/taxConfig.ts`, withholding rates in `src/data/incomeTypes.ts`, the LTR rules and the
+PND94 defaults all derive from it.
+
+`tax-data/2026/*.json` remains the **research log**: full conditions, limitations and verification
+notes per rule id. `src/config/__tests__/taxRules.test.ts` fails if a value in `taxRules.ts` and the
+registry disagree, if any rule lacks a source URL or ISO date, or if any derived constant changes
+from the values pinned on 2026-11-19. To change a tax value: update `taxRules.ts`, the registry
+entry, and the pinned snapshot in the same reviewed commit.
+
 ## 2026-11-19 primary-source pass
 
 | Area | Result | Primary source |

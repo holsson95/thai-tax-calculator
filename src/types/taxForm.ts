@@ -1,3 +1,5 @@
+import { TAX_RULES as R, BRACKET_RULES } from '../config/taxRules';
+
 export interface ChildData {
   birthYear: number;
   isStudent?: boolean; // Only asked if age 20-25
@@ -66,32 +68,30 @@ export interface MonthlyFormData {
 }
 
 /**
- * Tax constants for Monthly Withholding 2026
+ * Tax constants for the Monthly Withholding estimator.
+ * Values come from src/config/taxRules.ts (single source of truth, with sources
+ * and last-verified dates). Identical to TAX_CONSTANTS; kept as a separate
+ * name because existing modules import it.
  */
 export const MONTHLY_TAX_CONSTANTS = {
-  // Standard expense deduction for employment income (50% of income, max 100,000)
-  STANDARD_DEDUCTION_RATE: 0.5,
-  MAX_STANDARD_DEDUCTION: 100000,
-  MAX_SOCIAL_SECURITY: 10500, // New SSO ceiling for 2026
-  PERSONAL_ALLOWANCE: 60000,
-  SPOUSE_ALLOWANCE: 60000,
-  SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
-  // Child allowance with birth year bonus
-  CHILD_ALLOWANCE_BASE: 30000,        // Base allowance per child
-  CHILD_ALLOWANCE_BONUS: 30000,       // Additional for 2nd+ child born 2018+
-  CHILD_BONUS_BIRTH_YEAR: 2018,       // Children born 2018+ eligible for bonus
-  // Parent support allowance
-  PARENT_ALLOWANCE: 30000,
-  MAX_PARENTS: 4,
-  // Insurance & fund deductions
-  MAX_LIFE_INSURANCE: 100000,
-  MAX_HEALTH_INSURANCE: 25000,
-  MAX_PENSION_FUND: 500000,
-  MAX_PROVIDENT_FUND: 500000,
-  MAX_RMF: 500000,
-  MAX_SSF: 200000,
-  // Donations
-  MAX_DONATION_PERCENT: 0.10,         // 10% of taxable income
+  STANDARD_DEDUCTION_RATE: R.standardDeductionRate.value,
+  MAX_STANDARD_DEDUCTION: R.maxStandardDeduction.value,
+  MAX_SOCIAL_SECURITY: R.maxSocialSecurity.value,
+  PERSONAL_ALLOWANCE: R.personalAllowance.value,
+  SPOUSE_ALLOWANCE: R.spouseAllowance.value,
+  SENIOR_ALLOWANCE: R.seniorExemption.value, // 65+ exemption (named "allowance" in code)
+  CHILD_ALLOWANCE_BASE: R.childAllowanceBase.value,
+  CHILD_ALLOWANCE_BONUS: R.childAllowanceBonus.value,
+  CHILD_BONUS_BIRTH_YEAR: R.childBonusBirthYear.value,
+  PARENT_ALLOWANCE: R.parentAllowance.value,
+  MAX_PARENTS: R.maxParents.value,
+  MAX_LIFE_INSURANCE: R.maxLifeInsurance.value,
+  MAX_HEALTH_INSURANCE: R.maxHealthInsurance.value,
+  MAX_PENSION_FUND: R.maxPensionFund.value,
+  MAX_PROVIDENT_FUND: R.maxProvidentFund.value,
+  MAX_RMF: R.maxRmf.value,
+  MAX_SSF: R.maxSsf.value,
+  MAX_DONATION_PERCENT: R.maxDonationPercent.value,
 };
 
 /**
@@ -220,53 +220,43 @@ export interface TaxBracket {
 }
 
 /**
- * Tax constants verified for tax year 2025.
- * MAX_SOCIAL_SECURITY (10,500) is also confirmed unchanged for tax year 2026 —
- * see MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY below, same value.
- * The remaining allowance/deduction figures have NOT been independently
- * re-verified against a 2026 source; confirm against rd.go.th before relying
- * on this file as authoritative for 2026 filings.
- * Source: Thai Revenue Department (https://www.rd.go.th/english/index-eng.html)
+ * Allowance and deduction constants for the annual calculator.
+ * Values come from src/config/taxRules.ts — edit them there, not here.
+ * Verification status per rule is recorded in taxRules.ts and TAX_RULES.md.
  */
 export const TAX_CONSTANTS = {
-  // Standard expense deduction for employment income (50% of income, max 100,000)
-  STANDARD_DEDUCTION_RATE: 0.5,
-  MAX_STANDARD_DEDUCTION: 100000,
-  MAX_SOCIAL_SECURITY: 10500, // SSO ceiling for 2026 (was 9,000 for 2024–2025) — see tax-data/2026/social-security.json
-  PERSONAL_ALLOWANCE: 60000,
-  SPOUSE_ALLOWANCE: 60000,
-  SENIOR_ALLOWANCE: 190000, // Additional allowance for taxpayers 65 years or older
-  CHILD_ALLOWANCE_BASE: 30000,        // Base allowance per child
-  CHILD_ALLOWANCE_BONUS: 30000,       // Additional for 2nd+ child born 2018+
-  PARENT_ALLOWANCE: 30000,
-  MAX_PARENTS: 4,
-  MAX_LIFE_INSURANCE: 100000,
-  MAX_HEALTH_INSURANCE: 25000,
-  MAX_PENSION_FUND: 500000,
-  MAX_PROVIDENT_FUND: 500000,
-  MAX_RMF: 500000,
-  MAX_SSF: 200000,
-  MAX_DONATION_PERCENT: 0.10,         // 10% of taxable income
-  CHILD_BONUS_BIRTH_YEAR: 2018,       // Children born 2018+ eligible for bonus
+  STANDARD_DEDUCTION_RATE: R.standardDeductionRate.value,
+  MAX_STANDARD_DEDUCTION: R.maxStandardDeduction.value,
+  MAX_SOCIAL_SECURITY: R.maxSocialSecurity.value,
+  PERSONAL_ALLOWANCE: R.personalAllowance.value,
+  SPOUSE_ALLOWANCE: R.spouseAllowance.value,
+  SENIOR_ALLOWANCE: R.seniorExemption.value, // 65+ exemption (named "allowance" in code)
+  CHILD_ALLOWANCE_BASE: R.childAllowanceBase.value,
+  CHILD_ALLOWANCE_BONUS: R.childAllowanceBonus.value,
+  CHILD_BONUS_BIRTH_YEAR: R.childBonusBirthYear.value,
+  PARENT_ALLOWANCE: R.parentAllowance.value,
+  MAX_PARENTS: R.maxParents.value,
+  MAX_LIFE_INSURANCE: R.maxLifeInsurance.value,
+  MAX_HEALTH_INSURANCE: R.maxHealthInsurance.value,
+  MAX_PENSION_FUND: R.maxPensionFund.value,
+  MAX_PROVIDENT_FUND: R.maxProvidentFund.value,
+  MAX_RMF: R.maxRmf.value,
+  MAX_SSF: R.maxSsf.value,
+  MAX_DONATION_PERCENT: R.maxDonationPercent.value,
 };
 
 /**
- * Progressive personal income tax brackets.
- * These rates/thresholds have been unchanged since the 2017 tax year.
- * Source: Thai Revenue Department rate table (Thai), in force from tax year 2017 onward
- * under Section 12, Revenue Code Amendment Act No. 44 B.E. 2560:
- * https://www.rd.go.th/59670.html — verified 2026-11-19, see tax-data/2026/income-tax-brackets.json
+ * Progressive personal income tax brackets, derived from src/config/taxRules.ts
+ * (verified 2026-11-19 against https://www.rd.go.th/59670.html). Labels are
+ * display-only.
  */
-export const TAX_BRACKETS: TaxBracket[] = [
-  { upTo: 150000, rate: 0, label: '0-150k' },
-  { upTo: 300000, rate: 0.05, label: '150k-300k' },
-  { upTo: 500000, rate: 0.10, label: '300k-500k' },
-  { upTo: 750000, rate: 0.15, label: '500k-750k' },
-  { upTo: 1000000, rate: 0.20, label: '750k-1M' },
-  { upTo: 2000000, rate: 0.25, label: '1M-2M' },
-  { upTo: 5000000, rate: 0.30, label: '2M-5M' },
-  { upTo: Infinity, rate: 0.35, label: '5M+' },
-];
+const BRACKET_LABELS = ['0-150k', '150k-300k', '300k-500k', '500k-750k', '750k-1M', '1M-2M', '2M-5M', '5M+'];
+
+export const TAX_BRACKETS: TaxBracket[] = BRACKET_RULES.map((rule, i) => ({
+  upTo: rule.value.upTo,
+  rate: rule.value.rate,
+  label: BRACKET_LABELS[i],
+}));
 
 // Re-export freelancer types for convenience
 export * from './freelancerForm';
