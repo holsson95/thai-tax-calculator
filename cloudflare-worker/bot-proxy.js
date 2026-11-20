@@ -1,83 +1,77 @@
 /**
- * Cloudflare Worker: BOT API CORS Proxy
+ * Cloudflare Worker: Bank of Thailand exchange-rate proxy
  *
- * Deploy this worker on Cloudflare (free tier) to proxy BOT exchange rate
- * requests from the browser. The BOT API does not send CORS headers, so
- * browser requests must go through this worker.
+ * The BOT API sends no CORS headers, so the browser calls this Worker instead.
+ * The Worker holds the BOT API key as a secret and adds it itself: the key is
+ * never shipped in the website's JavaScript.
  *
- * How to deploy:
- *  1. Log in to https://dash.cloudflare.com and go to Workers & Pages
- *  2. Create a new Worker, paste this file, and Save & Deploy
- *  3. Note the worker URL (e.g. https://bot-proxy.YOUR-SUBDOMAIN.workers.dev)
- *  4. Set VITE_BOT_PROXY_URL=<that URL> in your .env file
+ * Deploy / rotate the key:
+ *  1. Get a key at https://portal.api.bot.or.th/ (Exchange Rates product).
+ *  2. Cloudflare dashboard → Workers & Pages → this worker → Settings →
+ *     Variables and Secrets → Add → type "Secret", name BOT_API_KEY.
+ *  3. Edit code → paste this file → Deploy.
+ *  4. The site needs only VITE_BOT_PROXY_URL=<worker URL> in .env.
  *
- * Usage: GET <worker-url>?url=<encoded-target-url>
- * Forward Authorization and Accept headers in the request.
+ * Usage: GET <worker-url>?url=<encoded BOT DAILY_AVG_EXG_RATE URL>
+ *
+ * Limits: only our origins and only the daily average exchange-rate series are
+ * forwarded. The Origin check stops other websites' browsers; it cannot stop a
+ * script that forges the header, so keep the key scoped to Exchange Rates only.
  */
 
 const ALLOWED_ORIGINS = new Set([
   'https://www.thai-tax-calculator.com',
   'https://www.mythaitaxes.com',
   'https://mythaitaxes.com',
+  'http://localhost:5173',
 ]);
-const ALLOWED_TARGET_PREFIX = 'https://gateway.api.bot.or.th/';
+const ALLOWED_TARGET_PREFIX = 'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/';
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const origin = request.headers.get('Origin') ?? '';
-    const allowedOrigin = ALLOWED_ORIGINS.has(origin) ? origin : '';
+    if (!ALLOWED_ORIGINS.has(origin)) {
+      return new Response('Origin not allowed', { status: 403 });
+    }
 
     const corsHeaders = {
-      'Access-Control-Allow-Origin': allowedOrigin,
+      'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Authorization, Accept',
+      'Access-Control-Allow-Headers': 'Accept',
       'Access-Control-Max-Age': '86400',
+      Vary: 'Origin',
     };
 
-    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders });
     }
-
     if (request.method !== 'GET') {
       return new Response('Method not allowed', { status: 405, headers: corsHeaders });
     }
 
-    const { searchParams } = new URL(request.url);
-    const targetUrl = searchParams.get('url');
-
+    const targetUrl = new URL(request.url).searchParams.get('url');
     if (!targetUrl) {
       return new Response('Missing ?url= parameter', { status: 400, headers: corsHeaders });
     }
-
-    // Only proxy requests to the BOT API
     if (!targetUrl.startsWith(ALLOWED_TARGET_PREFIX)) {
       return new Response('Target URL not allowed', { status: 403, headers: corsHeaders });
     }
-
-    const auth = request.headers.get('Authorization');
-    const accept = request.headers.get('Accept') ?? '*/*';
+    if (!env?.BOT_API_KEY) {
+      return new Response('Proxy not configured', { status: 500, headers: corsHeaders });
+    }
 
     let upstream;
     try {
       upstream = await fetch(targetUrl, {
-        headers: {
-          ...(auth ? { Authorization: auth } : {}),
-          Accept: accept,
-        },
+        headers: { Authorization: env.BOT_API_KEY, Accept: request.headers.get('Accept') ?? '*/*' },
       });
     } catch {
       return new Response('Failed to reach BOT API', { status: 502, headers: corsHeaders });
     }
 
-    const body = await upstream.arrayBuffer();
-
-    return new Response(body, {
+    return new Response(await upstream.arrayBuffer(), {
       status: upstream.status,
-      headers: {
-        ...corsHeaders,
-        'Content-Type': upstream.headers.get('Content-Type') ?? 'application/json',
-      },
+      headers: { ...corsHeaders, 'Content-Type': upstream.headers.get('Content-Type') ?? 'application/json' },
     });
   },
 };

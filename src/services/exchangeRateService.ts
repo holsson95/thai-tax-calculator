@@ -1,28 +1,20 @@
 /**
  * Bank of Thailand (BOT) Exchange Rate Service
  *
- * Fetches daily average exchange rates (THB / Foreign Currency) from the BOT API.
+ * Fetches the BOT daily average exchange rate (THB per 1 unit of foreign currency).
  *
- * BOT API portal: https://portal.api.bot.or.th/
- * Register to obtain an API key and subscribe to "Exchange Rates" product.
+ * Requests go through our Cloudflare Worker proxy (cloudflare-worker/bot-proxy.js),
+ * which holds the BOT API key as a server-side secret and adds it upstream. The key
+ * is never part of this bundle. Environment variable: VITE_BOT_PROXY_URL.
  *
- * Authentication: API key passed as `Authorization` header (value only, no "Bearer" prefix).
- * Environment variable: VITE_BOT_API_KEY
+ * The BOT rate is a reference rate. RD Q&A Q12 says to convert at the exchange rate
+ * on the date the money is brought into Thailand; it does not name a published rate.
  *
- * CORS: Since this is a browser-only app, requests are routed through
- * corsproxy.io (https://corsproxy.io) which forwards headers to the BOT API.
- *
- * Caching: Successful lookups are cached in sessionStorage to minimise API calls.
+ * Caching: successful lookups are cached in sessionStorage to minimise API calls.
  */
 
-const BOT_API_KEY = import.meta.env.VITE_BOT_API_KEY as string | undefined;
-
-// Base already includes the API group path; endpoint is just the series name
 const BOT_API_BASE = 'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2';
 const BOT_EXCHANGE_RATE_PATH = '/DAILY_AVG_EXG_RATE/';
-
-// Cloudflare Worker proxy URL — set VITE_BOT_PROXY_URL in .env after deploying cloudflare-worker/bot-proxy.js
-const BOT_PROXY_URL = import.meta.env.VITE_BOT_PROXY_URL as string | undefined;
 
 const SESSION_CACHE_PREFIX = 'bot_fx_';
 
@@ -35,7 +27,7 @@ export interface ExchangeRateResult {
 }
 
 export interface ExchangeRateError {
-  type: 'no_api_key' | 'network' | 'not_found' | 'unsupported_currency' | 'unknown';
+  type: 'network' | 'not_found' | 'unsupported_currency' | 'unknown';
   message: string;
 }
 
@@ -89,8 +81,7 @@ function writeCache(result: ExchangeRateResult): void {
  *   "mid_rate": "35.3000"
  * }
  *
- * We use the `mid_rate` (average of buying and selling). The Thai Revenue Department
- * accepts BOT reference rates for tax computation purposes.
+ * We use the `mid_rate` (average of buying and selling) as a reference rate.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseResponse(data: any, currency: string, requestedDate: string): ExchangeRateResult | null {
@@ -158,16 +149,7 @@ export async function getExchangeRate(
   const cached = readCache(upperCurrency, date);
   if (cached) return { ok: true, data: cached };
 
-  if (!BOT_API_KEY) {
-    return {
-      ok: false,
-      error: {
-        type: 'no_api_key',
-        message: 'BOT API key not configured. Add VITE_BOT_API_KEY to your .env file.',
-      },
-    };
-  }
-
+  const BOT_PROXY_URL = import.meta.env.VITE_BOT_PROXY_URL as string | undefined;
   if (!BOT_PROXY_URL) {
     return {
       ok: false,
@@ -193,10 +175,7 @@ export async function getExchangeRate(
 
     try {
       response = await fetch(proxiedUrl, {
-        headers: {
-          'Authorization': BOT_API_KEY,
-          'Accept': '*/*',
-        },
+        headers: { Accept: '*/*' },
       });
 
       if (response.ok) {
@@ -233,7 +212,7 @@ export async function getExchangeRate(
           : 'not_found',
         message:
           response?.status === 401 || response?.status === 403
-            ? 'BOT API authentication failed. Check your VITE_BOT_API_KEY.'
+            ? 'The exchange-rate service is not available right now.'
             : `No exchange rate data available for ${currency} around ${date}.`,
       },
     };
