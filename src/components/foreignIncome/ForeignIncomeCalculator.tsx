@@ -609,7 +609,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
         </Folder>
 
         {error && (
-          <p role="alert" className="rounded-sm border-l-4 border-stamp bg-paper-white p-3 text-sm font-semibold text-stamp-deep shadow-sheet">
+          <p role="alert" className="rounded-sm border border-stamp/40 bg-paper-white p-3 text-sm font-semibold text-stamp-deep">
             {error}
           </p>
         )}

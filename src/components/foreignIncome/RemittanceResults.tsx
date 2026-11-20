@@ -66,7 +66,7 @@ const RemittanceResults: React.FC<Props> = ({ result, transferLabels }) => {
       </div>
 
       {r.flags.length > 0 && (
-        <div className="bg-paper-white rounded-sm shadow-sheet border-l-4 border-desk p-5 sm:p-6">
+        <div className="bg-paper-white rounded-sm shadow-sheet ring-1 ring-desk/30 p-5 sm:p-6">
           <h3 className="font-semibold text-ink">
             {r.flags.length === 1 ? '1 thing that makes this more complex' : `${r.flags.length} things that make this more complex`}
           </h3>
