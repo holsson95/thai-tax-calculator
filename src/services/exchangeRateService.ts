@@ -58,10 +58,10 @@ function readCache(currency: string, date: string): ExchangeRateResult | null {
 /**
  * Write a result to sessionStorage
  */
-function writeCache(result: ExchangeRateResult): void {
+function writeCache(requestedDate: string, result: ExchangeRateResult): void {
   try {
     sessionStorage.setItem(
-      cacheKey(result.fromCurrency, result.date),
+      cacheKey(result.fromCurrency, requestedDate),
       JSON.stringify(result)
     );
   } catch {
@@ -89,13 +89,19 @@ function parseResponse(data: any, currency: string, requestedDate: string): Exch
     const detail = data?.result?.data?.data_detail;
     if (!Array.isArray(detail) || detail.length === 0) return null;
 
-    // Find the entry for the requested currency (case-insensitive)
-    const match = detail.find(
+    // Latest row for this currency published on or before the requested date.
+    // BOT publishes business days only, so a weekend/holiday date falls back to the prior business day.
+    const match = detail
+      .filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (row: any) =>
+          typeof row.currency_id === 'string' &&
+          row.currency_id.toUpperCase() === currency.toUpperCase() &&
+          typeof row.period === 'string' &&
+          row.period <= requestedDate
+      )
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (row: any) =>
-        typeof row.currency_id === 'string' &&
-        row.currency_id.toUpperCase() === currency.toUpperCase()
-    );
+      .sort((a: any, b: any) => (a.period < b.period ? 1 : a.period > b.period ? -1 : 0))[0];
     if (!match) return null;
 
     const rate = parseFloat(match.mid_rate ?? match.buying_transfer ?? match.selling);
@@ -116,13 +122,13 @@ function parseResponse(data: any, currency: string, requestedDate: string): Exch
   }
 }
 
-/**
- * Find the most recent business day on or before the given date.
- * BOT only publishes rates on business days (Mon–Fri, excluding Thai holidays).
- * We try up to 7 days back to handle long weekends.
- */
-function formatDate(d: Date): string {
-  return d.toISOString().split('T')[0];
+/** Days to look back for the most recent business day (covers long Thai holiday weekends). */
+const LOOKBACK_DAYS = 7;
+
+/** 'YYYY-MM-DD' minus n days, computed in UTC so the local time zone cannot shift the date. */
+function minusDays(iso: string, n: number): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d - n)).toISOString().slice(0, 10);
 }
 
 /**
@@ -160,60 +166,29 @@ export async function getExchangeRate(
     };
   }
 
-  // BOT rates are only available for business days; try up to 7 days back
-  const requestDate = new Date(date);
-  let response: Response | null = null;
-  let lastDate = date;
+  // One request for the week up to the date; the latest business-day row on or before it is used.
+  const targetUrl = `${BOT_API_BASE}${BOT_EXCHANGE_RATE_PATH}?start_period=${minusDays(date, LOOKBACK_DAYS)}&end_period=${date}`;
+  const proxiedUrl = `${BOT_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
 
-  for (let daysBack = 0; daysBack <= 7; daysBack++) {
-    const tryDate = new Date(requestDate);
-    tryDate.setDate(tryDate.getDate() - daysBack);
-    const tryDateStr = formatDate(tryDate);
-
-    const targetUrl = `${BOT_API_BASE}${BOT_EXCHANGE_RATE_PATH}?start_period=${tryDateStr}&end_period=${tryDateStr}`;
-    const proxiedUrl = `${BOT_PROXY_URL}?url=${encodeURIComponent(targetUrl)}`;
-
-    try {
-      response = await fetch(proxiedUrl, {
-        headers: { Accept: '*/*' },
-      });
-
-      if (response.ok) {
-        lastDate = tryDateStr;
-        break;
-      }
-
-      // 404 / no data for this date → try the previous day
-      if (response.status === 404 || response.status === 204) {
-        response = null;
-        continue;
-      }
-
-      // Other errors (auth, server) — stop retrying
-      break;
-    } catch {
-      // Network error
-      return {
-        ok: false,
-        error: {
-          type: 'network',
-          message: 'Could not reach the BOT API. Please check your connection.',
-        },
-      };
-    }
+  let response: Response;
+  try {
+    response = await fetch(proxiedUrl, { headers: { Accept: '*/*' } });
+  } catch {
+    return {
+      ok: false,
+      error: { type: 'network', message: 'Could not reach the BOT API. Please check your connection.' },
+    };
   }
 
-  if (!response || !response.ok) {
+  if (!response.ok) {
     return {
       ok: false,
       error: {
-        type: response?.status === 401 || response?.status === 403
-          ? 'unknown'
-          : 'not_found',
+        type: response.status === 404 || response.status === 204 ? 'not_found' : 'unknown',
         message:
-          response?.status === 401 || response?.status === 403
-            ? 'The exchange-rate service is not available right now.'
-            : `No exchange rate data available for ${currency} around ${date}.`,
+          response.status === 404 || response.status === 204
+            ? `No exchange rate data available for ${currency} around ${date}.`
+            : 'The exchange-rate service is not available right now.',
       },
     };
   }
@@ -228,7 +203,7 @@ export async function getExchangeRate(
     };
   }
 
-  const result = parseResponse(json, upperCurrency, lastDate);
+  const result = parseResponse(json, upperCurrency, date);
   if (!result) {
     return {
       ok: false,
@@ -239,7 +214,7 @@ export async function getExchangeRate(
     };
   }
 
-  writeCache(result);
+  writeCache(date, result);
   return { ok: true, data: result };
 }
 
