@@ -76,7 +76,7 @@ describe('ForeignIncomeCalculator (interactive)', () => {
 
   const fillBasic = (days: string, amount: string) => {
     fireEvent.change(screen.getByLabelText('Days in Thailand this year'), { target: { value: days } });
-    fireEvent.change(screen.getByLabelText('Amount (THB)'), { target: { value: amount } });
+    fireEvent.change(screen.getByLabelText('Amount'), { target: { value: amount } });
   };
 
   it('shows resident / non-resident status as days are entered', () => {
@@ -126,8 +126,8 @@ describe('ForeignIncomeCalculator (interactive)', () => {
   it('can add and remove transfers', () => {
     wrap(<ForeignIncomeCalculator />);
     fireEvent.click(screen.getByRole('button', { name: '+ Add another transfer' }));
-    expect(screen.getAllByLabelText('Amount (THB)')).toHaveLength(2);
+    expect(screen.getAllByLabelText('Amount')).toHaveLength(2);
     fireEvent.click(screen.getByRole('button', { name: 'Remove transfer 2' }));
-    expect(screen.getAllByLabelText('Amount (THB)')).toHaveLength(1);
+    expect(screen.getAllByLabelText('Amount')).toHaveLength(1);
   });
 });
