@@ -17,7 +17,7 @@ const ForeignIncomeCalculator = React.lazy(() => import('../components/foreignIn
 const CalculatorPlaceholder: React.FC = () => (
   // Reserves roughly the form's height so the content below does not jump when it loads (CLS).
   <div
-    className="bg-white rounded-xl border border-gray-200 p-6 text-center text-gray-500 min-h-[1400px] sm:min-h-[1000px]"
+    className="rounded-sm bg-paper-white p-6 text-center text-ink-mute shadow-sheet min-h-[1400px] sm:min-h-[1000px]"
     aria-busy="true"
   >
     Loading calculator…
@@ -44,7 +44,7 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
   const days = TAX_RULES.residencyDays.value;
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8 px-4">
+    <div className="bg-paper-ground min-h-screen py-8 px-4 sm:py-10">
       <Helmet>
         <title>{FOREIGN_INCOME_CALC_META.title}</title>
         <meta name="description" content={FOREIGN_INCOME_CALC_META.description} />
@@ -62,9 +62,9 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
 
       <div className="max-w-3xl mx-auto">
         <header className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Thailand Foreign Income Tax Calculator</h1>
+          <h1 className="display text-3xl leading-tight text-ink sm:text-[40px] mb-2">Thailand Foreign Income Tax Calculator</h1>
           <LastUpdated date={PAGE_LAST_UPDATED.foreignIncomeCalculator} className="mb-3" />
-          <p className="text-gray-700 leading-relaxed">
+          <p className="max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Estimate Thai tax on foreign income you bring into Thailand in {RULES_TAX_YEAR}. The calculator checks each transfer
             against the 2024 remittance rules (when it was earned, whether you were resident that year, and whether it is
             savings or income) and shows the estimated tax with a bracket breakdown. It runs in your browser; nothing is sent
@@ -76,62 +76,62 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
           <CalculatorIsland />
         </section>
 
-        <section className="mb-10 bg-white rounded-xl border border-gray-200 p-5 sm:p-6" aria-labelledby="how-rule-works">
-          <h2 id="how-rule-works" className="text-xl font-semibold text-gray-900 mb-3">
+        <section className="mb-10 rounded-sm bg-paper-white p-5 text-ink shadow-sheet sm:p-8" aria-labelledby="how-rule-works">
+          <h2 id="how-rule-works" className="display text-2xl leading-tight text-ink mb-3">
             How the remittance rule works
           </h2>
-          <p className="text-gray-700 leading-relaxed mb-3">
+          <p className="text-ink-soft leading-relaxed mb-3">
             Revenue Department Order Por. 161/2566, as amended by Por. 162/2566, applies from 1 January 2024. The Revenue
             Department's own Q&amp;A sets out when foreign income brought into Thailand is taxable:
           </p>
           <div className="overflow-x-auto mb-3">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left bg-gray-50 text-gray-600">
+                <tr className="field-label border-b-2 border-desk text-left text-ink-soft">
                   <th scope="col" className="p-2 font-medium">Money brought in</th>
                   <th scope="col" className="p-2 font-medium">May be taxable?</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-gray-700">
+              <tbody className="divide-y divide-ink/10 text-ink-soft">
                 <tr>
                   <td className="p-2">Income earned from 1 Jan 2024 in a year you were in Thailand {days}+ days</td>
-                  <td className="p-2 font-medium text-amber-700">Yes, in the year you bring it in</td>
+                  <td className="p-2 font-semibold text-ink">Yes, in the year you bring it in</td>
                 </tr>
                 <tr>
                   <td className="p-2">Income earned from 1 Jan 2024 in a year you were in Thailand under {days} days</td>
-                  <td className="p-2 font-medium text-green-700">No</td>
+                  <td className="p-2 font-medium text-ink-mute">No</td>
                 </tr>
                 <tr>
                   <td className="p-2">Income earned before 1 Jan 2024</td>
-                  <td className="p-2 font-medium text-green-700">No</td>
+                  <td className="p-2 font-medium text-ink-mute">No</td>
                 </tr>
                 <tr>
                   <td className="p-2">Savings or capital (the original principal)</td>
-                  <td className="p-2 font-medium text-green-700">No; only interest or gains on it</td>
+                  <td className="p-2 font-medium text-ink-mute">No; only interest or gains on it</td>
                 </tr>
                 <tr>
                   <td className="p-2">A realised capital gain from 2024 while resident</td>
-                  <td className="p-2 font-medium text-amber-700">Yes, the gain only (sale price minus cost)</td>
+                  <td className="p-2 font-semibold text-ink">Yes, the gain only (sale price minus cost)</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-ink-soft">
             Source:{' '}
             <a
               href={getSourceById('rd-section-41-qna')?.url}
-              className="text-blue-600 hover:underline"
+              className="font-semibold text-desk underline decoration-desk/30 underline-offset-2 hover:decoration-desk"
               target="_blank"
               rel="noopener noreferrer"
             >
               Revenue Department Q&amp;A on Section 41 paragraph 2 (Thai)
             </a>
             . For a full walkthrough see the{' '}
-            <Link to="/articles/foreign-income-thailand-tax/" className="text-blue-600 hover:underline">
+            <Link to="/articles/foreign-income-thailand-tax/" className="font-semibold text-desk underline decoration-desk/30 underline-offset-2 hover:decoration-desk">
               foreign income guide
             </Link>
             . To include deductions for a spouse, children, insurance or funds, use the{' '}
-            <Link to="/annual-tax/" className="text-blue-600 hover:underline">
+            <Link to="/annual-tax/" className="font-semibold text-desk underline decoration-desk/30 underline-offset-2 hover:decoration-desk">
               Annual Tax Calculator
             </Link>
             .
@@ -139,29 +139,29 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
         </section>
 
         <section className="mb-10" aria-labelledby="fic-faq">
-          <h2 id="fic-faq" className="text-xl font-semibold text-gray-900 mb-3">
+          <h2 id="fic-faq" className="display text-2xl leading-tight text-ink mb-3">
             Frequently asked questions
           </h2>
-          <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-200">
+          <div className="rounded-sm bg-paper-white shadow-sheet divide-y divide-ink/10">
             {FOREIGN_INCOME_CALC_FAQS.map((f) => {
               const source = f.sourceId ? getSourceById(f.sourceId) : undefined;
               const article = f.relatedArticleSlug ? getArticleBySlug(f.relatedArticleSlug) : undefined;
               return (
                 <details key={f.question} className="group px-4 sm:px-5">
-                  <summary className="cursor-pointer list-none py-4 font-medium text-gray-900 flex justify-between gap-4">
+                  <summary className="cursor-pointer list-none py-4 font-semibold text-ink flex justify-between gap-4">
                     <span>{f.question}</span>
-                    <span aria-hidden="true" className="text-gray-400 transition-transform group-open:rotate-45">
+                    <span aria-hidden="true" className="text-ink-mute transition-transform group-open:rotate-45 motion-reduce:transition-none">
                       +
                     </span>
                   </summary>
-                  <div className="pb-4 text-gray-700 leading-relaxed">
+                  <div className="pb-4 text-ink-soft leading-relaxed">
                     <p>{f.answer}</p>
                     {(source || article) && (
-                      <p className="mt-2 text-sm text-gray-500">
+                      <p className="mt-2 text-sm text-ink-mute">
                         {source && (
                           <>
                             Source:{' '}
-                            <a href={source.url} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">
+                            <a href={source.url} className="font-semibold text-desk underline decoration-desk/30 underline-offset-2 hover:decoration-desk" target="_blank" rel="noopener noreferrer">
                               {source.organization}: {source.title}
                             </a>
                           </>
@@ -170,7 +170,7 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
                         {article && (
                           <>
                             Read more:{' '}
-                            <Link to={`/articles/${article.slug}/`} className="text-blue-600 hover:underline">
+                            <Link to={`/articles/${article.slug}/`} className="font-semibold text-desk underline decoration-desk/30 underline-offset-2 hover:decoration-desk">
                               {article.title}
                             </Link>
                           </>
@@ -184,7 +184,7 @@ const ForeignIncomeCalculatorPage: React.FC = () => {
           </div>
         </section>
 
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-ink-mute">
           This calculator gives estimates for information only and is not tax advice. Thai tax rules and their interpretation can
           change; speak to a qualified tax advisor about your situation.
         </p>

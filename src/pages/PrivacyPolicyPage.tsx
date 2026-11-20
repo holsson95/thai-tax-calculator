@@ -147,8 +147,9 @@ const PrivacyPolicyPage: React.FC = () => {
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Exchange rate lookups</h2>
           <p>
-            When you enter foreign income in the Annual Tax Calculator, the site may fetch the Bank of
-            Thailand's published daily exchange rate for the currency and date you specify. This request
+            When you enter foreign income in the Annual Tax Calculator or the Foreign Income Tax Calculator,
+            the site may fetch the Bank of Thailand's published daily exchange rate for the currency and date
+            you specify. This request
             is made through a proxy server to comply with browser security restrictions. <strong>No personal
             or financial data from your form is included in this request</strong> — only the currency code and date.
           </p>
