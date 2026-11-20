@@ -10,24 +10,19 @@ const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
   return (
     <Link
       to={`/articles/${article.slug}/`}
-      className="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden"
+      className="group flex h-full flex-col bg-paper-white p-5 text-ink shadow-sheet-sm transition-transform duration-200 hover:-translate-y-0.5"
     >
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-xs font-medium text-blue-500 bg-blue-50 px-2 py-1 rounded">
-            {article.category}
-          </span>
-          <span className="text-xs text-gray-500">
-            {article.readTime} min read
-          </span>
-        </div>
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+      <div className="border-b-2 border-desk pb-2">
+        <h3 className="font-bold leading-snug text-ink line-clamp-2 group-hover:text-desk">
           {article.title}
         </h3>
-        <p className="text-gray-600 text-sm line-clamp-2">
-          {article.excerpt}
-        </p>
       </div>
+      <p className="mt-2 text-xs text-ink-mute">
+        {article.category} · {article.readTime} min read
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-ink-soft line-clamp-3">
+        {article.excerpt}
+      </p>
     </Link>
   );
 };

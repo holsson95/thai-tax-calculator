@@ -7,7 +7,7 @@ interface LastUpdatedProps {
 }
 
 const LastUpdated: React.FC<LastUpdatedProps> = ({ date, className = '' }) => (
-  <p className={`text-xs text-gray-500 ${className}`}>
+  <p className={`text-xs text-ink-mute ${className}`}>
     Last updated: <time dateTime={date}>{formatDisplayDate(date)}</time>
   </p>
 );

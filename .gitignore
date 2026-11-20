@@ -27,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Impeccable local artifacts (screenshots, caches, decision-page logs)
+.impeccable/review/
+.impeccable/hook.cache.json
+.impeccable/questions/

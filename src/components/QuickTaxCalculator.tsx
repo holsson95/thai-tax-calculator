@@ -4,6 +4,7 @@ import { leadContextFromSalary } from '../utils/leadContext';
 import { track, taxBand } from '../utils/analytics';
 import { calculateThaiTax } from '../utils/tax';
 import { TAX_CONSTANTS } from '../types/taxForm';
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 
 type Period = 'yearly' | 'monthly' | 'weekly';
 
@@ -32,11 +33,43 @@ const PERIOD_LABELS: Record<Period, string> = {
   weekly: 'Weekly',
 };
 
+const PLACEHOLDER: Record<Period, string> = {
+  yearly: '600000',
+  monthly: '50000',
+  weekly: '12500',
+};
+
+export interface QuickEstimate {
+  annualIncome: number;
+  annualTax: number;
+  monthlyTax: number;
+  taxableIncome: number;
+}
+
+interface QuickTaxCalculatorProps {
+  /** Called whenever the estimate changes (null when no income is entered). */
+  onResult?: (estimate: QuickEstimate | null) => void;
+}
+
+/** Square form box with a drawn cross when ticked (shared by radio and checkbox). */
+const FormBox: React.FC<{ checked: boolean }> = ({ checked }) => (
+  <span
+    aria-hidden="true"
+    className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center border-2 border-desk bg-paper-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-desk"
+  >
+    {checked && (
+      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-ink" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
+        <path d="M3 3l10 10M13 3L3 13" />
+      </svg>
+    )}
+  </span>
+);
+
 // Loaded only after a result exists and only if the leads API is configured,
 // so the homepage bundle does not grow.
 const LeadCTA = React.lazy(() => import('./leads/LeadCTA'));
 
-const QuickTaxCalculator: React.FC = () => {
+const QuickTaxCalculator: React.FC<QuickTaxCalculatorProps> = ({ onResult }) => {
   const [period, setPeriod] = useState<Period>('monthly');
   const [rawInput, setRawInput] = useState('');
   const [includeSS, setIncludeSS] = useState(true);
@@ -50,6 +83,12 @@ const QuickTaxCalculator: React.FC = () => {
   const leadContext = useMemo(() => leadContextFromSalary('quick', annualTax, taxable), [annualTax, taxable]);
   const [settled, setSettled] = useState(false);
 
+  useEffect(() => {
+    if (!onResult) return;
+    onResult(result ? { annualIncome, annualTax: result.annualTax, monthlyTax: result.monthlyTax, taxableIncome: result.taxableIncome } : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [annualIncome, annualTax, taxable, hasIncome]);
+
   // calculator_completed fires once, after the result has stopped changing for 2s (not on every keystroke).
   useEffect(() => {
     if (!hasIncome || settled) return;
@@ -61,100 +100,128 @@ const QuickTaxCalculator: React.FC = () => {
   }, [hasIncome, annualTax, settled]);
 
   const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^0-9.]/g, '');
+    const val = e.target.value.replace(/[^0-9.]/g, '').slice(0, 9);
     setRawInput(val);
   }, []);
 
-  return (
-    <div className="max-w-2xl mx-auto px-4 mb-8">
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <h2 className="text-xl font-semibold text-gray-900 mb-1">Quick Tax Estimate</h2>
-        <p className="text-sm text-gray-500 mb-5">
-          Salaried income — standard deductions and personal allowance applied automatically.
-        </p>
+  const effectiveRate = result && annualIncome > 0 ? (result.annualTax / annualIncome) * 100 : 0;
 
-        {/* Period toggle */}
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-1 mb-4 w-fit">
+  return (
+    <div className="on-paper text-ink">
+      {/* 1 — period */}
+      <fieldset>
+        <legend className="field-label w-full border-b-2 border-desk pb-1.5 mb-3">
+          1 · How you are paid
+        </legend>
+        <div className="flex flex-wrap gap-x-5 gap-y-2">
           {(['yearly', 'monthly', 'weekly'] as Period[]).map(p => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                period === p
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              {PERIOD_LABELS[p]}
-            </button>
+            <label key={p} className="flex items-center gap-2 cursor-pointer select-none text-[15px]">
+              <input
+                type="radio"
+                name="quick-period"
+                value={p}
+                checked={period === p}
+                onChange={() => setPeriod(p)}
+                className="peer sr-only"
+              />
+              <FormBox checked={period === p} />
+              <span className={period === p ? 'font-semibold' : 'text-ink-soft'}>{PERIOD_LABELS[p]}</span>
+            </label>
           ))}
         </div>
+      </fieldset>
 
-        {/* Income input */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="relative flex-1">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-medium select-none">฿</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={rawInput}
-              onChange={handleInput}
-              placeholder={period === 'yearly' ? '600,000' : period === 'monthly' ? '50,000' : '12,500'}
-              className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-gray-900 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-          <span className="text-gray-400 text-sm whitespace-nowrap">{PERIOD_LABELS[period].toLowerCase()} income</span>
-        </div>
-
-        {/* Social security checkbox */}
-        <label className="flex items-center gap-2.5 mb-5 cursor-pointer select-none group w-fit">
+      {/* 2 — income */}
+      <div className="mt-5">
+        <label htmlFor="quick-income" className="field-label block border-b-2 border-desk pb-1.5 mb-3">
+          2 · {PERIOD_LABELS[period]} salary, in baht
+        </label>
+        <input
+          id="quick-income"
+          type="text"
+          inputMode="numeric"
+          autoComplete="off"
+          value={rawInput}
+          onChange={handleInput}
+          placeholder={PLACEHOLDER[period]}
+          aria-describedby="quick-income-hint"
+          className="comb-input"
+        />
+        <p id="quick-income-hint" className="mt-2 text-xs text-ink-mute">
+          Salaried income before tax. The 50% employment deduction (max ฿{fmt(TAX_CONSTANTS.MAX_STANDARD_DEDUCTION)}) and ฿{fmt(TAX_CONSTANTS.PERSONAL_ALLOWANCE)} personal allowance are applied for you.
+        </p>
+        <label className="mt-3 flex w-fit items-center gap-2 cursor-pointer select-none text-[15px]">
           <input
             type="checkbox"
             checked={includeSS}
             onChange={e => setIncludeSS(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500 cursor-pointer"
+            className="peer sr-only"
           />
-          <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
-            Include social security deduction
-            <span className="text-gray-400 ml-1">(฿{fmt(TAX_CONSTANTS.MAX_SOCIAL_SECURITY)}/yr)</span>
+          <FormBox checked={includeSS} />
+          <span>
+            I pay social security
+            <span className="text-ink-mute ml-1">(฿{fmt(TAX_CONSTANTS.MAX_SOCIAL_SECURITY)}/yr deducted)</span>
           </span>
         </label>
+      </div>
 
-        {/* Results */}
-        {result ? (
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 mb-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs font-medium text-blue-500 uppercase tracking-wide mb-1">Annual Tax</p>
-                <p className="text-2xl font-bold text-gray-900">฿{fmt(result.annualTax)}</p>
-              </div>
-              <div>
-                <p className="text-xs font-medium text-blue-500 uppercase tracking-wide mb-1">Per Month</p>
-                <p className="text-2xl font-bold text-gray-900">฿{fmt(result.monthlyTax)}</p>
-              </div>
+      {/* 3 — result */}
+      <div className="mt-5">
+        <p className="field-label border-b-2 border-desk pb-1.5 mb-3">3 · Estimated Thai income tax</p>
+        <div className="relative border-2 border-desk" aria-live="polite">
+          <div className="grid grid-cols-2 divide-x-2 divide-desk">
+            <div className="px-4 py-3">
+              <p className="text-xs text-ink-mute">Per year</p>
+              <p className={`font-mono text-[34px] sm:text-[40px] font-bold leading-tight tabular-nums ${result ? 'text-ink' : 'text-ink-mute'}`}>
+                {result ? fmt(result.annualTax) : '–––'}
+              </p>
             </div>
-            <div className="mt-3 pt-3 border-t border-blue-100">
-              <p className="text-xs text-gray-500">
-                Based on ฿{fmt(annualIncome)} annual income · ฿{fmt(result.taxableIncome)} taxable
+            <div className="px-4 py-3">
+              <p className="text-xs text-ink-mute">Per month</p>
+              <p className={`font-mono text-[34px] sm:text-[40px] font-bold leading-tight tabular-nums ${result ? 'text-ink' : 'text-ink-mute'}`}>
+                {result ? fmt(result.monthlyTax) : '–––'}
               </p>
             </div>
           </div>
-        ) : (
-          <div className="bg-gray-50 rounded-xl p-5 mb-4 text-center text-gray-400 text-sm">
-            Enter your income above to see your estimate
+          <div className="border-t-2 border-desk py-2 pl-4 pr-28 text-xs text-ink-soft sm:pr-4">
+            {result ? (
+              <>
+                ฿{fmt(annualIncome)} a year · ฿{fmt(result.taxableIncome)} taxable · effective rate {effectiveRate.toFixed(1)}%
+              </>
+            ) : (
+              <>Type your salary in box 2 and the estimate fills in here.</>
+            )}
           </div>
-        )}
-
-        {result && settled && isLeadsApiConfigured() && (
-          <Suspense fallback={null}>
-            <LeadCTA context={leadContext} />
-          </Suspense>
-        )}
-
-        <p className="text-xs text-gray-400 mt-4">
-          Need deductions for insurance, provident fund, dependents, or detailed withholding? Use the full calculators below.
+          {result && (
+            <span
+              key={result.annualTax === 0 ? 'zero' : 'tax'}
+              className="pointer-events-none absolute -bottom-3 right-2 animate-stamp-in sm:-top-5 sm:bottom-auto sm:right-3 rounded-md border-[3px] border-stamp px-2.5 py-0.5 text-sm font-extrabold uppercase tracking-[0.18em] text-stamp mix-blend-multiply"
+            >
+              {result.annualTax === 0 ? 'No tax due' : 'Estimate'}
+            </span>
+          )}
+        </div>
+        <p className="mt-6 text-[11px] leading-snug text-ink-mute sm:mt-2">
+          Rates:{' '}
+          <a
+            href="https://www.rd.go.th/59670.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-ink"
+          >
+            Revenue Department rate table
+          </a>{' '}
+          · tax year {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR} · an estimate, not tax advice.
         </p>
       </div>
+
+      {result && settled && isLeadsApiConfigured() && (
+        <Suspense fallback={null}>
+          <div className="mt-4">
+            <LeadCTA context={leadContext} />
+          </div>
+        </Suspense>
+      )}
     </div>
   );
 };

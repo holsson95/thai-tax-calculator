@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { readFileSync, readdirSync } from 'fs';
@@ -65,6 +65,8 @@ describe('Phase 1 trust fixes', () => {
   it('homepage mentions the 2024 remittance rule and links to the foreign income calculator', () => {
     renderPage(<HomePage />);
     expect(screen.getByText(/Por\. 161\/2566/)).toBeInTheDocument();
+    // The rule lives on the "Foreign income" sheet of the home page's calculator stack.
+    fireEvent.click(screen.getByRole('tab', { name: /Foreign income/ }));
     const link = screen.getByRole('link', { name: /Estimate tax on money you remit/ });
     expect(link.getAttribute('href')).toBe('/foreign-income-tax-calculator/');
   });

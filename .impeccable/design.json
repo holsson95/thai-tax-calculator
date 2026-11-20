@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-20T12:00:00Z",
+  "title": "Design System: MyThaiTaxes",
+  "extensions": {
+    "colorMeta": {
+      "desk": {
+        "role": "primary",
+        "displayName": "Ultramarine Desk",
+        "canonical": "oklch(43.8% 0.134 268.8)",
+        "tonalRamp": [
+          "#030034",
+          "#0C1160",
+          "#1F307F",
+          "#374E9F",
+          "#516BC0",
+          "#6D8AE1",
+          "#A3BBFE",
+          "#E8EEFE"
+        ]
+      },
+      "desk-deep": {
+        "role": "primary",
+        "displayName": "Pressed Desk",
+        "canonical": "oklch(37.6% 0.116 268.4)",
+        "tonalRamp": [
+          "#020034",
+          "#0C1758",
+          "#223476",
+          "#3A5095",
+          "#556DB5",
+          "#718BD6",
+          "#A3BCFF",
+          "#E8EEFE"
+        ]
+      },
+      "desk-night": {
+        "role": "primary",
+        "displayName": "Night Desk",
+        "canonical": "oklch(30.8% 0.089 270.1)",
+        "tonalRamp": [
+          "#03022F",
+          "#121C4B",
+          "#293668",
+          "#425287",
+          "#5D6FA6",
+          "#7A8DC6",
+          "#A7BBF8",
+          "#E8EEFE"
+        ]
+      },
+      "desk-soft": {
+        "role": "primary",
+        "displayName": "Desk Highlight",
+        "canonical": "oklch(53.5% 0.115 270.4)",
+        "tonalRamp": [
+          "#030033",
+          "#101658",
+          "#253376",
+          "#3D4F95",
+          "#586CB5",
+          "#748BD6",
+          "#A5BBFF",
+          "#E8EEFF"
+        ]
+      },
+      "paper-canary": {
+        "role": "secondary",
+        "displayName": "Butter Canary Copy",
+        "canonical": "oklch(91.9% 0.050 92.2)",
+        "tonalRamp": [
+          "#100B00",
+          "#2E2403",
+          "#4B4121",
+          "#6B6140",
+          "#8D8260",
+          "#B0A581",
+          "#D5C9A5",
+          "#FAEEC9"
+        ]
+      },
+      "paper-pink": {
+        "role": "secondary",
+        "displayName": "Soft Pink Copy",
+        "canonical": "oklch(79.7% 0.079 2.8)",
+        "tonalRamp": [
+          "#1E0009",
+          "#3E0C1E",
+          "#5B2737",
+          "#794251",
+          "#985E6D",
+          "#B87B8B",
+          "#EAA9B9",
+          "#FEE8ED"
+        ]
+      },
+      "paper-sky": {
+        "role": "secondary",
+        "displayName": "Powder Sky Copy",
+        "canonical": "oklch(82.3% 0.053 256.4)",
+        "tonalRamp": [
+          "#000A21",
+          "#0F223B",
+          "#283B56",
+          "#425773",
+          "#5D7391",
+          "#7A91B0",
+          "#A8C0E0",
+          "#E5F0FF"
+        ]
+      },
+      "stamp": {
+        "role": "tertiary",
+        "displayName": "Stamp Red",
+        "canonical": "oklch(53.6% 0.161 16.8)",
+        "tonalRamp": [
+          "#1F0003",
+          "#460010",
+          "#72011F",
+          "#9A1B34",
+          "#BD3F4F",
+          "#E05F6B",
+          "#FE9FA4",
+          "#FEE9E9"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Slate Navy Ink",
+        "canonical": "oklch(31.2% 0.049 266.1)",
+        "tonalRamp": [
+          "#030920",
+          "#162139",
+          "#2E3A55",
+          "#485571",
+          "#64718F",
+          "#818FAE",
+          "#AFBEDE",
+          "#E7EFFF"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "canonical": "oklch(38.9% 0.046 268.0)",
+        "tonalRamp": [
+          "#04091E",
+          "#182038",
+          "#303A53",
+          "#4A5570",
+          "#66718D",
+          "#838FAC",
+          "#B1BDDD",
+          "#E8EEFE"
+        ]
+      },
+      "ink-mute": {
+        "role": "neutral",
+        "displayName": "Pale Ink",
+        "canonical": "oklch(50.3% 0.048 271.2)",
+        "tonalRamp": [
+          "#05091F",
+          "#192038",
+          "#313954",
+          "#4B5470",
+          "#67708E",
+          "#848EAD",
+          "#B2BDDD",
+          "#E9EEFE"
+        ]
+      },
+      "paper-white": {
+        "role": "neutral",
+        "displayName": "Warm Top Copy",
+        "canonical": "oklch(99.3% 0.011 95.2)",
+        "tonalRamp": [
+          "#0C0B06",
+          "#23221C",
+          "#3C3B34",
+          "#57554F",
+          "#73726B",
+          "#918F88",
+          "#C0BEB6",
+          "#F0EFE7"
+        ]
+      },
+      "paper-ground": {
+        "role": "neutral",
+        "displayName": "Back-of-Form Ground",
+        "canonical": "oklch(95.8% 0.010 267.4)",
+        "tonalRamp": [
+          "#090B0F",
+          "#1F2227",
+          "#383A40",
+          "#53555B",
+          "#6F7178",
+          "#8C8F95",
+          "#BBBEC4",
+          "#EBEEF5"
+        ]
+      },
+      "paper-rule": {
+        "role": "neutral",
+        "displayName": "Hairline Rule",
+        "canonical": "oklch(88.9% 0.023 272.0)",
+        "tonalRamp": [
+          "#080A15",
+          "#1E212D",
+          "#363A47",
+          "#515562",
+          "#6D717F",
+          "#8A8F9D",
+          "#B8BDCD",
+          "#E9EEFE"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The single hero headline on the desk; 44px / 60px sm / 76px lg."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headings on the back-of-form ground; 30-36px."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Headings of sheets, cards and routing slips; 20px, 24-28px on copy-sheet heads."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sheet copy and form text."
+      },
+      "body-lead": {
+        "displayName": "Lead",
+        "purpose": "Lead paragraphs; 20px in the hero on sm+."
+      },
+      "label": {
+        "displayName": "Field Label",
+        "purpose": "Numbered field labels, table heads, fact labels, footer column heads. Uppercase."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Result numbers; 34px mobile / 40px sm."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Bracket ranges, maxima, month cells and fact values; 11-18px."
+      }
+    },
+    "shadows": [
+      {
+        "name": "sheet",
+        "value": "0 1px 0 rgba(31,43,92,0.08), 0 18px 36px -12px rgba(25,34,70,0.45)",
+        "purpose": "Copy-stack sheets lying on the desk."
+      },
+      {
+        "name": "sheet-sm",
+        "value": "0 1px 0 rgba(31,43,92,0.06), 0 8px 18px -10px rgba(25,34,70,0.35)",
+        "purpose": "Sheets, cards and routing slips on the back-of-form ground."
+      }
+    ],
+    "motion": [
+      {
+        "name": "stamp-in",
+        "value": "380ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        "purpose": "The result stamp landing: from 1.6x scale and 2px blur to rest at -12deg."
+      },
+      {
+        "name": "nudge-down",
+        "value": "1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite",
+        "purpose": "The tear-strip arrow nudging 4px down."
+      },
+      {
+        "name": "sheet-shuffle",
+        "value": "transform 300ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Sheets moving in and out of the fan when a tab is chosen."
+      },
+      {
+        "name": "paper-lift",
+        "value": "transform 200ms",
+        "purpose": "Cards and routing slips lifting 2px on hover."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "animation/transition 0.01ms",
+        "purpose": "All motion collapses under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "comb-compact",
+        "value": "max-width: 420px"
+      },
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ],
+    "focus": {
+      "onDesk": "outline: 3px solid #F0E4BF; outline-offset: 2px",
+      "onPaper": "outline-color: #344A9B (inside .on-paper or .bg-paper-white)"
+    },
+    "perforation": "radial-gradient(circle, currentColor 1.6px, transparent 1.8px) / 12px 6px repeat-x, height 6px",
+    "fan": [
+      "translate 0, rotate 0",
+      "translate 12px -4px, rotate 1.6deg",
+      "translate 24px -6px, rotate 3.2deg",
+      "translate 36px -8px, rotate 4.8deg"
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (sheet action)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Square desk-blue action at the foot of a copy sheet, with a trailing arrow.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Open the annual calculator<svg viewBox=\"0 0 20 20\" width=\"16\" height=\"16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 10h12M11 5l5 5-5 5\"/></svg></a>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;background:#344A9B;color:#fff;padding:12px 20px;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;font-size:15px;font-weight:600;text-decoration:none;border-radius:0;transition:background-color .15s}.ds-btn-primary svg{transition:transform .2s}.ds-btn-primary:hover{background:#283B7E}.ds-btn-primary:hover svg{transform:translateX(2px)}.ds-btn-primary:focus-visible{outline:3px solid #344A9B;outline-offset:2px}"
+    },
+    {
+      "name": "Text Link Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Secondary action beside a primary: semibold desk text, underlined.",
+      "html": "<a class=\"ds-link-action\" href=\"#\">Read the foreign income guide</a>",
+      "css": ".ds-link-action{font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;font-size:15px;font-weight:600;color:#344A9B;text-decoration:underline;text-underline-offset:.2em;text-decoration-thickness:1px}.ds-link-action:hover{color:#25304A}.ds-link-action:focus-visible{outline:3px solid #344A9B;outline-offset:2px}"
+    },
+    {
+      "name": "Comb Input",
+      "kind": "input",
+      "refersTo": "comb-input",
+      "description": "Income typed into nine boxed digit cells under a numbered field label.",
+      "html": "<label class=\"ds-field-label\" for=\"ds-comb\">2 · Monthly salary, in baht</label><input id=\"ds-comb\" class=\"ds-comb\" inputmode=\"numeric\" placeholder=\"50000\" value=\"85000\">",
+      "css": ".ds-field-label{display:block;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#25304A;border-bottom:2px solid #344A9B;padding-bottom:6px;margin-bottom:12px}.ds-comb{--cell:40px;--fs:28px;font-family:\"JetBrains Mono Variable\", \"JetBrains Mono\", ui-monospace, monospace;font-size:var(--fs);font-weight:600;line-height:1;height:calc(var(--cell)*1.3);letter-spacing:calc(var(--cell) - .6*var(--fs));padding-left:calc((var(--cell) - .6*var(--fs))/2);width:calc(var(--cell)*9 + 2px);max-width:100%;color:#25304A;caret-color:#B83A4B;background-color:#FFFDF5;background-image:repeating-linear-gradient(to right,transparent 0 calc(var(--cell) - 2px),#344A9B calc(var(--cell) - 2px) var(--cell));border:2px solid #344A9B;border-left-width:0;box-shadow:inset 2px 0 0 #344A9B;border-radius:0;font-variant-numeric:tabular-nums}.ds-comb::placeholder{color:#A8AEC2}.ds-comb:focus{outline:none;background-color:#FEF8E1}"
+    },
+    {
+      "name": "Form Box Checkbox",
+      "kind": "input",
+      "refersTo": "comb-input",
+      "description": "Square 20px form box; ticked draws an X cross in ink.",
+      "html": "<label class=\"ds-box\"><input type=\"checkbox\" checked><span class=\"ds-box-mark\" aria-hidden=\"true\"><svg viewBox=\"0 0 16 16\" width=\"14\" height=\"14\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M3 3l10 10M13 3L3 13\"/></svg></span><span>I pay social security</span></label>",
+      "css": ".ds-box{display:inline-flex;align-items:center;gap:8px;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;font-size:15px;color:#25304A;cursor:pointer}.ds-box input{position:absolute;opacity:0;width:1px;height:1px}.ds-box-mark{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border:2px solid #344A9B;background:#fff;color:#25304A}.ds-box input:not(:checked)+.ds-box-mark svg{display:none}.ds-box input:focus-visible+.ds-box-mark{outline:2px solid #344A9B;outline-offset:2px}"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "Sticky desk bar; current page underlined in canary.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-mark\">MyThaiTaxes</span><a href=\"#\" aria-current=\"page\">Calculator</a><a href=\"#\">Foreign Income</a><a href=\"#\">Articles</a><a href=\"#\">FAQ</a></nav>",
+      "css": ".ds-nav{display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;background:#344A9B;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif}.ds-nav-mark{margin-right:auto;color:#fff;font-size:20px;font-weight:800;letter-spacing:-.02em}.ds-nav a{color:rgba(255,255,255,.75);font-size:15px;font-weight:500;text-decoration:none;padding:4px 0;border-bottom:2px solid transparent;transition:color .15s}.ds-nav a:hover{color:#fff}.ds-nav a[aria-current=page]{color:#fff;border-bottom-color:#F0E4BF}.ds-nav a:focus-visible{outline:3px solid #F0E4BF;outline-offset:2px}"
+    },
+    {
+      "name": "Sheet Tabs",
+      "kind": "nav",
+      "refersTo": "sheet-tab",
+      "description": "Paper-coloured tab edges of the copy stack; idle tabs sit lower and darker.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\" class=\"ds-tab\" style=\"background:#FFFDF5\">Quick estimate</button><button role=\"tab\" aria-selected=\"false\" class=\"ds-tab\" style=\"background:#F0E4BF\">Annual return</button><button role=\"tab\" aria-selected=\"false\" class=\"ds-tab\" style=\"background:#E9A8B8\">Monthly withholding</button><button role=\"tab\" aria-selected=\"false\" class=\"ds-tab\" style=\"background:#AFC7E8\">Foreign income</button></div>",
+      "css": ".ds-tabs{display:flex;align-items:flex-end;gap:6px;background:#344A9B;padding:12px 12px 0}.ds-tab{border:0;border-radius:6px 6px 0 0;padding:8px 16px 10px;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;font-size:14px;font-weight:700;color:#25304A;cursor:pointer;transition:margin .2s,filter .2s}.ds-tab[aria-selected=false]{margin-top:6px;filter:brightness(.93)}.ds-tab[aria-selected=false]:hover{margin-top:2px;filter:none}.ds-tab:focus-visible{outline:3px solid #F0E4BF;outline-offset:2px}"
+    },
+    {
+      "name": "Result Box with Stamp",
+      "kind": "custom",
+      "refersTo": "result-stamp",
+      "description": "Ruled result box with mono figures; the red stamp lands only when a result exists.",
+      "html": "<div class=\"ds-result\"><div class=\"ds-result-cells\"><div><p class=\"ds-result-k\">Per year</p><p class=\"ds-result-v\">84,900</p></div><div><p class=\"ds-result-k\">Per month</p><p class=\"ds-result-v\">7,075</p></div></div><div class=\"ds-result-strip\">฿1,020,000 a year · ฿849,500 taxable · effective rate 8.3%</div><span class=\"ds-stamp\">Estimate</span></div>",
+      "css": ".ds-result{position:relative;border:2px solid #344A9B;background:#FFFDF5;color:#25304A;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;margin-top:24px}.ds-result-cells{display:grid;grid-template-columns:1fr 1fr}.ds-result-cells>div{padding:12px 16px}.ds-result-cells>div+div{border-left:2px solid #344A9B}.ds-result-k{margin:0;font-size:12px;color:#5A6380}.ds-result-v{margin:0;font-family:\"JetBrains Mono Variable\", \"JetBrains Mono\", ui-monospace, monospace;font-size:40px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}.ds-result-strip{border-top:2px solid #344A9B;padding:8px 16px;font-size:12px;color:#3A445E}.ds-stamp{position:absolute;top:-20px;right:12px;transform:rotate(-12deg);border:3px solid #B83A4B;border-radius:6px;padding:2px 10px;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:.18em;color:#B83A4B;mix-blend-mode:multiply;animation:ds-stamp-in 380ms cubic-bezier(.16,1,.3,1) both}@keyframes ds-stamp-in{0%{opacity:0;transform:rotate(-12deg) scale(1.6);filter:blur(2px)}60%{opacity:1;transform:rotate(-12deg) scale(.94);filter:blur(0)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}"
+    },
+    {
+      "name": "Article Card",
+      "kind": "card",
+      "refersTo": "article-card",
+      "description": "White sheet on the ground: ruled title, metadata, excerpt; lifts on hover.",
+      "html": "<a class=\"ds-card\" href=\"#\"><h3>Thai tax brackets explained</h3><p class=\"ds-card-meta\">Basics · 6 min read</p><p class=\"ds-card-ex\">How the eight progressive brackets apply to taxable income, with a worked example.</p></a>",
+      "css": ".ds-card{display:flex;flex-direction:column;background:#FFFDF5;color:#25304A;padding:20px;text-decoration:none;font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif;box-shadow:0 1px 0 rgba(31,43,92,.06),0 8px 18px -10px rgba(25,34,70,.35);transition:transform .2s;max-width:320px}.ds-card h3{margin:0;padding-bottom:8px;border-bottom:2px solid #344A9B;font-weight:700;line-height:1.375}.ds-card:hover{transform:translateY(-2px)}.ds-card:hover h3{color:#344A9B}.ds-card-meta{margin:8px 0 0;font-size:12px;color:#5A6380}.ds-card-ex{margin:8px 0 0;font-size:14px;line-height:1.625;color:#3A445E}.ds-card:focus-visible{outline:3px solid #344A9B;outline-offset:2px}"
+    },
+    {
+      "name": "Perforation Tear Strip",
+      "kind": "custom",
+      "refersTo": "nav-bar",
+      "description": "Perforated divider over a tracked-caps scroll link with a nudging arrow.",
+      "html": "<div class=\"ds-tear\"><div class=\"ds-perf\" aria-hidden=\"true\"></div><a href=\"#\">Tear here for rates, deductions &amp; guides<svg viewBox=\"0 0 20 20\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4v12M5 11l5 5 5-5\"/></svg></a></div>",
+      "css": ".ds-tear{background:#344A9B;color:rgba(255,255,255,.85);font-family:\"Manrope Variable\", Manrope, system-ui, sans-serif}.ds-perf{height:6px;color:rgba(255,255,255,.35);background-image:radial-gradient(circle,currentColor 1.6px,transparent 1.8px);background-size:12px 6px;background-repeat:repeat-x;background-position:center}.ds-tear a{display:flex;align-items:center;justify-content:center;gap:12px;padding:16px;color:inherit;text-decoration:none;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.16em}.ds-tear a:hover{color:#fff}.ds-tear svg{animation:ds-nudge 1.8s cubic-bezier(.45,0,.55,1) infinite}@keyframes ds-nudge{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}.ds-tear a:focus-visible{outline:3px solid #F0E4BF;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Carbon-Copy Form Set",
+    "overview": "The site is a desk with forms on it. An ultramarine desk is the ground of the first viewport, header and footer; the working surfaces are carbonless copy papers in warm white, butter canary, soft pink and powder sky blue, stacked and fanned so that the working form is always the nearest sheet. Everything printed on a sheet is printed in one blue ink family (a slate navy for words, the desk blue for ruling): the ruling, the numbered field labels, the boxed digit cells, the text. A single muted red rubber stamp lands only when a result exists. The palette is deliberately soft: chalky papers and a dusty desk blue, so the forms read calm rather than loud.\n\nThe world earns trust the way a paper form does: structure is visible. Fields are numbered (1 · 2 · 3), ruled off with a heavy ink line, and filled in. Sources and tax years sit on the sheet in small print beside the figure they qualify, like the fine print on a form. Density is that of a form rather than a brochure: tight vertical rhythm, ruled rows, compact small print, generous only in the hero headline.\n\nBelow the desk, the page turns into \"the back of the form\": a pale ultramarine-tinted ground carrying smaller sheets (rate table, facts, deductions, article cards) and routing slips, divided by perforation lines rather than plain rules.",
+    "keyCharacteristics": [
+      "Ultramarine desk ground with coloured paper sheets as the only major surfaces.",
+      "One ink: every line and every word on paper is in the blue ink family (slate-navy text, desk-blue ruling).",
+      "Square paper; only tab tops and the rubber stamp have soft corners.",
+      "Numbered, tracked-caps field labels over a heavy 2px ink rule.",
+      "Monospaced, tabular figures; income typed into boxed digit cells.",
+      "Red stamp ink appears for the live result and nowhere else on the page.",
+      "Perforation dot-lines as the world's divider and \"tear here\" cue."
+    ],
+    "rules": [
+      {
+        "name": "The One Stamp Rule",
+        "body": "Stamp red is the result. It appears on the stamp that lands on a computed figure and as the input caret, never on buttons, links, headings, errors or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Ink Rule",
+        "body": "On paper, every line and every word is in the blue ink family (ink, ink-soft, ink-mute, desk). No neutral grey, no black, no second ink colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Is the Surface Rule",
+        "body": "Major surfaces are paper colours on the desk or the ground. Tinted panels, gradients and translucent cards are not part of the world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Numbers Are Mono Rule",
+        "body": "Any tax figure, bracket range, or entered amount is set in JetBrains Mono with tabular numerals. Prose numbers inside sentences stay in Manrope.",
+        "section": "typography"
+      },
+      {
+        "name": "The Labels Are Fields Rule",
+        "body": "Tracked caps belong to form fields: numbered labels over a ruled line, table heads, fact labels, footer column heads. They name the thing directly beneath them; they are never a floating tagline above a heading.",
+        "section": "typography"
+      },
+      {
+        "name": "The Paper Lift Rule",
+        "body": "Interactive sheets (cards, routing slips) respond to hover by lifting 2px (translateY(-0.5)), not by changing shadow or colour.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Nearest Sheet Rule",
+        "body": "The working form is always the top sheet; selecting another copy brings it forward and pushes the rest back into the fan.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do put every working surface on a paper colour (warm white, canary, pink, sky) sitting on the desk or the back-of-form ground.",
+      "Do rule fields with a 2px desk line under a numbered tracked-caps label.",
+      "Do set every tax figure, bracket and entered amount in JetBrains Mono with tabular numerals.",
+      "Do close every figure-bearing sheet with a source ticket: source link, tax year, estimate disclaimer.",
+      "Do use perforation lines to divide major regions.",
+      "Do use the global focus ring: 3px canary on desk, desk on paper (the `on-paper` wrapper switches it).",
+      "Do set headings in Manrope 800 with -0.02em tracking; never reach for a width axis or font-stretch.",
+      "Do keep motion physical and short (sheet transforms 300ms cubic-bezier(0.16, 1, 0.3, 1)) and honour reduced motion."
+    ],
+    "donts": [
+      "Don't use stamp red for anything but the result stamp and the input caret.",
+      "Don't introduce grey, black or a second ink on paper; text and ruling stay in the blue ink family.",
+      "Don't round sheets, cards, buttons or inputs; soft corners belong to tabs and the stamp only.",
+      "Don't add tracked-caps lines that float above headings as taglines; tracked caps label a field, a column or a list directly beneath them.",
+      "Don't let the monthly 12-month row wrap.",
+      "Don't imitate official Revenue Department forms, layouts or emblems; the forms are a generic carbon-copy set."
+    ],
+    "knownGaps": [
+      "Article pages, FAQ, the inner screens of the annual and monthly wizards, the foreign-income calculator page, info pages, and the lead/email capture components still use the previous gray/blue Tailwind classes; next to be migrated onto this system."
+    ]
+  }
+}

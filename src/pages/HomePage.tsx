@@ -3,17 +3,66 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
-import QuickTaxCalculator from '../components/QuickTaxCalculator';
+import CopyStack from '../components/home/CopyStack';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
-import LastUpdated from '../components/LastUpdated';
-import { PAGE_LAST_UPDATED } from '../config/contentDates';
+import { PAGE_LAST_UPDATED, formatDisplayDate } from '../config/contentDates';
+import { TAX_YEAR_CONFIG } from '../config/taxConfig';
+import { TAX_RULES } from '../config/taxRules';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
+const BRACKETS = [
+  { range: '0 – 150,000', rate: 0, label: 'Exempt', max: '–' },
+  { range: '150,001 – 300,000', rate: 5, label: '5%', max: '7,500' },
+  { range: '300,001 – 500,000', rate: 10, label: '10%', max: '20,000' },
+  { range: '500,001 – 750,000', rate: 15, label: '15%', max: '37,500' },
+  { range: '750,001 – 1,000,000', rate: 20, label: '20%', max: '50,000' },
+  { range: '1,000,001 – 2,000,000', rate: 25, label: '25%', max: '250,000' },
+  { range: '2,000,001 – 5,000,000', rate: 30, label: '30%', max: '900,000' },
+  { range: 'Over 5,000,000', rate: 35, label: '35%', max: 'No limit' },
+];
+
+const DEDUCTIONS: [string, string][] = [
+  ['Personal allowance', '60,000 THB'],
+  ['Spouse allowance (no income)', '60,000 THB'],
+  ['Child allowance', '30,000 THB per child'],
+  ['Employment income deduction', '50% of salary, max 100,000 THB'],
+  ['Life insurance premiums', 'Up to 100,000 THB'],
+  ['Health insurance premiums', 'Up to 25,000 THB'],
+  ['RMF contributions', 'Up to 30% of income, max 500,000 THB'],
+  ['SSF contributions', 'Up to 30% of income, max 200,000 THB'],
+];
+
+const KEY_FACTS = [
+  {
+    label: 'Residency',
+    value: '180 days',
+    text:
+      'Spend 180 or more days in Thailand in a calendar year and you become a Thai tax resident, liable to declare all Thai-source income and remitted foreign income.',
+  },
+  {
+    label: 'Filing deadline',
+    value: '31 March',
+    text:
+      'PND 90 (freelancers & multiple income sources) and PND 91 (salaried employees) are both due by 31 March for the prior tax year (paper filing). The 8-day online-filing extension granted in past years is not yet confirmed for this tax year.',
+  },
+  {
+    label: 'Filing threshold',
+    value: '120,000 THB',
+    text:
+      'Commonly cited threshold: single filers with assessable income above 120,000 THB per year must file a return, rising to 220,000 THB for married couples filing jointly. We have not yet verified these figures against a primary source.',
+  },
+];
+
+const ChevronRight: React.FC<{ className?: string }> = ({ className = 'h-4 w-4' }) => (
+  <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 10h12M11 5l5 5-5 5" />
+  </svg>
+);
+
 const HomePage: React.FC = () => {
-  // Get first 3 articles and curated FAQ items across key categories
-  const featuredArticles = articles.slice(0, 3);
+  const featuredArticles = articles.slice(0, 4);
   const FEATURED_FAQ_CATEGORIES = ['Pensioners & Retirees', 'Tax Residency', 'Filing & Deadlines'];
   const featuredFAQCategories = faqData
     .filter(cat => FEATURED_FAQ_CATEGORIES.includes(cat.name))
@@ -25,7 +74,7 @@ const HomePage: React.FC = () => {
     'Calculate your Thai income tax quickly and accurately. Free tool for salaried employees, freelancers, sole proprietors, and company owners in Thailand.';
 
   return (
-    <div className="py-8">
+    <div>
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -45,309 +94,240 @@ const HomePage: React.FC = () => {
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'THB' },
         })}</script>
       </Helmet>
-      {/* Hero Section */}
-      <div className="max-w-4xl mx-auto px-4 text-center mb-4">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-          Thai Tax Calculator
-        </h1>
-        <p className="text-lg text-gray-600 mb-2">
-          Calculate your Thai tax obligation quickly and accurately
-        </p>
-        <p className="text-sm text-gray-500 max-w-2xl mx-auto">
-          Thailand's personal income tax applies to anyone spending 180 or more days in the country each year.
-          Enter your income details below to get an instant estimate — salaried employees, freelancers,
-          sole proprietors, and company owners are all supported.
-        </p>
-        <LastUpdated date={PAGE_LAST_UPDATED.home} className="mt-2" />
-      </div>
 
-      <QuickTaxCalculator />
+      {/* ── The desk: headline + the stack of calculator sheets ───────────── */}
+      <section className="relative flex flex-col overflow-x-clip bg-desk text-white lg:min-h-[calc(100svh-4rem)]">
+        <div className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-[minmax(0,1fr)] items-center gap-x-14 gap-y-10 px-4 pb-12 pt-8 sm:px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:px-10 lg:pb-10 lg:pt-10">
+          <div className="max-w-xl">
+            <h1 className="display text-[44px] leading-[0.95] sm:text-6xl lg:text-[76px]">
+              Thai tax, filled in for you.
+            </h1>
+            <p className="mt-5 text-[17px] leading-relaxed text-white/85 sm:mt-6 sm:text-xl">
+              Living in Thailand or earning income from abroad? Calculate your Thai income tax in minutes,
+              with rates backed by official Revenue Department sources.
+            </p>
+            <p className="mt-6 text-xs text-white/75">
+              Last updated: <time dateTime={PAGE_LAST_UPDATED.home}>{formatDisplayDate(PAGE_LAST_UPDATED.home)}</time>
+              {' '}· Estimates only, not tax advice
+            </p>
+          </div>
 
-      {/* Calculator CTAs */}
-      <div className="max-w-3xl mx-auto px-4 mb-8">
-        <div className="grid md:grid-cols-2 gap-4">
-          <Link
-            to="/annual-tax/"
-            className="block bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border-2 border-transparent hover:border-blue-500"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  Annual Tax Calculator
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  Get a detailed breakdown of your annual tax liability and potential refund.
-                </p>
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            to="/monthly-withholding/"
-            className="block bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow p-6 border-2 border-transparent hover:border-blue-500"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
-                  Monthly Withholding
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  Estimate how much tax should be deducted from your monthly salary.
-                </p>
-              </div>
-            </div>
-          </Link>
+          <div className="min-w-0 pr-6 sm:pr-8">
+            <CopyStack />
+          </div>
         </div>
 
-        <Link
-          to="/tax-examples/"
-          className="mt-4 flex items-center justify-between gap-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border-2 border-transparent hover:border-blue-500"
-        >
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-semibold text-gray-900">Not sure what this means for your income?</p>
-              <p className="text-gray-600 text-sm">
-                See worked examples at real income levels — from a simple salary to a full calculator walkthrough.
-              </p>
-            </div>
-          </div>
-          <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-      </div>
-
-      {/* 2024 foreign-income remittance rule */}
-      <section className="max-w-3xl mx-auto px-4 mb-8" aria-labelledby="remittance-rule-heading">
-        <div className="bg-amber-50 rounded-xl border border-amber-200 p-5 md:p-6">
-          <h2 id="remittance-rule-heading" className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
-            Bringing foreign income into Thailand? The rules changed in 2024
-          </h2>
-          <p className="text-sm text-gray-700 leading-relaxed mb-3">
-            Under Revenue Department Order Por. 161/2566 (as amended by Por. 162/2566), foreign income
-            earned on or after 1 January 2024 in a year you were a Thai tax resident (180+ days) may be
-            taxable when you bring it into Thailand, whether in that year or any later year. Income earned
-            before 2024 and the original capital of savings or investments are treated differently, so
-            what you remit and when it was earned matter.
-          </p>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <Link
-              to="/foreign-income-tax-calculator/"
-              className="inline-flex justify-center items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
-            >
-              Estimate tax on money you remit
-            </Link>
-            <Link to="/articles/foreign-income-thailand-tax/" className="text-sm text-blue-600 hover:underline">
-              Read the foreign income guide
-            </Link>
-          </div>
-          <p className="text-xs text-gray-500 mt-3">
-            Source:{' '}
-            <a
-              href="https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf"
-              className="underline hover:text-gray-700"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Revenue Department Q&amp;A on Section 41 paragraph 2 (Thai)
-            </a>
-            . Estimates only, not tax advice.
-          </p>
+        {/* Tear-off strip: the scroll cue. On desktop it sticks to the bottom of the screen while the hero
+            is in view, so it is visible on load at any window height. */}
+        <div className="bottom-0 z-40 bg-desk lg:sticky">
+          <div className="perforation text-white/35" aria-hidden="true" />
+          <a
+            href="#reference"
+            className="group flex items-center justify-center gap-3 px-4 py-4 text-center text-[12px] font-bold uppercase tracking-[0.14em] text-white/85 transition-colors hover:text-white sm:text-[13px] sm:tracking-[0.16em]"
+          >
+            <svg viewBox="0 0 24 24" className="hidden h-4 w-4 shrink-0 -rotate-90 opacity-70 sm:block" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+              <circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12" />
+            </svg>
+            <span><span className="hidden sm:inline">Tear here for </span>Rates, deductions &amp; guides</span>
+            <svg viewBox="0 0 20 20" className="h-5 w-5 shrink-0 animate-nudge-down" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10 4v12M5 11l5 5 5-5" />
+            </svg>
+          </a>
         </div>
       </section>
 
-      {/* Ad Slot */}
-      <div className="flex justify-center mb-8 px-4">
-        <div className="hidden md:block">
-          <AdSlot size="leaderboard" adSlot="5959313072" />
-        </div>
-        <div className="md:hidden">
-          <AdSlot size="mobile-banner" adSlot="6916229573" />
-        </div>
-      </div>
-
-      {/* Thai Income Tax Essentials */}
-      <div className="max-w-4xl mx-auto px-4 mb-10">
-        <h2 className="text-2xl font-bold text-gray-900 mb-3">Thai Personal Income Tax — The Essentials</h2>
-        <p className="text-gray-600 mb-6 leading-relaxed">
-          Thailand uses a progressive personal income tax system with eight brackets, ranging from exempt on
-          the first 150,000 THB to 35% on income above 5,000,000 THB. Tax residents — those who spend
-          180 or more days in Thailand in a calendar year — must report income earned in Thailand and any
-          foreign income remitted into the country. Non-residents are taxed only on Thai-sourced income.
-          The annual filing deadline is <strong>31 March</strong> each year (or 8 April for online filings).
-        </p>
-
-        <Link
-          to="/thailand-tax-2026/"
-          className="flex items-center justify-between gap-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-5 border-2 border-transparent hover:border-blue-500 mb-6"
-        >
-          <div>
-            <p className="font-semibold text-gray-900">New to Thai tax? Start with the 2026 overview</p>
-            <p className="text-gray-600 text-sm">
-              Brackets, allowances, residency, foreign income, and filing — one page that explains how it
-              all fits together and links to the full guide on each topic.
-            </p>
-          </div>
-          <svg className="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-
-        {/* Key facts */}
-        <div className="grid sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-md p-5">
-            <div className="text-3xl font-bold text-blue-600 mb-1">180</div>
-            <div className="text-sm font-semibold text-gray-900 mb-1">Day residency threshold</div>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Spend 180 or more days in Thailand in a calendar year and you become a Thai tax resident,
-              liable to declare all Thai-source income and remitted foreign income.
-            </p>
-          </div>
-          <div className="bg-white rounded-xl shadow-md p-5">
-            <div className="text-3xl font-bold text-blue-600 mb-1">31 Mar</div>
-            <div className="text-sm font-semibold text-gray-900 mb-1">Annual filing deadline</div>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              PND 90 (freelancers &amp; multiple income sources) and PND 91 (salaried employees) are both
-              due by 31 March for the prior tax year. Online filings via RD Smart Tax get an 8-day extension.
-            </p>
-          </div>
-          <div className="bg-white rounded-xl shadow-md p-5">
-            <div className="text-3xl font-bold text-blue-600 mb-1">120k</div>
-            <div className="text-sm font-semibold text-gray-900 mb-1">Filing threshold (THB)</div>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              Single filers with assessable income above 120,000 THB per year must file a return.
-              The threshold rises to 220,000 THB for married couples filing jointly.
-            </p>
-          </div>
-        </div>
-
-        {/* Tax brackets table */}
-        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-4">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-semibold text-gray-900">2026 Personal Income Tax Rates</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Taxable Income (THB)</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Rate</th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Max tax on bracket</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {[
-                  { range: '0 – 150,000',           rate: 'Exempt', max: '–' },
-                  { range: '150,001 – 300,000',      rate: '5%',     max: '7,500' },
-                  { range: '300,001 – 500,000',      rate: '10%',    max: '20,000' },
-                  { range: '500,001 – 750,000',      rate: '15%',    max: '37,500' },
-                  { range: '750,001 – 1,000,000',    rate: '20%',    max: '50,000' },
-                  { range: '1,000,001 – 2,000,000',  rate: '25%',    max: '250,000' },
-                  { range: '2,000,001 – 5,000,000',  rate: '30%',    max: '900,000' },
-                  { range: 'Over 5,000,000',         rate: '35%',    max: 'No limit' },
-                ].map((row, i) => (
-                  <tr key={i} className={i % 2 === 1 ? 'bg-gray-50' : ''}>
-                    <td className="px-6 py-3 text-gray-700">{row.range}</td>
-                    <td className={`px-6 py-3 text-right font-medium ${row.rate === 'Exempt' ? 'text-green-600' : 'text-blue-600'}`}>{row.rate}</td>
-                    <td className="px-6 py-3 text-right text-gray-500">{row.max}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
-            <p className="text-xs text-gray-500">
-              Rates apply to <em>taxable</em> income — i.e. after deducting all allowances and expenses.
-              The calculator above applies your personal deductions before reaching these brackets.{' '}
-              <Link to="/articles/thai-tax-brackets-explained/" className="text-blue-500 hover:underline">
-                See full breakdown →
-              </Link>
-              {' '}·{' '}
-              <Link to="/tax-examples/" className="text-blue-500 hover:underline">
-                See worked examples →
-              </Link>
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
-              Source:{' '}
-              <a
-                href="https://www.rd.go.th/59670.html"
-                className="underline hover:text-gray-700"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Revenue Department rate table (Thai)
-              </a>
-              , in force from tax year 2017 under Revenue Code Amendment Act No. 44. No later change found as of the last-updated date above.
-            </p>
-          </div>
-        </div>
-
-        {/* Key deductions summary */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="font-semibold text-gray-900 mb-3">Common Deductions That Reduce Your Taxable Income</h3>
-          <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2 text-sm text-gray-600">
-            {[
-              ['Personal allowance', '60,000 THB'],
-              ['Spouse allowance (no income)', '60,000 THB'],
-              ['Child allowance', '30,000 THB per child'],
-              ['Employment income deduction', '50% of salary, max 100,000 THB'],
-              ['Life insurance premiums', 'Up to 100,000 THB'],
-              ['Health insurance premiums', 'Up to 25,000 THB'],
-              ['RMF contributions', 'Up to 30% of income, max 500,000 THB'],
-              ['SSF contributions', 'Up to 30% of income, max 200,000 THB'],
-            ].map(([label, value]) => (
-              <div key={label} className="flex justify-between gap-4 py-1.5 border-b border-gray-100 last:border-0">
-                <span>{label}</span>
-                <span className="text-gray-900 font-medium text-right flex-shrink-0">{value}</span>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-gray-500 mt-3">
-            <Link to="/articles/maximizing-tax-deductions-thailand/" className="text-blue-500 hover:underline">
-              Full guide to Thai tax deductions →
-            </Link>
-          </p>
-        </div>
-      </div>
-
-      {/* FAQ & Articles Teasers */}
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Popular Questions */}
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Popular Questions
+      {/* ── The back of the form: rates, facts, deductions ────────────────── */}
+      <section id="reference" className="scroll-mt-16 bg-paper-ground">
+        <div className="mx-auto max-w-7xl px-4 pb-16 pt-16 sm:px-6 lg:px-10 lg:pt-20">
+          <div className="max-w-3xl">
+            <h2 className="display text-3xl leading-tight text-ink sm:text-4xl">
+              Thai personal income tax, the essentials
             </h2>
-            <div className="space-y-5">
+            <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
+              Thailand uses a progressive personal income tax system with eight brackets, ranging from exempt on
+              the first 150,000 THB to 35% on income above 5,000,000 THB. Tax residents (those who spend
+              180 or more days in Thailand in a calendar year) must report income earned in Thailand and any
+              foreign income remitted into the country. Non-residents are taxed only on Thai-sourced income.
+              The annual filing deadline is <strong className="text-ink">31 March</strong> each year for paper returns. Online filers have had an 8-day extension in past years, but it is not yet confirmed for the {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR} tax year.
+            </p>
+          </div>
+
+          <div className="mt-10 grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-10">
+            {/* Rate schedule */}
+            <div className="on-paper bg-paper-white shadow-sheet-sm">
+              <div className="flex items-baseline justify-between gap-4 border-b-2 border-desk px-5 py-4 sm:px-6">
+                <h3 className="display text-xl text-ink">{TAX_YEAR_CONFIG.CURRENT_TAX_YEAR} Personal Income Tax Rates</h3>
+                <span className="field-label hidden text-ink-mute sm:block">Taxable income, THB</span>
+              </div>
+              <div>
+                <table className="w-full text-[15px]">
+                  <caption className="sr-only">Thai personal income tax brackets</caption>
+                  <thead>
+                    <tr className="text-left">
+                      <th scope="col" className="field-label px-3 pb-2 pt-3 text-ink-mute sm:px-6">Taxable income (THB)</th>
+                      <th scope="col" className="field-label px-2 pb-2 pt-3 text-ink-mute sm:px-3">Rate</th>
+                      <th scope="col" className="field-label px-3 pb-2 pt-3 text-right text-ink-mute sm:px-6"><span className="sm:hidden">Max tax</span><span className="hidden sm:inline">Max tax on bracket</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {BRACKETS.map(row => (
+                      <tr key={row.range} className="border-t border-paper-rule">
+                        <td className="whitespace-nowrap px-3 py-2.5 font-mono text-[12px] text-ink sm:px-6 sm:text-[14px]">{row.range}</td>
+                        <td className="px-2 py-2.5 sm:px-3">
+                          <div className="flex items-center gap-3">
+                            <span className={`shrink-0 font-semibold sm:w-14 ${row.rate === 0 ? 'text-ink-mute' : 'text-ink'}`}>{row.label}</span>
+                            <span className="hidden h-2.5 bg-desk/15 sm:block" style={{ width: 120 }} aria-hidden="true">
+                              <span className="block h-full bg-desk" style={{ width: `${(row.rate / 35) * 100}%` }} />
+                            </span>
+                          </div>
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-[12px] text-ink-soft sm:px-6 sm:text-[14px]">{row.max}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="border-t-2 border-desk px-5 py-4 text-xs leading-relaxed text-ink-soft sm:px-6">
+                <p>
+                  Rates apply to <em>taxable</em> income, i.e. after deducting all allowances and expenses.
+                  The calculator above applies your personal deductions before reaching these brackets.{' '}
+                  <Link to="/articles/thai-tax-brackets-explained/" className="font-semibold text-desk underline">
+                    See full breakdown
+                  </Link>
+                  {' · '}
+                  <Link to="/tax-examples/" className="font-semibold text-desk underline">
+                    See worked examples
+                  </Link>
+                </p>
+                <p className="mt-1.5">
+                  Source:{' '}
+                  <a
+                    href="https://www.rd.go.th/59670.html"
+                    className="underline hover:text-ink"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Revenue Department rate table (Thai)
+                  </a>
+                  , in force from tax year 2017 under Revenue Code Amendment Act No. 44. No later change found as of the last-updated date above.
+                </p>
+              </div>
+            </div>
+
+            {/* Facts + deductions */}
+            <div className="flex flex-col gap-8">
+              <div className="on-paper bg-paper-canary px-5 py-5 shadow-sheet-sm sm:px-6">
+                <h3 className="display text-xl text-ink">Three numbers to know</h3>
+                <dl className="mt-3">
+                  {KEY_FACTS.map(f => (
+                    <div key={f.label} className="border-t border-ink/25 py-3">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <dt className="field-label text-ink-soft">{f.label}</dt>
+                        <dd className="font-mono text-lg font-bold text-ink">{f.value}</dd>
+                      </div>
+                      <p className="mt-1 text-[13px] leading-relaxed text-ink-soft">{f.text}</p>
+                    </div>
+                  ))}
+                </dl>
+                <p className="mt-1 border-t border-ink/25 pt-3 text-[11px] leading-relaxed text-ink-soft">
+                  Residency:{' '}
+                  <a href={TAX_RULES.residencyDays.source.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">
+                    Revenue Code Section 41 (Revenue Department)
+                  </a>
+                  , tax year {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR}. Deadline: 31 March paper filing date confirmed in{' '}
+                  <a href="https://www.nishimura.com/en/knowledge/publications/further-eight-day-extension-for-e-filing-tax-returns-and-online-tax-payments-in-thailand" target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">
+                    secondary sources
+                  </a>
+                  ; the online-filing extension is not yet confirmed for the {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR} tax year. Filing threshold: not yet verified in our{' '}
+                  <Link to="/sources/" className="underline hover:text-ink">rules registry</Link>.
+                </p>
+              </div>
+
+              <div className="on-paper bg-paper-white px-5 py-5 shadow-sheet-sm sm:px-6">
+                <h3 className="display text-xl text-ink">Common deductions that reduce your taxable income</h3>
+                <ul className="mt-3 text-[14px]">
+                  {DEDUCTIONS.map(([label, value]) => (
+                    <li key={label} className="flex justify-between gap-4 border-t border-paper-rule py-2">
+                      <span className="text-ink">{label}</span>
+                      <span className="text-right text-ink-soft">{value}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1 border-t border-paper-rule pt-3 text-[11px] leading-relaxed text-ink-soft">
+                  Tax year {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR}. Each figure is sourced in our{' '}
+                  <Link to="/sources/" className="underline hover:text-ink">rules registry</Link>, e.g.{' '}
+                  <a href={TAX_RULES.personalAllowance.source.url} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">
+                    {TAX_RULES.personalAllowance.source.label.split(' — ')[0]}
+                  </a>{' '}
+                  (secondary) for allowances. See{' '}
+                  <Link to="/methodology/" className="underline hover:text-ink">methodology</Link> for what is verified.
+                </p>
+                <Link to="/articles/maximizing-tax-deductions-thailand/" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-desk underline">
+                  Full guide to Thai tax deductions
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Routing slips */}
+          <div className="mt-10 grid gap-4 md:grid-cols-2">
+            <Link
+              to="/thailand-tax-2026/"
+              className="group flex items-center justify-between gap-6 bg-paper-sky px-6 py-5 text-ink shadow-sheet-sm transition-transform duration-200 hover:-translate-y-0.5"
+            >
+              <span>
+                <span className="display block text-lg">New to Thai tax? Start with the 2026 overview</span>
+                <span className="mt-1 block text-sm text-ink-soft">
+                  Brackets, allowances, residency, foreign income, and filing on one page, linking to the full guide on each topic.
+                </span>
+              </span>
+              <ChevronRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/tax-examples/"
+              className="group flex items-center justify-between gap-6 bg-paper-pink px-6 py-5 text-ink shadow-sheet-sm transition-transform duration-200 hover:-translate-y-0.5"
+            >
+              <span>
+                <span className="display block text-lg">Not sure what this means for your income?</span>
+                <span className="mt-1 block text-sm text-ink-soft">
+                  See worked examples at real income levels, from a simple salary to a full calculator walkthrough.
+                </span>
+              </span>
+              <ChevronRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+
+          {/* Ad slot */}
+          <div className="mt-14 flex justify-center">
+            <div className="hidden md:block">
+              <AdSlot size="leaderboard" adSlot="5959313072" />
+            </div>
+            <div className="md:hidden">
+              <AdSlot size="mobile-banner" adSlot="6916229573" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Questions and guides ─────────────────────────────────────────── */}
+      <section className="bg-paper-ground">
+        <div className="perforation mx-auto max-w-7xl text-desk/30" aria-hidden="true" />
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-10">
+          <div>
+            <h2 className="display text-3xl text-ink">Questions people ask first</h2>
+            <div className="mt-6 space-y-7">
               {featuredFAQCategories.map(category => (
                 <div key={category.name}>
-                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-                    {category.name}
-                  </p>
-                  <ul className="space-y-2">
+                  <p className="field-label border-b-2 border-desk pb-1.5 text-ink">{category.name}</p>
+                  <ul>
                     {category.items.map((item, index) => (
-                      <li key={index}>
+                      <li key={index} className="border-b border-paper-rule">
                         <Link
                           to="/faq/"
-                          className="flex items-start gap-2 text-sm text-gray-600 hover:text-blue-500 transition-colors"
+                          className="group flex items-start justify-between gap-4 py-2.5 text-[15px] text-ink transition-colors hover:text-desk"
                         >
-                          <span className="text-blue-500 flex-shrink-0 mt-0.5">Q:</span>
                           <span>{item.question}</span>
+                          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-ink-mute transition-transform group-hover:translate-x-0.5 group-hover:text-desk" />
                         </Link>
                       </li>
                     ))}
@@ -355,39 +335,24 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-            <Link
-              to="/faq/"
-              className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 mt-4 text-sm font-medium"
-            >
-              View all FAQ
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+            <Link to="/faq/" className="mt-6 inline-flex items-center gap-2 text-[15px] font-semibold text-desk underline">
+              All questions
             </Link>
           </div>
 
-          {/* Latest Articles */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Latest Articles
-            </h2>
-            <div className="space-y-4">
-              {featuredArticles.map((article) => (
+            <h2 className="display text-3xl text-ink">Latest guides</h2>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {featuredArticles.map(article => (
                 <ArticleCard key={article.slug} article={article} />
               ))}
             </div>
-            <Link
-              to="/articles/"
-              className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 mt-4 text-sm font-medium"
-            >
-              View all articles
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+            <Link to="/articles/" className="mt-6 inline-flex items-center gap-2 text-[15px] font-semibold text-desk underline">
+              All articles
             </Link>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

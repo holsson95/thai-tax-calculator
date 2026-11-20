@@ -63,12 +63,18 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4">
+    <header className="sticky top-0 z-50 bg-desk text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 shrink-0">
-            <span className="text-xl font-bold text-blue-500">Thai Tax Calculator</span>
+          <Link to="/" className="flex shrink-0 items-center gap-2.5" aria-label="MyThaiTaxes home">
+            <svg viewBox="0 0 28 28" className="h-7 w-7" aria-hidden="true">
+              <rect x="7" y="3" width="17" height="21" fill="#AFC7E8" transform="rotate(8 15 14)" />
+              <rect x="5.5" y="4" width="17" height="21" fill="#F0E4BF" transform="rotate(3 14 14)" />
+              <rect x="4" y="5" width="17" height="21" fill="#FFFDF5" />
+              <path d="M7.5 11h10M7.5 15h10M7.5 19h6" stroke="#344A9B" strokeWidth="1.6" />
+            </svg>
+            <span className="text-xl font-extrabold tracking-[-0.02em]">MyThaiTaxes</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -82,11 +88,11 @@ const Header: React.FC = () => {
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   placeholder="Search articles and FAQs..."
-                  className="w-72 px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-colors text-sm"
+                  className="w-72 border-2 border-paper-white bg-paper-white px-3 py-1.5 text-sm text-ink placeholder:text-ink-mute focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="text-blue-500 hover:text-blue-700 font-medium text-sm whitespace-nowrap"
+                  className="whitespace-nowrap text-sm font-semibold text-white hover:text-paper-canary"
                 >
                   Search
                 </button>
@@ -94,7 +100,7 @@ const Header: React.FC = () => {
                   type="button"
                   onClick={() => { setSearchOpen(false); setSearchValue(''); }}
                   aria-label="Close search"
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-white/70 hover:text-white"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -109,10 +115,11 @@ const Header: React.FC = () => {
                     <Link
                       key={link.path}
                       to={link.path}
-                      className={`font-medium transition-colors ${
+                      aria-current={isActive(link.path) ? 'page' : undefined}
+                      className={`border-b-2 py-1 text-[15px] font-medium transition-colors ${
                         isActive(link.path)
-                          ? 'text-blue-500'
-                          : 'text-gray-600 hover:text-blue-500'
+                          ? 'border-paper-canary text-white'
+                          : 'border-transparent text-white/75 hover:text-white'
                       }`}
                     >
                       {link.label}
@@ -122,7 +129,7 @@ const Header: React.FC = () => {
                 <button
                   onClick={() => setSearchOpen(true)}
                   aria-label="Search"
-                  className="text-gray-500 hover:text-blue-500 transition-colors"
+                  className="text-white/75 transition-colors hover:text-white"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -134,7 +141,7 @@ const Header: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+            className="md:hidden p-2 text-white/85 hover:text-white"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileMenuOpen}
@@ -153,7 +160,7 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-gray-100">
+          <nav className="md:hidden border-t border-white/20 py-4">
             <div className="flex flex-col gap-2">
               {/* Mobile Search */}
               <form onSubmit={handleSearchSubmit} className="px-4 mb-2">
@@ -163,10 +170,10 @@ const Header: React.FC = () => {
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     placeholder="Search articles and FAQs..."
-                    className="w-full px-4 py-2 pl-9 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 text-sm"
+                    className="w-full border-2 border-paper-white bg-paper-white px-4 py-2 pl-9 text-sm text-ink placeholder:text-ink-mute focus:outline-none"
                   />
                   <svg
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-mute"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -181,10 +188,11 @@ const Header: React.FC = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`py-2 px-4 rounded-lg font-medium transition-colors ${
+                  aria-current={isActive(link.path) ? 'page' : undefined}
+                  className={`px-4 py-2 font-medium transition-colors ${
                     isActive(link.path)
-                      ? 'bg-blue-50 text-blue-500'
-                      : 'text-gray-600 hover:bg-gray-50'
+                      ? 'bg-paper-canary text-ink'
+                      : 'text-white/85 hover:bg-white/10'
                   }`}
                 >
                   {link.label}
