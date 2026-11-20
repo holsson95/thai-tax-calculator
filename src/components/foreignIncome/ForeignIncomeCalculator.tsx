@@ -281,6 +281,8 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
   };
 
   const totalThb = input.remittances.reduce((sum, r) => sum + r.amountThb, 0);
+  // Transfers with a foreign amount but no rate yet: the engine would see them as ฿0.
+  const needRate = input.remittances.map((r, i) => ({ r, i })).filter(({ r }) => money[r.id] && thbAmounts(money[r.id]) === null);
   const transferLabels = Object.fromEntries(
     input.remittances
       .filter((r) => money[r.id] && money[r.id].currency !== 'THB')
@@ -388,7 +390,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
           ref={tabRefs.money}
           id="fic-money"
           title={`Money brought in during ${RULES_TAX_YEAR}`}
-          summary={transfersSummary(totalThb, input.remittances.length)}
+          summary={transfersSummary(totalThb, input.remittances.length, needRate.length)}
           paper="bg-paper-canary"
           open={open.money}
           onToggle={() => toggle('money')}
@@ -631,7 +633,16 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
         </div>
       </form>
 
-      {submitted && (
+      {submitted && needRate.length > 0 && (
+        <div ref={resultsRef} className="mt-8 scroll-mt-4 rounded-sm border border-stamp/40 bg-paper-white p-4 text-sm text-ink" role="status">
+          <p className="font-semibold">
+            {needRate.map(({ i }) => `Transfer ${i + 1}`).join(', ')} {needRate.length === 1 ? 'needs' : 'need'} an exchange rate.
+          </p>
+          <p className="mt-1 text-ink-soft">Add the rate, then choose Estimate my tax again to see your updated estimate.</p>
+        </div>
+      )}
+
+      {submitted && needRate.length === 0 && (
         <div ref={resultsRef} className="mt-8 scroll-mt-4">
           <div className="flex">
             <span className="rounded-t-md bg-paper-sky px-4 pb-2 pt-2.5 text-sm font-bold text-ink sm:text-[15px]">Your estimate</span>

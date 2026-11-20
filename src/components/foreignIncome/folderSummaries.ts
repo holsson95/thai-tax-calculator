@@ -12,8 +12,9 @@ export function aboutSummary(input: RemittanceEstimateInput, visaLabel: string):
   return `About you · ${input.daysInThailand} days · ${resident} · ${visaLabel}`;
 }
 
-export function transfersSummary(totalThb: number, count: number): string {
-  return `Money brought in · ${count} ${count === 1 ? 'transfer' : 'transfers'} · ${thb(totalThb)}`;
+export function transfersSummary(totalThb: number, count: number, needRate = 0): string {
+  const base = `Money brought in · ${count} ${count === 1 ? 'transfer' : 'transfers'} · ${thb(totalThb)}`;
+  return needRate > 0 ? `${base} · ${needRate} ${needRate === 1 ? 'needs' : 'need'} a rate` : base;
 }
 
 export function thaiSummary(t: ThaiIncomeInput): string {

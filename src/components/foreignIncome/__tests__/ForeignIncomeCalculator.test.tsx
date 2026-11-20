@@ -110,4 +110,29 @@ describe('ForeignIncomeCalculator with folders and currencies', () => {
     expect(screen.getByLabelText('Currency')).toHaveValue('THB');
     expect(screen.getByLabelText('Amount')).toHaveValue('50,000');
   });
+
+  it('hides a stale estimate while a transfer needs a rate', async () => {
+    mockRate.mockImplementation(async (_c: string, d: string) =>
+      d === '2026-03-02' ? ok('USD', 35.62) : { ok: false, error: { type: 'network', message: 'x' } }
+    );
+    renderCalc();
+    setDays('200');
+    usdTransfer('20000');
+    await screen.findByText(/Bank of Thailand average rate/);
+    estimate();
+    expect(screen.getByRole('region', { name: /estimate/i })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Date brought into Thailand'), { target: { value: '2026-03-03' } });
+    await screen.findByText('Enter the rate from your bank statement');
+    expect(screen.queryByRole('region', { name: /estimate/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/Transfer 1 needs an exchange rate/)).toBeInTheDocument();
+  });
+
+  it('marks un-rated transfers in the closed Money summary instead of counting them as ฿0', async () => {
+    mockRate.mockResolvedValue({ ok: false, error: { type: 'network', message: 'x' } });
+    renderCalc();
+    usdTransfer('1000');
+    await screen.findByText('Enter the rate from your bank statement');
+    fireEvent.click(screen.getByRole('button', { name: /^Money brought in/ }));
+    expect(screen.getByRole('button', { name: /1 transfer · ฿0 · 1 needs a rate/ })).toBeInTheDocument();
+  });
 });

@@ -18,6 +18,7 @@ describe('folder summaries', () => {
   it('money brought in', () => {
     expect(transfersSummary(1240000, 2)).toBe('Money brought in · 2 transfers · ฿1,240,000');
     expect(transfersSummary(5000, 1)).toBe('Money brought in · 1 transfer · ฿5,000');
+    expect(transfersSummary(5000, 3, 2)).toBe('Money brought in · 3 transfers · ฿5,000 · 2 need a rate');
   });
   it('thai income', () => {
     expect(thaiSummary(base.thaiIncome)).toBe('Thai income · none');
