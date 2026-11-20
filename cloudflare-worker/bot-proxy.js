@@ -25,7 +25,29 @@ const ALLOWED_ORIGINS = new Set([
   'https://mythaitaxes.com',
   'http://localhost:5173',
 ]);
-const ALLOWED_TARGET_PREFIX = 'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/';
+const ALLOWED_TARGET_ORIGIN = 'https://gateway.api.bot.or.th';
+const ALLOWED_TARGET_PATH = '/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/';
+const ALLOWED_PARAMS = ['start_period', 'end_period'];
+
+/**
+ * Rebuild the upstream URL from scratch: exact origin and (normalised) path, and only the
+ * period parameters. A raw prefix check is not enough: fetch() resolves "../" and "%2e%2e".
+ */
+function safeTarget(raw) {
+  let u;
+  try {
+    u = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (u.origin !== ALLOWED_TARGET_ORIGIN || u.pathname !== ALLOWED_TARGET_PATH) return null;
+  const out = new URL(ALLOWED_TARGET_PATH, ALLOWED_TARGET_ORIGIN);
+  for (const k of ALLOWED_PARAMS) {
+    const v = u.searchParams.get(k);
+    if (v !== null) out.searchParams.set(k, v);
+  }
+  return out.toString();
+}
 
 export default {
   async fetch(request, env) {
@@ -49,11 +71,12 @@ export default {
       return new Response('Method not allowed', { status: 405, headers: corsHeaders });
     }
 
-    const targetUrl = new URL(request.url).searchParams.get('url');
-    if (!targetUrl) {
+    const rawTarget = new URL(request.url).searchParams.get('url');
+    if (!rawTarget) {
       return new Response('Missing ?url= parameter', { status: 400, headers: corsHeaders });
     }
-    if (!targetUrl.startsWith(ALLOWED_TARGET_PREFIX)) {
+    const targetUrl = safeTarget(rawTarget);
+    if (!targetUrl) {
       return new Response('Target URL not allowed', { status: 403, headers: corsHeaders });
     }
     if (!env?.BOT_API_KEY) {

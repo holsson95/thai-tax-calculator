@@ -40,3 +40,26 @@ describe('bot-proxy worker', () => {
     expect((await worker.fetch(req('https://www.mythaitaxes.com'), {})).status).toBe(500);
   });
 });
+
+describe('bot-proxy worker: path normalisation', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })));
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it.each([
+    'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/../../../Stat-InterestRate/v2/X/',
+    'https://gateway.api.bot.or.th/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/%2e%2e/%2e%2e/%2e%2e/Stat-InterestRate/v2/X/',
+  ])('rejects dot-segment escapes: %s', async (url) => {
+    const res = await worker.fetch(req('https://www.mythaitaxes.com', url), env);
+    expect(res.status).toBe(403);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it('forwards only the period parameters', async () => {
+    await worker.fetch(req('https://www.mythaitaxes.com', `${target}&extra=1`), env);
+    const sent = new URL(fetch.mock.calls[0][0]);
+    expect(sent.pathname).toBe('/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/');
+    expect([...sent.searchParams.keys()].sort()).toEqual(['end_period', 'start_period']);
+  });
+});
