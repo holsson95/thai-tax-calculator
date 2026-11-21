@@ -2,22 +2,26 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
+import ArticleIndexSheet from '../components/articles/ArticleIndexSheet';
 import AdSlot from '../components/ads/AdSlot';
+import RoutingSlip from '../components/ui/RoutingSlip';
 import { articles } from '../data/articles';
+import { buildArticleIndex } from '../data/articleGroups';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
 const ArticlesPage: React.FC = () => {
-  // Split articles for ad placement
-  const firstBatch = articles.slice(0, 3);
-  const secondBatch = articles.slice(3);
+  const { featured, groups } = buildArticleIndex(articles);
+  // The in-feed ad sits after the first row of sheets (two per row on lg).
+  const firstRow = groups.slice(0, 2);
+  const secondRow = groups.slice(2);
 
   const title = 'Thai Tax Articles & Guides | Thai Tax Calculator';
   const description =
     'Expert guides on Thai taxation covering freelancer tax, expat filing, deductions, tax residency, double tax agreements, and more.';
 
   return (
-    <div className="py-8">
+    <div className="mx-auto max-w-7xl px-4 pb-20 pt-12 sm:px-6 lg:px-10 lg:pt-16">
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -27,30 +31,62 @@ const ArticlesPage: React.FC = () => {
         <meta property="og:url" content={`${SITE_URL}/articles/`} />
         <meta property="og:type" content="website" />
       </Helmet>
-      <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Thai Tax Guides for Expats
-          </h1>
-          <p className="text-gray-600">
-            Comprehensive guides to help you understand and navigate Thai taxation. New here?{' '}
-            <Link to="/thailand-tax-2026/" className="text-blue-600 hover:underline">
-              Start with the 2026 tax overview
-            </Link>.
-          </p>
-        </div>
 
-        {/* First batch of articles */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {firstBatch.map((article) => (
-            <ArticleCard key={article.slug} article={article} />
-          ))}
-        </div>
+      {/* Header */}
+      <div className="max-w-3xl">
+        <h1 className="display text-4xl leading-tight text-ink sm:text-5xl">Thai Tax Guides for Expats</h1>
+        <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
+          {articles.length} guides, grouped by situation. New here?{' '}
+          <Link to="/thailand-tax-2026/" className="font-semibold text-desk underline underline-offset-2">
+            Start with the 2026 tax overview
+          </Link>
+          .
+        </p>
+        <nav aria-label="Guide groups" className="mt-5">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2 text-[15px]">
+            {groups.map((group) => (
+              <li key={group.id}>
+                <a
+                  href={`#${group.id}`}
+                  className="font-semibold text-desk underline decoration-desk/30 underline-offset-4 transition-colors hover:decoration-desk"
+                >
+                  {group.title}
+                  <span className="ml-1.5 font-mono text-xs font-normal tabular-nums text-ink-mute">
+                    {group.articles.length}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
 
-        {/* In-feed Ad */}
-        {secondBatch.length > 0 && (
-          <div className="flex justify-center mb-8">
+      {/* Start here */}
+      {featured.length > 0 && (
+        <section aria-labelledby="start-here-heading" className="mt-12">
+          <h2 id="start-here-heading" className="display text-2xl text-ink">
+            Start here
+          </h2>
+          <div className="mt-5 grid gap-5 md:grid-cols-3">
+            {featured.map((article) => (
+              <ArticleCard key={article.slug} article={article} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="perforation mt-14 text-desk/30" aria-hidden="true" />
+
+      {/* Groups by situation */}
+      <div className="mt-12 grid items-start gap-8 lg:grid-cols-2">
+        {firstRow.map((group) => (
+          <ArticleIndexSheet key={group.id} group={group} />
+        ))}
+      </div>
+
+      {secondRow.length > 0 && (
+        <>
+          <div className="mt-12 flex justify-center">
             <div className="hidden md:block">
               <AdSlot size="leaderboard" adSlot="5959313072" />
             </div>
@@ -58,36 +94,22 @@ const ArticlesPage: React.FC = () => {
               <AdSlot size="rectangle" adSlot="3447757856" />
             </div>
           </div>
-        )}
 
-        {/* Second batch of articles */}
-        {secondBatch.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {secondBatch.map((article) => (
-              <ArticleCard key={article.slug} article={article} />
+          <div className="mt-12 grid items-start gap-8 lg:grid-cols-2">
+            {secondRow.map((group) => (
+              <ArticleIndexSheet key={group.id} group={group} />
             ))}
           </div>
-        )}
+        </>
+      )}
 
-        {/* CTA Section */}
-        <div className="bg-blue-50 rounded-xl p-6 md:p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Ready to calculate your tax?
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Use our free calculator to estimate your Thai tax liability.
-          </p>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-          >
-            Start Calculator
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
-      </div>
+      {/* Calculator routing slip */}
+      <RoutingSlip
+        to="/"
+        className="mt-14"
+        title="Ready to calculate your tax?"
+        description="Use our free calculator to estimate your Thai tax liability."
+      />
     </div>
   );
 };

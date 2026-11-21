@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ArticleCard from '../components/articles/ArticleCard';
 import AdSlot from '../components/ads/AdSlot';
+import ArrowIcon from '../components/ui/ArrowIcon';
+import RoutingSlip from '../components/ui/RoutingSlip';
 import CopyStack from '../components/home/CopyStack';
 import { articles } from '../data/articles';
 import { faqData } from '../data/faq';
@@ -54,12 +56,6 @@ const KEY_FACTS = [
       'Commonly cited threshold: single filers with assessable income above 120,000 THB per year must file a return, rising to 220,000 THB for married couples filing jointly. We have not yet verified these figures against a primary source.',
   },
 ];
-
-const ChevronRight: React.FC<{ className?: string }> = ({ className = 'h-4 w-4' }) => (
-  <svg viewBox="0 0 20 20" className={className} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M4 10h12M11 5l5 5-5 5" />
-  </svg>
-);
 
 const HomePage: React.FC = () => {
   const featuredArticles = articles.slice(0, 4);
@@ -271,30 +267,18 @@ const HomePage: React.FC = () => {
 
           {/* Routing slips */}
           <div className="mt-10 grid gap-4 md:grid-cols-2">
-            <Link
+            <RoutingSlip
               to="/thailand-tax-2026/"
-              className="group flex items-center justify-between gap-6 bg-paper-sky px-6 py-5 text-ink shadow-sheet-sm transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              <span>
-                <span className="display block text-lg">New to Thai tax? Start with the 2026 overview</span>
-                <span className="mt-1 block text-sm text-ink-soft">
-                  Brackets, allowances, residency, foreign income, and filing on one page, linking to the full guide on each topic.
-                </span>
-              </span>
-              <ChevronRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
+              paper="sky"
+              title="New to Thai tax? Start with the 2026 overview"
+              description="Brackets, allowances, residency, foreign income, and filing on one page, linking to the full guide on each topic."
+            />
+            <RoutingSlip
               to="/tax-examples/"
-              className="group flex items-center justify-between gap-6 bg-paper-pink px-6 py-5 text-ink shadow-sheet-sm transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              <span>
-                <span className="display block text-lg">Not sure what this means for your income?</span>
-                <span className="mt-1 block text-sm text-ink-soft">
-                  See worked examples at real income levels, from a simple salary to a full calculator walkthrough.
-                </span>
-              </span>
-              <ChevronRight className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1" />
-            </Link>
+              paper="pink"
+              title="Not sure what this means for your income?"
+              description="See worked examples at real income levels, from a simple salary to a full calculator walkthrough."
+            />
           </div>
 
           {/* Ad slot */}
@@ -327,7 +311,7 @@ const HomePage: React.FC = () => {
                           className="group flex items-start justify-between gap-4 py-2.5 text-[15px] text-ink transition-colors hover:text-desk"
                         >
                           <span>{item.question}</span>
-                          <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-ink-mute transition-transform group-hover:translate-x-0.5 group-hover:text-desk" />
+                          <ArrowIcon className="mt-1 h-4 w-4 shrink-0 text-ink-mute transition-transform group-hover:translate-x-0.5 group-hover:text-desk" />
                         </Link>
                       </li>
                     ))}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ArrowIcon from './ui/ArrowIcon';
 
 interface CTAAction {
   label: string;
@@ -15,12 +16,7 @@ interface CalculateTaxCTAProps {
   headingLevel?: 'h2' | 'h3';
 }
 
-const ArrowIcon: React.FC = () => (
-  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-  </svg>
-);
-
+/** A sky-blue copy sheet that sends the reader to a calculator. */
 const CalculateTaxCTA: React.FC<CalculateTaxCTAProps> = ({
   heading,
   description,
@@ -30,21 +26,21 @@ const CalculateTaxCTA: React.FC<CalculateTaxCTAProps> = ({
 }) => {
   const Heading = headingLevel;
   return (
-    <div className="bg-blue-50 rounded-xl p-6 text-center">
-      <Heading className="text-xl font-semibold text-gray-900 mb-2">{heading}</Heading>
-      <p className="text-gray-600 mb-4">{description}</p>
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+    <div className="on-paper bg-paper-sky px-5 py-6 text-ink shadow-sheet-sm sm:px-8">
+      <Heading className="display text-xl text-ink">{heading}</Heading>
+      <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-ink-soft">{description}</p>
+      <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
         <Link
           to={primary.to}
-          className="inline-flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+          className="group inline-flex items-center justify-center gap-2 bg-desk px-5 py-3 text-[15px] font-semibold text-paper-white transition-colors hover:bg-desk-deep"
         >
           {primary.label}
-          <ArrowIcon />
+          <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
         {secondary && (
           <Link
             to={secondary.to}
-            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-blue-600 border border-blue-200 font-medium py-3 px-6 rounded-lg transition-colors"
+            className="text-[15px] font-semibold text-desk underline decoration-desk/40 underline-offset-4 hover:decoration-desk"
           >
             {secondary.label}
           </Link>

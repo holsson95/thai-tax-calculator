@@ -1,11 +1,15 @@
 import React from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import ArticleCard from '../components/articles/ArticleCard';
+import ArticleIndexSheet from '../components/articles/ArticleIndexSheet';
+import ArrowIcon from '../components/ui/ArrowIcon';
 import AdSlot from '../components/ads/AdSlot';
 import CalculateTaxCTA from '../components/CalculateTaxCTA';
 import RelatedExamples from '../components/RelatedExamples';
 import { getArticleBySlug, getRelatedArticles } from '../data/articles';
+import { getArticleGroup } from '../data/articleGroups';
+import { formatDisplayDate } from '../config/contentDates';
+import { formatArticle, splitAtMiddleHeading } from '../utils/formatArticle';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
@@ -43,14 +47,29 @@ const ArticleDetailPage: React.FC = () => {
     ],
   };
 
-  // Split content for mid-article ad
-  const contentParts = article.content.split('\n\n');
-  const midPoint = Math.floor(contentParts.length / 2);
-  const firstHalf = contentParts.slice(0, midPoint).join('\n\n');
-  const secondHalf = contentParts.slice(midPoint).join('\n\n');
+  const group = getArticleGroup(article.slug);
+  const { html, headings } = formatArticle(article.content);
+  const [firstHalf, secondHalf] = splitAtMiddleHeading(html);
+  const dateLabel = article.updatedAt ? 'Updated' : 'Published';
+  const date = article.updatedAt || article.publishedAt;
+
+  const toc = (
+    <ol className="space-y-0.5">
+      {headings.map((h) => (
+        <li key={h.id}>
+          <a
+            href={`#${h.id}`}
+            className="block py-1.5 text-sm leading-snug text-ink-soft transition-colors hover:text-desk"
+          >
+            {h.text}
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
 
   return (
-    <div className="py-8">
+    <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 lg:px-10 lg:pt-14">
       <Helmet>
         <title>{article.title} | My Thai Taxes</title>
         <meta name="description" content={article.excerpt} />
@@ -63,239 +82,135 @@ const ArticleDetailPage: React.FC = () => {
         <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
-      <div className="max-w-3xl mx-auto px-4">
-        {/* Breadcrumb */}
-        <nav className="mb-6">
-          <Link to="/articles/" className="text-blue-500 hover:text-blue-600 text-sm">
-            ← Back to Articles
-          </Link>
+
+      {/* Header */}
+      <header className="max-w-[46rem]">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex flex-wrap items-center gap-x-2 text-sm text-ink-mute">
+            <li>
+              <Link to="/articles/" className="font-semibold text-desk hover:underline">
+                Articles
+              </Link>
+            </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link to={`/articles/#${group.id}`} className="font-semibold text-desk hover:underline">
+                {group.title}
+              </Link>
+            </li>
+          </ol>
         </nav>
+        <h1 className="display mt-4 text-3xl leading-[1.12] text-ink sm:text-4xl lg:text-[44px]">{article.title}</h1>
+        <p className="mt-4 text-sm text-ink-mute">
+          {article.readTime} min read · {dateLabel} <time dateTime={date}>{formatDisplayDate(date)}</time>
+        </p>
+        <p className="mt-3 max-w-prose text-[13px] leading-relaxed text-ink-mute">
+          This article is for informational purposes only and is based on publicly available Thai Revenue Department
+          guidance and the Revenue Code. Tax rules change — verify current regulations at{' '}
+          <a
+            href="https://www.rd.go.th/english/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-desk underline"
+          >
+            rd.go.th
+          </a>{' '}
+          or consult a licensed Thai tax advisor before making financial decisions.
+        </p>
+      </header>
 
-        {/* Article Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-sm font-medium text-blue-500 bg-blue-50 px-3 py-1 rounded-full">
-              {article.category}
-            </span>
-            <span className="text-sm text-gray-500">
-              {article.readTime} min read
-            </span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            {article.title}
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Published: {new Date(article.publishedAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-            {' '}· Last updated: {new Date(article.updatedAt || article.publishedAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </p>
-        </header>
+      <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,46rem)_15rem] lg:gap-14">
+        <div className="min-w-0">
+          {/* Contents, phones and tablets */}
+          {headings.length > 1 && (
+            <details className="group on-paper mb-6 bg-paper-white shadow-sheet-sm lg:hidden">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
+                <span className="field-label text-ink">On this page</span>
+                <span className="flex items-center gap-2 font-mono text-xs text-ink-mute">
+                  {headings.length} sections
+                  <ArrowIcon className="h-4 w-4 rotate-90 transition-transform group-open:-rotate-90" />
+                </span>
+              </summary>
+              <div className="border-t-2 border-desk px-5 pb-3 pt-2">{toc}</div>
+            </details>
+          )}
 
-        {/* Disclaimer */}
-        <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-8 text-sm text-amber-800">
-          <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>
-            This article is for informational purposes only and is based on publicly available Thai Revenue Department guidance and the Revenue Code. Tax rules change — verify current regulations at{' '}
-            <a href="https://www.rd.go.th/english/" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-900 font-medium">rd.go.th</a>
-            {' '}or consult a licensed Thai tax advisor before making financial decisions.
-          </span>
-        </div>
+          <article className="on-paper bg-paper-white px-5 py-8 shadow-sheet-sm sm:px-10 sm:py-10">
+            <div className="article-body" dangerouslySetInnerHTML={{ __html: firstHalf }} />
+            {secondHalf && (
+              <>
+                <div className="my-10 flex justify-center">
+                  <AdSlot size="rectangle" adSlot="3447757856" />
+                </div>
+                <div className="article-body" dangerouslySetInnerHTML={{ __html: secondHalf }} />
+              </>
+            )}
+          </article>
 
-        {/* Article Content - First Half */}
-        <article className="prose prose-gray max-w-none mb-8">
-          <div
-            className="article-content"
-            dangerouslySetInnerHTML={{ __html: formatContent(firstHalf) }}
-          />
-        </article>
+          {/* Sources & References */}
+          {article.sources && article.sources.length > 0 && (
+            <section aria-labelledby="sources-heading" className="on-paper mt-8 bg-paper-white shadow-sheet-sm">
+              <h2 id="sources-heading" className="display border-b-2 border-desk px-5 py-4 text-lg text-ink sm:px-10">
+                Sources &amp; official references
+              </h2>
+              <ul className="px-5 sm:px-10">
+                {article.sources.map((source, i) => (
+                  <li key={i} className="border-b border-paper-rule py-2.5 text-[15px] last:border-b-0">
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-desk underline decoration-desk/40 hover:decoration-desk"
+                    >
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <p className="border-t border-paper-rule px-5 py-3 text-xs text-ink-mute sm:px-10">
+                See the full source registry and verification status on{' '}
+                <Link to="/sources/" className="font-semibold text-desk underline">
+                  Sources &amp; References
+                </Link>
+                .
+              </p>
+            </section>
+          )}
 
-        {/* Mid-article Ad */}
-        <div className="flex justify-center my-8">
-          <AdSlot size="rectangle" adSlot="3447757856" />
-        </div>
-
-        {/* Article Content - Second Half */}
-        <article className="prose prose-gray max-w-none mb-8">
-          <div
-            className="article-content"
-            dangerouslySetInnerHTML={{ __html: formatContent(secondHalf) }}
-          />
-        </article>
-
-        {/* Sources & References */}
-        {article.sources && article.sources.length > 0 && (
-          <div className="border-t border-gray-200 pt-6 mb-8">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
-              Sources &amp; Official References
-            </h2>
-            <ul className="space-y-1">
-              {article.sources.map((source, i) => (
-                <li key={i} className="text-sm text-gray-600">
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 hover:underline"
-                  >
-                    {source.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <p className="text-sm text-gray-500 mt-2">
-              See the full source registry and verification status on{' '}
-              <Link to="/sources/" className="text-blue-600 hover:underline">Sources &amp; References</Link>.
-            </p>
-          </div>
-        )}
-
-        {/* Related Examples */}
-        {article.relatedExamples && article.relatedExamples.length > 0 && (
-          <div className="mb-8">
-            <RelatedExamples exampleIds={article.relatedExamples} />
-          </div>
-        )}
-
-        {/* Calculator CTA */}
-        <div className="mb-8">
-          <CalculateTaxCTA
-            heading="Ready to calculate your tax?"
-            description="Put this knowledge to use with our free calculator."
-            primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
-          />
-        </div>
-
-        {/* Related Articles */}
-        {relatedArticles.length > 0 && (
-          <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Related Articles
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {relatedArticles.map((relatedArticle) => (
-                <ArticleCard key={relatedArticle.slug} article={relatedArticle} />
-              ))}
+          {/* Related Examples */}
+          {article.relatedExamples && article.relatedExamples.length > 0 && (
+            <div className="mt-12">
+              <RelatedExamples exampleIds={article.relatedExamples} />
             </div>
-          </section>
+          )}
+
+          {/* Calculator CTA */}
+          <div className="mt-12">
+            <CalculateTaxCTA
+              heading="Ready to calculate your tax?"
+              description="Put this knowledge to use with our free calculator."
+              primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
+            />
+          </div>
+
+          {/* Related Articles */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-12">
+              <ArticleIndexSheet group={{ id: 'related', title: 'Related guides', articles: relatedArticles }} />
+            </div>
+          )}
+        </div>
+
+        {/* Contents, desktop */}
+        {headings.length > 1 && (
+          <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto lg:block" aria-label="On this page">
+            <p className="field-label border-b-2 border-desk pb-1.5 text-ink">On this page</p>
+            <div className="mt-2">{toc}</div>
+          </aside>
         )}
       </div>
     </div>
   );
 };
-
-// Simple markdown-like formatting
-function formatContent(content: string): string {
-  // Process tables first (find consecutive lines starting with |)
-  let result = content.replace(
-    /(^\|.+\|$\n?)+/gm,
-    (tableBlock) => {
-      const lines = tableBlock.trim().split('\n');
-      let html = '<table class="w-full border-collapse mb-4">';
-
-      lines.forEach((line, index) => {
-        const cells = line.split('|').filter(c => c.trim());
-
-        // Skip separator row (contains only dashes)
-        if (cells.every(c => c.trim().match(/^[-:]+$/))) {
-          return;
-        }
-
-        // First row is header
-        const isHeader = index === 0;
-        const tag = isHeader ? 'th' : 'td';
-        const cellClass = isHeader
-          ? 'border border-gray-200 px-4 py-2 bg-gray-50 font-semibold text-left'
-          : 'border border-gray-200 px-4 py-2';
-
-        const cellsHtml = cells.map(c => `<${tag} class="${cellClass}">${c.trim()}</${tag}>`).join('');
-        html += `<tr>${cellsHtml}</tr>`;
-      });
-
-      html += '</table>';
-      return html;
-    }
-  );
-
-  result = result
-    // Headers
-    .replace(/^## (.+)$/gm, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h2>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">$1</h3>')
-    // Links
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:underline">$1</a>')
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-  // Process nested lists (numbered items with indented sub-bullets)
-  result = result.replace(
-    /(^\d+\. .+$(\n(   - .+$|\d+\. .+$))*)+/gm,
-    (match) => {
-      let html = '<ol class="list-decimal list-outside ml-5 mb-4 text-gray-600 space-y-3">';
-      let currentSubList: string[] = [];
-
-      const lines = match.split('\n');
-      lines.forEach((line, index) => {
-        const isNumbered = /^\d+\. /.test(line);
-        const isSubItem = /^   - /.test(line);
-
-        if (isNumbered) {
-          // Close previous sub-list if exists
-          if (currentSubList.length > 0) {
-            html += '<ul class="list-disc list-outside ml-5 mt-2 text-gray-500 space-y-1">';
-            html += currentSubList.join('');
-            html += '</ul>';
-            currentSubList = [];
-            html += '</li>';
-          } else if (index > 0) {
-            html += '</li>';
-          }
-
-          const text = line.replace(/^\d+\. /, '');
-          html += `<li>${text}`;
-        } else if (isSubItem) {
-          const text = line.replace(/^   - /, '');
-          currentSubList.push(`<li>${text}</li>`);
-        }
-      });
-
-      // Close final item
-      if (currentSubList.length > 0) {
-        html += '<ul class="list-disc list-outside ml-5 mt-2 text-gray-500 space-y-1">';
-        html += currentSubList.join('');
-        html += '</ul>';
-      }
-      html += '</li></ol>';
-      return html;
-    }
-  );
-
-  // Process simple unordered lists (non-indented)
-  result = result.replace(/(^- .+$(\n- .+$)*)/gm, (match) => {
-    const items = match.split('\n').map(line => {
-      const text = line.replace(/^- /, '');
-      return `<li>${text}</li>`;
-    }).join('');
-    return `<ul class="list-disc list-outside ml-5 mb-4 text-gray-600 space-y-1">${items}</ul>`;
-  });
-
-  result = result
-    // Paragraphs
-    .replace(/\n\n/g, '</p><p class="mb-4 text-gray-600 leading-relaxed">')
-    // Wrap in paragraph
-    .replace(/^/, '<p class="mb-4 text-gray-600 leading-relaxed">')
-    .replace(/$/, '</p>')
-    // Clean up empty paragraphs
-    .replace(/<p class="mb-4 text-gray-600 leading-relaxed"><\/p>/g, '');
-
-  return result;
-}
 
 export default ArticleDetailPage;

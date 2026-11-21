@@ -27,6 +27,11 @@
   .on-paper :focus-visible {
     outline-color: #344A9B;
   }
+  /* Programmatic focus targets (e.g. a wizard step receiving focus) draw no ring. */
+  [tabindex="-1"]:focus-visible,
+  .on-paper [tabindex="-1"]:focus-visible {
+    outline: none;
+  }
   a {
     text-underline-offset: 0.2em;
     text-decoration-thickness: 1px;
@@ -64,6 +69,207 @@
     background-repeat: repeat-x;
     background-position: center;
     height: 6px;
+  }
+}
+
+@layer components {
+  /* Long-form reading text (articles, and any page rendered from the article
+     markdown). Markup comes unstyled from src/utils/formatArticle.ts. */
+  .article-body {
+    @apply text-[17px] leading-[1.7] text-ink;
+  }
+  .article-body > * + * {
+    @apply mt-5;
+  }
+  .article-body h2 {
+    @apply display mt-12 scroll-mt-24 border-b-2 border-desk pb-2 text-2xl leading-tight text-ink sm:text-[28px];
+  }
+  .article-body h2:first-child {
+    @apply mt-0;
+  }
+  .article-body h3 {
+    @apply mt-9 text-lg font-extrabold leading-snug tracking-[-0.01em] text-ink;
+  }
+  .article-body h2 + *,
+  .article-body h3 + * {
+    @apply mt-3;
+  }
+  .article-body a {
+    @apply font-semibold text-desk underline decoration-desk/40 hover:decoration-desk;
+  }
+  .article-body strong {
+    @apply font-bold text-ink;
+  }
+  .article-body ul,
+  .article-body ol {
+    @apply space-y-2 pl-6;
+  }
+  .article-body ul {
+    @apply list-[square];
+  }
+  .article-body ol {
+    @apply list-decimal;
+  }
+  .article-body li::marker {
+    @apply font-mono text-[0.85em] font-semibold text-desk;
+  }
+  .article-body li > ul {
+    @apply mt-2 space-y-1 text-[16px] text-ink-soft;
+  }
+  .article-body pre {
+    @apply mt-3 overflow-x-auto border-l border-paper-rule bg-paper-ground px-4 py-3 font-mono text-[13px] leading-relaxed text-ink-soft;
+  }
+  .article-body .table-scroll {
+    @apply -mx-5 overflow-x-auto px-5 sm:mx-0 sm:px-0;
+  }
+  .article-body table {
+    @apply w-full border-collapse text-[15px] leading-snug;
+  }
+  .article-body th {
+    @apply field-label border-b-2 border-desk px-3 pb-2 text-left align-bottom text-ink-mute first:pl-0;
+  }
+  .article-body td {
+    @apply border-b border-paper-rule px-3 py-2.5 align-top text-ink-soft first:pl-0;
+  }
+  .article-body td.figure {
+    @apply whitespace-nowrap font-mono text-[14px] text-ink;
+  }
+}
+
+@layer components {
+  /* Calculator form vocabulary (annual and monthly calculators). See DESIGN.md
+     "Inputs / Fields" and "Buttons". Everything is square and ruled in desk ink. */
+
+  /* A boxed entry field: 2px desk frame on warm paper; numbers in mono.
+     Focus keeps the global desk outline and fills the box with the butter wash. */
+  .field-input {
+    @apply block h-11 w-full border-2 border-desk bg-paper-white px-3 font-mono text-[15px] tabular-nums text-ink placeholder:text-[#A8AEC2] focus:bg-[#FEF8E1];
+    border-radius: 0;
+  }
+  .field-input:disabled {
+    @apply cursor-not-allowed border-ink/25 bg-paper-ground text-ink-mute;
+  }
+  .field-input[aria-invalid="true"] {
+    @apply border-[3px] border-ink;
+  }
+  select.field-input {
+    @apply font-sans pr-9;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 4.5 6 8l4-3.5' fill='none' stroke='%23344A9B' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 12px;
+  }
+  /* Native checkboxes and radios on paper become form boxes: 20px square, 2px desk frame,
+     a drawn cross when ticked (same mark as FormBox). Visually-hidden peers are left alone. */
+  .on-paper input[type='checkbox']:not(.sr-only),
+  .on-paper input[type='radio']:not(.sr-only) {
+    appearance: none;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border: 2px solid #344A9B;
+    border-radius: 0;
+    background-color: #FFFDF5;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 14px;
+    cursor: pointer;
+  }
+  .on-paper input[type='checkbox']:not(.sr-only):checked,
+  .on-paper input[type='radio']:not(.sr-only):checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 3l10 10M13 3L3 13' fill='none' stroke='%2325304A' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+  .on-paper input[type='checkbox']:not(.sr-only):disabled,
+  .on-paper input[type='radio']:not(.sr-only):disabled {
+    cursor: not-allowed;
+    border-color: rgba(37, 48, 74, 0.25);
+  }
+  .on-paper input[type='checkbox']:not(.sr-only):focus-visible,
+  .on-paper input[type='radio']:not(.sr-only):focus-visible {
+    outline: 2px solid #344A9B;
+    outline-offset: 2px;
+  }
+  /* Range sliders take the desk ink. */
+  .on-paper input[type='range'] {
+    accent-color: #344A9B;
+  }
+
+  /* A field label as plain sentence case (inner fields under a numbered section). */
+  .field-name {
+    @apply mb-1.5 block text-sm font-semibold text-ink;
+  }
+  .field-hint {
+    @apply mt-1.5 text-xs leading-snug text-ink-mute;
+  }
+  /* Validation message: ink, bold, led by a drawn mark from FieldError. Never stamp red. */
+  .field-error {
+    @apply mt-1.5 flex items-start gap-1.5 text-[13px] font-semibold leading-snug text-ink;
+  }
+  .field-error::before {
+    content: '';
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    margin-top: 2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2325304A' stroke-width='2' stroke-linecap='round'%3E%3Crect x='1.5' y='1.5' width='13' height='13'/%3E%3Cpath d='M8 4.5v4.5M8 11.5v.01'/%3E%3C/svg%3E") no-repeat center / contain;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-desk px-5 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-desk-deep disabled:cursor-not-allowed disabled:bg-ink/15 disabled:text-ink-mute;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 border-2 border-desk bg-transparent px-5 py-2.5 text-[15px] font-semibold text-desk transition-colors hover:bg-desk hover:text-white disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink-mute disabled:hover:bg-transparent;
+  }
+  .btn-text {
+    @apply inline-flex items-center gap-1.5 text-[15px] font-semibold text-desk underline decoration-desk/40 underline-offset-4 hover:decoration-desk;
+  }
+  /* Small square stepper button (+ / −) for counts. */
+  .btn-count {
+    @apply inline-flex h-9 w-9 items-center justify-center border-2 border-desk bg-paper-white font-mono text-lg font-bold text-desk transition-colors hover:bg-desk hover:text-white disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink-mute disabled:hover:bg-paper-white;
+  }
+
+  /* Small print on paper: a hairline box for guidance, a 2px desk box for things to act on. */
+  .note {
+    @apply border border-ink/25 px-4 py-3 text-sm leading-relaxed text-ink-soft;
+  }
+  .note-strong {
+    @apply border-2 border-desk px-4 py-3 text-sm leading-relaxed text-ink;
+  }
+  .note > h3,
+  .note-strong > h3,
+  .note-title {
+    @apply field-label mb-2 text-ink;
+  }
+
+  /* Ruled two-column form line: label left, figure right. */
+  .form-line {
+    @apply flex items-baseline justify-between gap-4 border-b border-paper-rule py-2 text-[15px];
+  }
+  .form-line > :last-child {
+    @apply text-right font-mono text-sm tabular-nums text-ink;
+  }
+  .form-total {
+    @apply flex items-baseline justify-between gap-4 border-t-2 border-desk pt-2.5 text-[15px] font-bold;
+  }
+  .form-total > :last-child {
+    @apply text-right font-mono tabular-nums text-ink;
+  }
+
+  /* The calculator's data tables. */
+  .sheet-table {
+    @apply w-full border-collapse text-sm;
+  }
+  .sheet-table th {
+    @apply field-label border-b-2 border-desk px-2 pb-2 text-left align-bottom text-ink-mute first:pl-0 last:pr-0;
+  }
+  .sheet-table td {
+    @apply border-b border-paper-rule px-2 py-2 align-top text-ink-soft first:pl-0 last:pr-0;
+  }
+  .sheet-table td.figure,
+  .sheet-table th.figure {
+    @apply whitespace-nowrap text-right font-mono tabular-nums text-ink;
   }
 }
 
