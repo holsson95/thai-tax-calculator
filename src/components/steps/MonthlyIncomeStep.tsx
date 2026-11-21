@@ -57,24 +57,24 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData }
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">Assessable Income</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display mb-4 text-2xl leading-tight text-ink sm:text-[28px]">Assessable Income</h2>
+      <p className="text-ink-soft mb-6">
         Enter your income details below. Include your regular monthly salary, plus any bonus or other income you expect to receive this year.
       </p>
 
       {/* Monthly Salary Input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-ink-soft mb-2">
           Salary per month (THB)
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
           <input
             type="text"
             inputMode="numeric"
             value={formatDisplayValue(salary)}
             onChange={handleSalaryChange}
-            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="field-input pl-8 pr-4"
             placeholder="0"
           />
         </div>
@@ -82,58 +82,58 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData }
 
       {/* Annual Bonus Input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-ink-soft mb-2">
           Bonus per year (THB)
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
           <input
             type="text"
             inputMode="numeric"
             value={formatDisplayValue(bonus)}
             onChange={handleBonusChange}
-            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="field-input pl-8 pr-4"
             placeholder="0"
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-ink-mute mt-1">
           Expected annual bonus amount
         </p>
       </div>
 
       {/* Other Income Input */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-ink-soft mb-2">
           Other income per year (THB)
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
           <input
             type="text"
             inputMode="numeric"
             value={formatDisplayValue(otherIncome)}
             onChange={handleOtherIncomeChange}
-            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="field-input pl-8 pr-4"
             placeholder="0"
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-ink-mute mt-1">
           Housing allowance, overtime, commissions, etc.
         </p>
       </div>
 
       {/* Social Security Checkbox */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-paper-rule p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={includeSS}
             onChange={(e) => setIncludeSS(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="mt-1"
           />
           <div>
-            <span className="font-medium text-gray-800">Include Social Security Contributions</span>
-            <p className="text-sm text-gray-500 mt-1">
+            <span className="font-medium text-ink">Include Social Security Contributions</span>
+            <p className="text-sm text-ink-mute mt-1">
               Social security contributions are tax-deductible up to ฿10,500 per year (2026 limit).
             </p>
           </div>
@@ -142,21 +142,21 @@ const MonthlyIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData }
         {/* Social Security Amount Input */}
         {includeSS && (
           <div className="mt-4 ml-8">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-ink-soft mb-2">
               Estimated annual contribution (THB)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
               <input
                 type="text"
                 inputMode="numeric"
                 value={formatDisplayValue(ssContribution)}
                 onChange={handleSSContributionChange}
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="field-input pl-8 pr-4"
                 placeholder="0"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Maximum: ฿{MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()} per year
             </p>
           </div>

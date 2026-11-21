@@ -6,7 +6,7 @@ import Folder from '../Folder';
 const Harness: React.FC<{ onNext?: () => void }> = ({ onNext = () => {} }) => {
   const [open, setOpen] = useState(true);
   return (
-    <Folder id="about" title="About you" summary="About you · 200 days" paper="bg-paper-white" open={open}
+    <Folder id="about" title="About you" summary="About you · 200 days" n={1} open={open}
       onToggle={() => setOpen((o) => !o)} next={{ label: 'Money brought in', onClick: onNext }}>
       <p>Body content</p>
     </Folder>

@@ -27,7 +27,10 @@ import FreelancerResultsStep from './steps/FreelancerResultsStep';
 import BusinessProfileStep from './steps/BusinessProfileStep';
 // Company owner-specific steps
 import CompanyIncomeStep from './steps/CompanyIncomeStep';
-import LastUpdated from './LastUpdated';
+import CalculatorFrame from './calculator/CalculatorFrame';
+import { StepTrack, WizardNav } from './calculator/StepTrack';
+import { AnnualReference, ANNUAL_INTRO } from './calculator/reference';
+import { RULES_TAX_YEAR } from '../config/taxRules';
 import { PAGE_LAST_UPDATED } from '../config/contentDates';
 
 const STORAGE_KEY = 'thai_tax_annual_wizard_data';
@@ -558,7 +561,7 @@ const AnnualTaxWizard: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8 px-4">
+    <>
       <Helmet>
         <title>{ANNUAL_TAX_META.title}</title>
         <meta name="description" content={ANNUAL_TAX_META.description} />
@@ -569,269 +572,48 @@ const AnnualTaxWizard: React.FC = () => {
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(ANNUAL_TAX_SCHEMA)}</script>
       </Helmet>
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-5">
-          <h1 className="text-xl font-bold text-gray-900 mb-1">Annual Tax Calculator</h1>
-          <LastUpdated date={PAGE_LAST_UPDATED.annualTax} className="mb-1" />
-          <p className="text-sm text-gray-600">
-            Walk through a step-by-step form to estimate your Thai personal income tax for the full
-            calendar year. Covers salaried employees, freelancers, sole proprietors, and company owners —
-            including foreign income and double tax agreement scenarios. At the end you can download a
-            PDF summary to use as a filing reference.
-          </p>
-        </div>
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full">
-        {/* Header with Home button */}
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={handleGoHome}
-            className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm"
-            aria-label="Go to home page"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-            </svg>
+      <CalculatorFrame
+        title="Annual Tax Calculator"
+        crumb="Annual tax"
+        updated={PAGE_LAST_UPDATED.annualTax}
+        intro={ANNUAL_INTRO}
+        paper="canary"
+        tab={`Annual return · tax year ${RULES_TAX_YEAR}`}
+        homeLink={
+          <button type="button" onClick={handleGoHome} className="hover:text-white" aria-label="Go to home page">
             Home
           </button>
-          {!isResultsStep && (
-            <button
-              onClick={handleStartOver}
-              className="text-red-500 hover:text-red-700 text-sm"
-              aria-label="Start over"
-            >
-              Start Over
-            </button>
+        }
+        reference={<AnnualReference />}
+      >
+        <StepTrack
+          labels={stepLabels}
+          current={currentStep}
+          onGoTo={goToStep}
+          onStartOver={isResultsStep ? undefined : handleStartOver}
+        >
+          {currentStep > 0 && !isResultsStep && (
+            <p className="mt-2 text-xs text-ink-mute">
+              Your progress has been saved. You can continue where you left off.
+            </p>
+          )}
+        </StepTrack>
+
+        <div className="px-5 pb-7 pt-7 sm:px-8 sm:pb-8">
+          <div className="min-h-[300px] outline-none" ref={stepContentRef} tabIndex={-1}>
+            {renderStep()}
+          </div>
+
+          {showNavigation && !isFirstStep && (
+            <WizardNav
+              onPrevious={handlePreviousStep}
+              onNext={isReviewStep ? undefined : () => handleNextStep()}
+              nextDisabled={!isStepValid()}
+            />
           )}
         </div>
-
-        {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">
-              Step {currentStep + 1} of {totalSteps}: {stepLabels[currentStep]}
-            </span>
-            <span className="text-sm text-gray-500">
-              {Math.round(((currentStep + 1) / totalSteps) * 100)}%
-            </span>
-          </div>
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div
-              className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
-              role="progressbar"
-              aria-valuenow={currentStep + 1}
-              aria-valuemin={1}
-              aria-valuemax={totalSteps}
-            />
-          </div>
-          {/* Step Dots - Sliding Window */}
-          <div className="flex justify-center items-center gap-2 mt-3">
-            {(() => {
-              const windowSize = 2; // Show current ± 2 steps
-              const showStart = currentStep > windowSize;
-              const showEnd = currentStep < totalSteps - 1 - windowSize;
-
-              // Calculate visible range
-              let startIndex = Math.max(0, currentStep - windowSize);
-              let endIndex = Math.min(totalSteps - 1, currentStep + windowSize);
-
-              // Adjust range to always show at least 5 items when possible
-              if (endIndex - startIndex < windowSize * 2 && totalSteps > windowSize * 2) {
-                if (startIndex === 0) {
-                  endIndex = Math.min(totalSteps - 1, windowSize * 2);
-                } else if (endIndex === totalSteps - 1) {
-                  startIndex = Math.max(0, totalSteps - 1 - windowSize * 2);
-                }
-              }
-
-              const visibleSteps = stepLabels.slice(startIndex, endIndex + 1);
-
-              return (
-                <>
-                  {/* First step + ellipsis if needed */}
-                  {showStart && (
-                    <>
-                      <button
-                        onClick={() => goToStep(0)}
-                        className="flex flex-col items-center group cursor-pointer"
-                        aria-label={`Go to Step 1: ${stepLabels[0]}`}
-                      >
-                        <div className="w-3 h-3 rounded-full bg-blue-500 group-hover:bg-blue-600 transition-all" />
-                        <span className="text-xs mt-1 text-gray-400 hidden md:block">{stepLabels[0]}</span>
-                      </button>
-                      <span className="text-gray-400 text-sm px-1">...</span>
-                    </>
-                  )}
-
-                  {/* Visible steps in window */}
-                  {visibleSteps.map((label: string, i: number) => {
-                    const index = startIndex + i;
-                    return (
-                      <button
-                        key={`${label}-${index}`}
-                        onClick={() => index < currentStep && goToStep(index)}
-                        disabled={index >= currentStep}
-                        className={`flex flex-col items-center group ${
-                          index < currentStep ? 'cursor-pointer' : 'cursor-default'
-                        }`}
-                        aria-label={`${index < currentStep ? 'Go to ' : ''}Step ${index + 1}: ${label}`}
-                      >
-                        <div
-                          className={`w-3 h-3 rounded-full transition-all ${
-                            index < currentStep
-                              ? 'bg-blue-500 group-hover:bg-blue-600'
-                              : index === currentStep
-                              ? 'bg-blue-500 ring-2 ring-blue-200'
-                              : 'bg-gray-300'
-                          }`}
-                        />
-                        <span
-                          className={`text-xs mt-1 hidden md:block whitespace-nowrap ${
-                            index === currentStep ? 'text-blue-600 font-medium' : 'text-gray-400'
-                          }`}
-                        >
-                          {label}
-                        </span>
-                      </button>
-                    );
-                  })}
-
-                  {/* Ellipsis + last step if needed */}
-                  {showEnd && (
-                    <>
-                      <span className="text-gray-400 text-sm px-1">...</span>
-                      <button
-                        onClick={() => {}}
-                        disabled
-                        className="flex flex-col items-center group cursor-default"
-                        aria-label={`Step ${totalSteps}: ${stepLabels[totalSteps - 1]}`}
-                      >
-                        <div className="w-3 h-3 rounded-full bg-gray-300 transition-all" />
-                        <span className="text-xs mt-1 text-gray-400 hidden md:block">{stepLabels[totalSteps - 1]}</span>
-                      </button>
-                    </>
-                  )}
-                </>
-              );
-            })()}
-          </div>
-        </div>
-
-        {/* Resume indicator for returning users */}
-        {currentStep > 0 && !isResultsStep && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <span className="text-sm text-blue-700">
-              Your progress has been saved. You can continue where you left off.
-            </span>
-          </div>
-        )}
-
-        {/* Step Content */}
-        <div className="min-h-[300px] outline-none" ref={stepContentRef} tabIndex={-1}>
-          {renderStep()}
-        </div>
-
-        {/* Navigation Buttons */}
-        {showNavigation && !isFirstStep && (
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-            <button
-              onClick={handlePreviousStep}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
-              aria-label="Go to previous step"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              Previous
-            </button>
-            {!isReviewStep && (
-              <button
-                onClick={() => handleNextStep()}
-                disabled={!isStepValid()}
-                className={`px-6 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                  isStepValid()
-                    ? 'bg-blue-500 text-white hover:bg-blue-600'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                }`}
-                aria-label="Go to next step"
-              >
-                Next
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 w-full mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">How this calculator works</h2>
-        <p className="text-sm text-gray-600 mb-6">
-          This calculator walks through Thailand's annual personal income tax return step by step:
-          your employment type, gross income, and eligible deductions and allowances. It applies
-          Thailand's progressive tax brackets to your taxable income and shows a full breakdown of
-          what you owe, with the option to download a PDF summary for your records. Everything runs
-          in your browser — nothing you enter is sent to a server.
-        </p>
-
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Thailand's progressive tax brackets</h2>
-        <p className="text-sm text-gray-600 mb-3">
-          Thailand taxes income progressively — each bracket of income is taxed only at its own rate,
-          not your whole income at your top rate. The first 150,000 THB of taxable income is exempt;
-          income above that is taxed in increasing bands from 5% up to 35% for taxable income over
-          5,000,000 THB. Because of this structure, your effective tax rate is always lower than your
-          top marginal rate.
-        </p>
-        <table className="w-full text-sm text-gray-600 mb-6">
-          <thead>
-            <tr className="text-left border-b border-gray-200">
-              <th className="py-1.5 font-medium text-gray-700">Taxable income (THB)</th>
-              <th className="py-1.5 font-medium text-gray-700">Rate</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b border-gray-100"><td className="py-1.5">0 – 150,000</td><td className="py-1.5">Exempt</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">150,001 – 300,000</td><td className="py-1.5">5%</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">300,001 – 500,000</td><td className="py-1.5">10%</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">500,001 – 750,000</td><td className="py-1.5">15%</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">750,001 – 1,000,000</td><td className="py-1.5">20%</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">1,000,001 – 2,000,000</td><td className="py-1.5">25%</td></tr>
-            <tr className="border-b border-gray-100"><td className="py-1.5">2,000,001 – 5,000,000</td><td className="py-1.5">30%</td></tr>
-            <tr><td className="py-1.5">Over 5,000,000</td><td className="py-1.5">35%</td></tr>
-          </tbody>
-        </table>
-
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
-        <div className="space-y-4">
-          <div>
-            <p className="text-sm font-medium text-gray-800">Who should use this calculator?</p>
-            <p className="text-sm text-gray-600">
-              Anyone filing a Thai PND 90/91 return — salaried employees, freelancers, sole
-              proprietors, and company owners — including expats with foreign income remitted to
-              Thailand.
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-800">Does it account for deductions and allowances?</p>
-            <p className="text-sm text-gray-600">
-              Yes. The form walks through standard personal allowances, spouse and dependent
-              allowances, social security contributions, and common deductions before applying the
-              tax brackets.
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
-            <p className="text-sm text-gray-600">
-              No. Your answers are kept only in your browser's session storage so you can resume if
-              you navigate away, and nothing is transmitted to a server.
-            </p>
-          </div>
-        </div>
-      </div>
-      </div>
-    </div>
+      </CalculatorFrame>
+    </>
   );
 };
 

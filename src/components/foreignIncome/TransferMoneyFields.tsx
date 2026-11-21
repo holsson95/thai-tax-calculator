@@ -95,7 +95,7 @@ const TransferMoneyFields: React.FC<Props> = ({ idPrefix, value, onChange, showI
   else rateStatus = value.date ? '' : 'Pick the date to look up the rate, or type your own.';
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
       <div>
         <label htmlFor={`${idPrefix}-currency`} className={labelCls}>
           Currency
@@ -156,7 +156,7 @@ const TransferMoneyFields: React.FC<Props> = ({ idPrefix, value, onChange, showI
               type="text"
               inputMode="decimal"
               autoComplete="off"
-              className={`${inputCls} font-mono`}
+              className={inputCls}
               value={rateText}
               placeholder="e.g. 35.50"
               onChange={(e) => setRate(e.target.value)}
@@ -182,7 +182,7 @@ const TransferMoneyFields: React.FC<Props> = ({ idPrefix, value, onChange, showI
 
       <div className="sm:col-span-2">
         {converted && value.amount > 0 && (
-          <p className="font-mono text-sm font-semibold text-ink">= ฿{converted.amountThb.toLocaleString('en-US')} used in the estimate</p>
+          <p className="font-mono text-sm font-semibold tabular-nums text-ink">= ฿{converted.amountThb.toLocaleString('en-US')} used in the estimate</p>
         )}
         {!isThb && <p className={`${hintCls} mt-1 max-w-prose`}>{REFERENCE_NOTE}</p>}
       </div>

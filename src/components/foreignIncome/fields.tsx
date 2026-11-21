@@ -6,10 +6,10 @@ export const toNumber = (v: string): number => {
   return Number.isFinite(n) && n >= 0 ? n : 0;
 };
 
-export const inputCls =
-  'w-full px-3 py-2.5 border border-ink/30 rounded-md text-ink bg-white placeholder:text-ink-mute/70 focus:outline-none focus:ring-2 focus:ring-desk focus:border-transparent';
-export const labelCls = 'block text-sm font-semibold text-ink mb-1';
-export const hintCls = 'text-xs text-ink-mute mt-1';
+/* The carbon-copy field vocabulary (src/index.css: .field-input, .field-name, .field-hint). */
+export const inputCls = 'field-input';
+export const labelCls = 'field-name';
+export const hintCls = 'field-hint';
 
 interface MoneyFieldProps {
   id: string;
@@ -28,7 +28,7 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({ id, label, value, onChan
     </label>
     <div className="relative">
       <span
-        className="absolute left-3 top-1/2 -translate-y-1/2 font-mono text-sm text-ink-mute select-none"
+        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 select-none font-mono text-[15px] text-ink-mute"
         aria-hidden="true"
       >
         {prefix}
@@ -38,7 +38,7 @@ export const MoneyField: React.FC<MoneyFieldProps> = ({ id, label, value, onChan
         type="text"
         inputMode="decimal"
         autoComplete="off"
-        className={`${inputCls} ${prefix.length > 1 ? 'pl-14' : 'pl-7'}`}
+        className={`${inputCls} ${prefix.length > 1 ? 'pl-14' : 'pl-8'}`}
         value={value ? value.toLocaleString('en-US') : ''}
         placeholder="0"
         onChange={(e) => onChange(toNumber(e.target.value))}

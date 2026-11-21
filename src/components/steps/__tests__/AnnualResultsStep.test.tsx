@@ -252,7 +252,7 @@ describe('AnnualResultsStep', () => {
     expect(screen.getByText('Spouse')).toBeInTheDocument();
   });
 
-  it('uses green color styling for refund display', () => {
+  it('marks a refund with the Refund stamp', () => {
     const formData = createBaseFormData({
       annualIncome: 500000,
       taxWithheld: 50000,
@@ -265,12 +265,12 @@ describe('AnnualResultsStep', () => {
 
     // Check that refund text is displayed
     expect(screen.getByText('Tax Refund')).toBeInTheDocument();
-    // Check for green color class somewhere in the refund area
-    const refundAmount = screen.getByText(/overpaid/i);
-    expect(refundAmount).toHaveClass('text-green-600');
+    // One ink: the outcome is carried by the words and the rubber stamp, not by colour
+    expect(screen.getByText(/overpaid/i)).toHaveAttribute('data-outcome', 'refund');
+    expect(screen.getByText('Refund')).toBeInTheDocument();
   });
 
-  it('uses red color styling for owed display', () => {
+  it('marks a balance owed with the Balance due stamp', () => {
     const formData = createBaseFormData({
       annualIncome: 1000000,
       taxWithheld: 10000,
@@ -283,9 +283,8 @@ describe('AnnualResultsStep', () => {
 
     // Check that owed text is displayed
     expect(screen.getByText('Additional Tax Owed')).toBeInTheDocument();
-    // Check for red color class somewhere in the owed area
-    const owedMessage = screen.getByText(/owe additional tax/i);
-    expect(owedMessage).toHaveClass('text-red-600');
+    expect(screen.getByText(/owe additional tax/i)).toHaveAttribute('data-outcome', 'owed');
+    expect(screen.getByText('Balance due')).toBeInTheDocument();
   });
 
   it('handles zero income correctly', () => {

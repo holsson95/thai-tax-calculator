@@ -19,6 +19,7 @@ import LeadCTA from '../leads/LeadCTA';
 import { leadContextFromRemittance } from '../../utils/leadContext';
 import { track, taxBand } from '../../utils/analytics';
 import Folder from './Folder';
+import { Check, FieldError, FormBox, Radio } from '../ui/form';
 import TransferMoneyFields from './TransferMoneyFields';
 import { MoneyField, hintCls, inputCls, labelCls, toNumber } from './fields';
 import { aboutSummary, thaiSummary, transferCardSummary, transfersSummary } from './folderSummaries';
@@ -126,15 +127,6 @@ const focusById = (id: string) =>
     el?.focus();
     el?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
   });
-
-const chipCls = (on: boolean) =>
-  `cursor-pointer select-none rounded-full border px-3 py-1.5 text-sm transition-colors focus-within:ring-2 focus-within:ring-desk focus-within:ring-offset-1 ${
-    on ? 'bg-desk border-desk text-white' : 'bg-white border-ink/30 text-ink hover:border-desk'
-  }`;
-const optionCls = (on: boolean) =>
-  `cursor-pointer rounded-md border text-sm focus-within:ring-2 focus-within:ring-desk focus-within:ring-offset-1 ${
-    on ? 'border-desk bg-white ring-1 ring-desk' : 'border-ink/25 bg-white/60 hover:bg-white'
-  }`;
 
 type FolderKey = 'about' | 'money' | 'thai';
 
@@ -292,18 +284,18 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
 
   return (
     <div>
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate>
         <Folder
           ref={tabRefs.about}
           id="fic-about"
+          n={1}
           title={`About you in ${RULES_TAX_YEAR}`}
           summary={aboutSummary(input, VISA_LABELS[input.visaType])}
-          paper="bg-paper-white"
           open={open.about}
           onToggle={() => toggle('about')}
           next={{ label: 'Money brought in', onClick: () => goNext('about', 'money') }}
         >
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
             <div>
               <label htmlFor="fic-days" className={labelCls}>
                 Days in Thailand this year
@@ -320,7 +312,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                 onChange={(e) => set('daysInThailand', Math.min(366, toNumber(e.target.value)))}
                 aria-describedby="fic-days-status"
               />
-              <p id="fic-days-status" className="text-xs mt-1" aria-live="polite">
+              <p id="fic-days-status" className="field-hint" aria-live="polite">
                 {input.daysInThailand > 0 ? (
                   <span className="font-semibold text-ink">
                     {isResident
@@ -368,20 +360,16 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
               </select>
             </div>
           </div>
-          <div className="mt-5">
+          <div className="mt-6">
             <p className={labelCls} id="fic-types-label">
               Foreign income you have (tick all that apply)
             </p>
-            <div className="flex flex-wrap gap-2" role="group" aria-labelledby="fic-types-label">
-              {(Object.keys(INCOME_TYPE_LABELS) as ForeignIncomeType[]).map((t) => {
-                const on = input.foreignIncomeTypes.includes(t);
-                return (
-                  <label key={t} className={chipCls(on)}>
-                    <input type="checkbox" className="sr-only" checked={on} onChange={() => toggleIncomeType(t)} />
-                    {INCOME_TYPE_LABELS[t]}
-                  </label>
-                );
-              })}
+            <div className="mt-2 grid gap-x-4 gap-y-3 sm:grid-cols-3" role="group" aria-labelledby="fic-types-label">
+              {(Object.keys(INCOME_TYPE_LABELS) as ForeignIncomeType[]).map((t) => (
+                <Check key={t} checked={input.foreignIncomeTypes.includes(t)} onChange={() => toggleIncomeType(t)}>
+                  {INCOME_TYPE_LABELS[t]}
+                </Check>
+              ))}
             </div>
           </div>
         </Folder>
@@ -389,38 +377,44 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
         <Folder
           ref={tabRefs.money}
           id="fic-money"
+          n={2}
           title={`Money brought in during ${RULES_TAX_YEAR}`}
           summary={transfersSummary(totalThb, input.remittances.length, needRate.length)}
-          paper="bg-paper-canary"
           open={open.money}
           onToggle={() => toggle('money')}
           next={{ label: 'Thai income', onClick: () => goNext('money', 'thai') }}
         >
-          <p className="text-sm text-ink-soft mb-4 max-w-prose">
+          <p className="mb-5 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Add each transfer, or group similar ones, in the currency you sent. If you already know the baht amount your
             Thai bank credited, choose THB and enter that.
           </p>
-          <ol className="space-y-3">
+          <ol className="space-y-4">
             {input.remittances.map((r, i) => {
               const m = money[r.id] ?? newTransferMoney('THB');
               const isOpen = cardOpen[r.id] ?? true;
               const askResidency = r.yearEarned !== 'pre2024' && r.yearEarned !== RULES_TAX_YEAR && r.kind !== 'capital';
               return (
-                <li key={r.id} className="rounded-sm bg-white/55 ring-1 ring-ink/15">
-                  <div className="flex items-center justify-between gap-3 px-3 py-2 sm:px-4">
+                <li key={r.id} className="border-2 border-desk">
+                  <div className="flex items-center justify-between gap-3 px-3 py-1.5 sm:px-4">
                     <button
                       type="button"
                       aria-expanded={isOpen}
                       aria-controls={`${r.id}-body`}
                       onClick={() => setCardOpen((c) => ({ ...c, [r.id]: !isOpen }))}
-                      className="min-w-0 flex-1 py-1 text-left text-sm font-bold text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-desk"
+                      className={`min-w-0 flex-1 py-1.5 text-left text-ink ${isOpen ? 'field-label' : 'text-sm font-semibold'}`}
                     >
-                      {isOpen ? `Transfer ${i + 1}` : transferCardSummary(i, m, KIND_LABELS[r.kind].label)}
+                      {isOpen ? (
+                        <>
+                          Transfer <span className="font-mono">{i + 1}</span>
+                        </>
+                      ) : (
+                        transferCardSummary(i, m, KIND_LABELS[r.kind].label)
+                      )}
                     </button>
                     {input.remittances.length > 1 && (
                       <button
                         type="button"
-                        className="shrink-0 text-sm font-medium text-stamp-deep hover:underline"
+                        className="shrink-0 text-sm font-semibold text-ink-soft underline decoration-ink/30 underline-offset-4 hover:text-ink hover:decoration-ink"
                         onClick={() => removeTransfer(r.id)}
                         aria-label={`Remove transfer ${i + 1}`}
                       >
@@ -428,14 +422,14 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                       </button>
                     )}
                   </div>
-                  <div id={`${r.id}-body`} hidden={!isOpen} className="border-t border-ink/10 px-3 pb-4 pt-3 sm:px-4">
+                  <div id={`${r.id}-body`} hidden={!isOpen} className="border-t-2 border-desk px-3 pb-5 pt-4 sm:px-4">
                     <TransferMoneyFields
                       idPrefix={r.id}
                       value={m}
                       onChange={(next) => updateMoney(r.id, next)}
                       showIncomePortion={r.kind === 'mixed'}
                     />
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="mt-5 grid gap-x-4 gap-y-5 sm:grid-cols-2">
                       <div>
                         <label htmlFor={`${r.id}-year`} className={labelCls}>
                           Year the money was earned
@@ -483,20 +477,37 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                         <p className={labelCls} id={`${r.id}-kind-label`}>
                           What is this money?
                         </p>
-                        <div className="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-labelledby={`${r.id}-kind-label`}>
-                          {(Object.keys(KIND_LABELS) as RemittanceKind[]).map((k) => (
-                            <label key={k} className={`${optionCls(r.kind === k)} p-2.5`}>
-                              <input
-                                type="radio"
-                                name={`${r.id}-kind`}
-                                className="sr-only"
-                                checked={r.kind === k}
-                                onChange={() => updateRemittance(r.id, { kind: k })}
-                              />
-                              <span className="block font-semibold text-ink">{KIND_LABELS[k].label}</span>
-                              <span className="block text-xs text-ink-mute">{KIND_LABELS[k].hint}</span>
-                            </label>
-                          ))}
+                        <div
+                          className="mt-2 grid border-t-2 border-desk sm:grid-cols-3 sm:divide-x sm:divide-ink/25"
+                          role="radiogroup"
+                          aria-labelledby={`${r.id}-kind-label`}
+                        >
+                          {(Object.keys(KIND_LABELS) as RemittanceKind[]).map((k) => {
+                            const on = r.kind === k;
+                            return (
+                              <label
+                                key={k}
+                                className={`flex cursor-pointer items-start gap-3 border-b border-ink/25 px-2 py-3 transition-colors sm:px-3 ${
+                                  on ? 'bg-[#FEF8E1]' : 'hover:bg-desk/[0.05]'
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name={`${r.id}-kind`}
+                                  className="peer sr-only"
+                                  checked={on}
+                                  onChange={() => updateRemittance(r.id, { kind: k })}
+                                />
+                                <FormBox checked={on} className="mt-0.5" />
+                                <span className="min-w-0">
+                                  <span className={`block text-[15px] leading-snug text-ink ${on ? 'font-bold' : 'font-semibold'}`}>
+                                    {KIND_LABELS[k].label}
+                                  </span>
+                                  <span className="mt-0.5 block text-xs leading-snug text-ink-mute">{KIND_LABELS[k].hint}</span>
+                                </span>
+                              </label>
+                            );
+                          })}
                         </div>
                       </div>
                       {askResidency && (
@@ -504,18 +515,17 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                           <p className={labelCls} id={`${r.id}-res-label`}>
                             Were you in Thailand {TAX_RULES.residencyDays.value}+ days in {String(r.yearEarned)}?
                           </p>
-                          <div className="flex gap-2" role="radiogroup" aria-labelledby={`${r.id}-res-label`}>
+                          <div className="mt-2 flex flex-wrap gap-x-7 gap-y-3" role="radiogroup" aria-labelledby={`${r.id}-res-label`}>
                             {(['yes', 'no', 'unsure'] as YesNoUnsure[]).map((v) => (
-                              <label key={v} className={`${optionCls(r.residentInYearEarned === v)} px-3 py-1.5`}>
-                                <input
-                                  type="radio"
-                                  name={`${r.id}-res`}
-                                  className="sr-only"
-                                  checked={r.residentInYearEarned === v}
-                                  onChange={() => updateRemittance(r.id, { residentInYearEarned: v })}
-                                />
+                              <Radio
+                                key={v}
+                                name={`${r.id}-res`}
+                                value={v}
+                                checked={r.residentInYearEarned === v}
+                                onChange={() => updateRemittance(r.id, { residentInYearEarned: v })}
+                              >
                                 {v === 'yes' ? 'Yes' : v === 'no' ? 'No' : 'Not sure'}
-                              </label>
+                              </Radio>
                             ))}
                           </div>
                         </div>
@@ -529,14 +539,14 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
           <button
             id="fic-add-transfer"
             type="button"
-            className="mt-4 text-sm font-semibold text-desk hover:underline"
+            className="btn-text mt-5"
             onClick={addTransfer}
           >
             + Add another transfer
           </button>
 
-          <div className="mt-6 border-t border-ink/15 pt-5">
-            <div className="grid gap-3 sm:grid-cols-2">
+          <div className="mt-7 border-t border-paper-rule pt-6">
+            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
               <MoneyField
                 id="fic-foreign-tax"
                 label="Foreign tax already paid on this money (optional)"
@@ -573,7 +583,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                     type="text"
                     inputMode="decimal"
                     autoComplete="off"
-                    className={`${inputCls} font-mono`}
+                    className={inputCls}
                     value={taxRateText}
                     placeholder="e.g. 45.00"
                     onChange={(e) => {
@@ -585,7 +595,7 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
                 </div>
               )}
               {foreignTax.currency !== 'THB' && foreignTax.amount > 0 && foreignTax.rate && (
-                <p className="self-end pb-3 font-mono text-sm text-ink">≈ ฿{foreignTaxThb(foreignTax).toLocaleString('en-US')} (approximate)</p>
+                <p className="self-end pb-3 font-mono text-sm tabular-nums text-ink">≈ ฿{foreignTaxThb(foreignTax).toLocaleString('en-US')} (approximate)</p>
               )}
             </div>
           </div>
@@ -594,47 +604,37 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
         <Folder
           ref={tabRefs.thai}
           id="fic-thai"
+          n={3}
           title="Thai income (optional)"
           summary={thaiSummary(input.thaiIncome)}
-          paper="bg-paper-pink"
           open={open.thai}
           onToggle={() => toggle('thai')}
         >
-          <p className="text-sm text-ink-soft mb-4">
+          <p className="mb-5 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Thai-source income is added to remitted income before the tax brackets apply.
           </p>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-x-4 gap-y-5 sm:grid-cols-3">
             <MoneyField id="fic-thai-salary" label="Thai salary (per year)" value={input.thaiIncome.annualSalary} onChange={(n) => setThai('annualSalary', n)} />
             <MoneyField id="fic-thai-sso" label="Social security paid" value={input.thaiIncome.socialSecurityPaid} onChange={(n) => setThai('socialSecurityPaid', n)} />
             <MoneyField id="fic-thai-other" label="Other Thai income" value={input.thaiIncome.otherThaiIncome} onChange={(n) => setThai('otherThaiIncome', n)} />
           </div>
         </Folder>
 
-        {error && (
-          <p role="alert" className="rounded-sm border border-stamp/40 bg-paper-white p-3 text-sm font-semibold text-stamp-deep">
-            {error}
-          </p>
-        )}
-
-        <div className="flex flex-col gap-3 pt-1 sm:flex-row">
-          <button
-            type="submit"
-            className="w-full rounded-md bg-desk px-6 py-3 font-bold text-white hover:bg-desk-deep focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-desk sm:w-auto"
-          >
-            Estimate my tax
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="w-full rounded-md border border-ink/30 bg-paper-white px-6 py-3 font-semibold text-ink hover:bg-white sm:w-auto"
-          >
-            Start over
-          </button>
+        <div className="px-5 pb-8 pt-6 sm:px-8">
+          {error && <FieldError className="mb-4 mt-0">{error}</FieldError>}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button type="submit" className="btn-primary w-full sm:w-auto">
+              Estimate my tax
+            </button>
+            <button type="button" onClick={handleReset} className="btn-secondary w-full sm:w-auto">
+              Start over
+            </button>
+          </div>
         </div>
       </form>
 
       {submitted && needRate.length > 0 && (
-        <div ref={resultsRef} className="mt-8 scroll-mt-4 rounded-sm border border-stamp/40 bg-paper-white p-4 text-sm text-ink" role="status">
+        <div ref={resultsRef} className="note-strong mx-5 mb-8 scroll-mt-4 sm:mx-8" role="status">
           <p className="font-semibold">
             {needRate.map(({ i }) => `Transfer ${i + 1}`).join(', ')} {needRate.length === 1 ? 'needs' : 'need'} an exchange rate.
           </p>
@@ -643,13 +643,9 @@ const ForeignIncomeCalculator: React.FC<ForeignIncomeCalculatorProps> = ({ onEst
       )}
 
       {submitted && needRate.length === 0 && (
-        <div ref={resultsRef} className="mt-8 scroll-mt-4">
-          <div className="flex">
-            <span className="rounded-t-md bg-paper-sky px-4 pb-2 pt-2.5 text-sm font-bold text-ink sm:text-[15px]">Your estimate</span>
-          </div>
-          <div className="rounded-b-sm rounded-tr-md bg-paper-sky p-3 shadow-sheet sm:p-5">
-            <RemittanceResults result={result} transferLabels={transferLabels} />
-          </div>
+        <div ref={resultsRef} className="scroll-mt-4 px-5 pb-8 sm:px-8 sm:pb-10">
+          <div className="perforation mb-8 text-ink/30" aria-hidden="true" />
+          <RemittanceResults result={result} transferLabels={transferLabels} />
           {renderAfterResults ? renderAfterResults(input, result) : <LeadCTA context={leadContext} />}
         </div>
       )}

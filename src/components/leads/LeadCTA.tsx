@@ -54,30 +54,30 @@ const LeadCTA: React.FC<Props> = ({ context }) => {
   return (
     <aside
       aria-label="Specialist review"
-      className={`mt-6 rounded-xl p-5 sm:p-6 ${high ? 'border-2 border-blue-600 bg-blue-50' : 'border border-gray-200 bg-white'}`}
+      className={`mt-6 p-5 sm:p-6 ${high ? 'border-2 border-desk' : 'border border-paper-rule bg-paper-white'}`}
     >
       {open ? (
-        <Suspense fallback={<p className="text-sm text-gray-500">Loading form…</p>}>
+        <Suspense fallback={<p className="text-sm text-ink-mute">Loading form…</p>}>
           <LeadForm context={context} onCancel={() => setOpen(false)} />
         </Suspense>
       ) : (
         <>
-          <h3 className={`font-semibold text-gray-900 ${high ? 'text-lg' : 'text-base'}`}>
+          <h3 className={`font-semibold text-ink ${high ? 'text-lg' : 'text-base'}`}>
             Want a specialist to review this? Free 15-min call.
           </h3>
           {high && context.flags.length > 0 ? (
-            <p className="mt-1 text-sm text-gray-700">
+            <p className="mt-1 text-sm text-ink-soft">
               Your situation includes {context.flags.map((f) => f.title.toLowerCase()).join(', ')}. These are areas where a
               qualified advisor can check how the rules apply to you.
             </p>
           ) : (
-            <p className="mt-1 text-sm text-gray-600">A tax specialist at {PARTNER.partnerName} can check your figures and filing.</p>
+            <p className="mt-1 text-sm text-ink-soft">A tax specialist at {PARTNER.partnerName} can check your figures and filing.</p>
           )}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               type="button"
               onClick={handleOpen}
-              className={`rounded-lg px-5 py-2.5 font-semibold ${high ? 'bg-blue-600 text-white hover:bg-blue-700' : 'border border-blue-600 text-blue-700 hover:bg-blue-50'}`}
+              className={`px-5 py-2.5 font-semibold ${high ? 'bg-desk text-white hover:bg-desk-deep' : 'border border-desk text-desk hover:bg-desk/[0.05]'}`}
             >
               Request a free call
             </button>

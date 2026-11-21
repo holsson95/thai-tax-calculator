@@ -261,15 +261,15 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
   if (!formData.hasForeignIncome) {
     return (
       <div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Foreign Income</h2>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-          <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Foreign Income</h2>
+        <div className="border p-6 text-center border-ink/25">
+          <svg className="w-12 h-12 text-ink-mute mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
-          <p className="text-gray-600">
+          <p className="text-ink-soft">
             You indicated that you don't have foreign income remitted to Thailand.
           </p>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-ink-mute mt-2">
             Click Next to proceed to the next step.
           </p>
         </div>
@@ -279,20 +279,17 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">Foreign Income Details</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Foreign Income Details</h2>
+      <p className="text-ink-soft mb-6">
         Add all foreign income that was remitted to Thailand during this tax year.
       </p>
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="border border-ink/25 p-4 mb-6">
         <div className="flex items-start gap-3">
-          <svg className="h-5 w-5 text-blue-500 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-          <div className="text-sm text-blue-700">
+          <div className="text-sm text-ink-soft">
             <p className="font-medium mb-1">Foreign Income Tax Rules (2024+)</p>
-            <ul className="list-disc list-inside space-y-1 text-blue-600">
+            <ul className="list-disc list-inside space-y-1 text-ink-soft">
               <li>Income earned on/after January 1, 2024 is taxable if remitted to Thailand</li>
               <li>Foreign tax paid may be credited against Thai tax (limited to Thai tax rate)</li>
               <li>Income earned before 2024 is not taxable even if remitted in 2024+</li>
@@ -303,14 +300,11 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
       </div>
 
       {/* Non-income remittance info card */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+      <div className="p-4 mb-6 border-2 border-desk">
         <div className="flex items-start gap-3">
-          <svg className="h-5 w-5 text-green-600 mt-0.5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          <div className="text-sm text-green-800">
+          <div className="text-sm text-ink">
             <p className="font-medium mb-1">Remitting savings or capital? That's not taxable.</p>
-            <p className="text-green-700">
+            <p className="text-ink">
               Thailand taxes <strong>income</strong>, not capital. If you're transferring money you
               already saved — whether pre-residency savings, return of investment principal, or funds
               accumulated before 1 January 2024 — that is not assessable income and does not need to
@@ -333,47 +327,47 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
           return (
             <div
               key={entry.id}
-              className={`border-2 rounded-lg overflow-hidden transition-all ${
+              className={`border-2 overflow-hidden transition-all ${
                 entryErrors.length > 0 && showValidationErrors
-                  ? 'border-red-300'
-                  : 'border-gray-200'
+                  ? 'border-desk'
+                  : 'border-paper-rule'
               }`}
             >
               {/* Entry Header */}
               <div
                 className={`p-4 cursor-pointer flex justify-between items-center ${
-                  isExpanded ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'
+                  isExpanded ? '' : 'bg-paper-white hover:bg-desk/[0.05]'
                 }`}
                 onClick={() => setExpandedEntry(isExpanded ? null : entry.id)}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
+                  <span className="text-sm font-medium text-ink-mute">#{index + 1}</span>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-gray-800">
+                      <p className="font-medium text-ink">
                         {entry.country || 'New Entry'} - {entry.currency} {entry.amount.toLocaleString() || '0'}
                       </p>
                       {entry.country && (() => {
                         const dtaStatus = getEntryDTAStatus(entry);
                         if (dtaStatus === true) return (
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 whitespace-nowrap">Tax Treaty</span>
+                          <span className="text-xs px-1.5 py-0.5 text-ink whitespace-nowrap">Tax Treaty</span>
                         );
                         if (dtaStatus === false) return (
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 whitespace-nowrap">No Treaty</span>
+                          <span className="text-xs px-1.5 py-0.5 text-ink whitespace-nowrap">No Treaty</span>
                         );
                         return null;
                       })()}
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-ink-mute">
                       THB {entry.amountThb.toLocaleString()}
                       {taxability.dtaPensionExempt && (
-                        <span className="ml-2 text-blue-600 font-medium">DTA Exempt</span>
+                        <span className="ml-2 text-ink-soft font-medium">DTA Exempt</span>
                       )}
                       {!taxability.dtaPensionExempt && taxability.taxable && (
-                        <span className="ml-2 text-amber-600 font-medium">Taxable</span>
+                        <span className="ml-2 text-ink font-medium">Taxable</span>
                       )}
                       {!taxability.dtaPensionExempt && !taxability.taxable && entry.dateEarned && (
-                        <span className="ml-2 text-gray-400">Not Taxable</span>
+                        <span className="ml-2 text-ink-mute">Not Taxable</span>
                       )}
                     </p>
                   </div>
@@ -384,7 +378,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                       e.stopPropagation();
                       handleRemoveEntry(entry.id);
                     }}
-                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-desk hover:text-ink hover:bg-desk/[0.05] transition-colors"
                     aria-label="Remove entry"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -392,7 +386,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     </svg>
                   </button>
                   <svg
-                    className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    className={`w-5 h-5 text-ink-mute transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -404,11 +398,11 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
               {/* Entry Details (Expanded) */}
               {isExpanded && (
-                <div className="p-4 border-t border-gray-200 bg-white space-y-4">
+                <div className="p-4 border-t border-paper-rule bg-paper-white space-y-4">
                   {/* Error Messages */}
                   {entryErrors.length > 0 && showValidationErrors && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                      <ul className="text-sm text-red-600 list-disc list-inside">
+                    <div className="border-desk p-3 border-2">
+                      <ul className="text-sm text-ink list-disc list-inside">
                         {entryErrors.map((err, i) => (
                           <li key={i}>{err}</li>
                         ))}
@@ -418,7 +412,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                   {/* Country - searchable dropdown with DTA status */}
                   <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                       Country of Income Source *
                     </label>
                     <div className="relative">
@@ -434,18 +428,18 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         onFocus={() => setShowCountryDropdown(prev => ({ ...prev, [entry.id]: true }))}
                         onBlur={() => setTimeout(() => setShowCountryDropdown(prev => ({ ...prev, [entry.id]: false })), 150)}
                         placeholder="Type to search countries..."
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       />
                       {/* DTA status indicator */}
                       {entry.country && (() => {
                         const dtaStatus = getEntryDTAStatus(entry);
                         if (dtaStatus === true) return (
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 field-label border border-desk px-1.5 py-0.5 text-ink">
                             Tax treaty ✓
                           </span>
                         );
                         if (dtaStatus === false) return (
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 field-label border border-desk px-1.5 py-0.5 text-ink">
                             No treaty ⚠
                           </span>
                         );
@@ -455,24 +449,24 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                     {/* Country dropdown list */}
                     {showCountryDropdown[entry.id] && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      <div className="absolute z-10 w-full mt-1 bg-paper-white border border-paper-rule max-h-48 overflow-y-auto">
                         {searchCountries(countrySearch[entry.id] ?? '').slice(0, 20).map(country => (
                           <button
                             key={country.code}
                             type="button"
                             onMouseDown={() => handleCountrySelect(entry.id, country)}
-                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 flex items-center justify-between"
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-desk/[0.05] flex items-center justify-between"
                           >
-                            <span className="text-gray-800">{country.name}</span>
+                            <span className="text-ink">{country.name}</span>
                             {country.hasDTA ? (
-                              <span className="text-xs text-green-600">Tax treaty</span>
+                              <span className="text-xs text-ink">Tax treaty</span>
                             ) : (
-                              <span className="text-xs text-amber-600">No treaty</span>
+                              <span className="text-xs text-ink">No treaty</span>
                             )}
                           </button>
                         ))}
                         {searchCountries(countrySearch[entry.id] ?? '').length === 0 && (
-                          <p className="px-3 py-2 text-sm text-gray-500">No countries found</p>
+                          <p className="px-3 py-2 text-sm text-ink-mute">No countries found</p>
                         )}
                       </div>
                     )}
@@ -481,17 +475,17 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     {entry.country && (() => {
                       const dtaStatus = getEntryDTAStatus(entry);
                       if (dtaStatus === true) return (
-                        <p className="mt-1 text-xs text-green-600">
+                        <p className="mt-1 text-xs text-ink">
                           Thailand has a tax treaty with {entry.country}. Foreign taxes paid may be credited against Thai tax.
                         </p>
                       );
                       if (dtaStatus === false) return (
-                        <p className="mt-1 text-xs text-amber-600">
+                        <p className="mt-1 text-xs text-ink">
                           No tax treaty with {entry.country}. Foreign tax credit may not be available — double taxation risk.
                         </p>
                       );
                       return (
-                        <p className="mt-1 text-xs text-gray-500">
+                        <p className="mt-1 text-xs text-ink-mute">
                           Country not in our database. Check rd.go.th for DTA status.
                         </p>
                       );
@@ -515,20 +509,20 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                             ),
                           });
                         }}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                       
                       />
-                      <span className="text-sm font-medium text-gray-700">This is pension income</span>
+                      <span className="text-sm font-medium text-ink-soft">This is pension income</span>
                     </label>
 
                     {entry.isPension && (
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
+                        <label className="block text-sm font-medium text-ink-soft">
                           Pension Type
                         </label>
                         <select
                           value={entry.pensionType ?? ''}
                           onChange={(e) => handleUpdateEntry(entry.id, 'pensionType', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="field-input"
                         >
                           <option value="">Select pension type…</option>
                           {PENSION_TYPE_OPTIONS.map(opt => (
@@ -536,7 +530,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                           ))}
                         </select>
                         {entry.pensionType && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-ink-mute">
                             {PENSION_TYPE_OPTIONS.find(o => o.value === entry.pensionType)?.description}
                           </p>
                         )}
@@ -546,18 +540,18 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                           const exemption = getPensionDTAExemption(entry.country, entry.pensionType as PensionType);
                           if (exemption) {
                             return (
-                              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                                <p className="text-sm font-medium text-green-800">
+                              <div className="p-3 border-2 border-desk">
+                                <p className="text-sm font-medium text-ink">
                                   DTA Exempt — {exemption.dtaArticle}
                                 </p>
-                                <p className="text-xs text-green-700 mt-0.5">{exemption.note}</p>
+                                <p className="text-xs text-ink mt-0.5">{exemption.note}</p>
                               </div>
                             );
                           }
                           if (entry.pensionType !== 'other_pension') {
                             return (
-                              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p className="text-sm text-blue-700">
+                              <div className="p-3 border border-ink/25">
+                                <p className="text-sm text-ink-soft">
                                   This pension type is not DTA-exempt and is subject to Thai tax when remitted to Thailand. Foreign tax paid may be credited against Thai tax if a tax treaty applies.
                                 </p>
                               </div>
@@ -572,25 +566,25 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                   {/* Dates — shown before currency/amount so BOT rate fetch has dates ready */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-ink-soft mb-1">
                         Date Earned *
                       </label>
                       <input
                         type="date"
                         value={entry.dateEarned}
                         onChange={(e) => handleUpdateEntry(entry.id, 'dateEarned', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-ink-soft mb-1">
                         Date Remitted to Thailand
                       </label>
                       <input
                         type="date"
                         value={entry.dateRemitted || ''}
                         onChange={(e) => handleUpdateEntry(entry.id, 'dateRemitted', e.target.value || null)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       />
                     </div>
                   </div>
@@ -598,13 +592,13 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                   {/* Amount and Currency */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-ink-soft mb-1">
                         Currency
                       </label>
                       <select
                         value={entry.currency}
                         onChange={(e) => handleUpdateEntry(entry.id, 'currency', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       >
                         <optgroup label="Common">
                           {COMMON_CURRENCIES.map(curr => (
@@ -623,7 +617,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-ink-soft mb-1">
                         Amount *
                       </label>
                       <input
@@ -632,19 +626,19 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         onChange={(e) => handleUpdateEntry(entry.id, 'amount', parseFloat(e.target.value) || 0)}
                         placeholder="0"
                         min="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       />
                     </div>
                   </div>
 
                   {/* THB Amount with BOT rate fetch */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                       Amount in Thai Baht (THB) *
                     </label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
                         <input
                           type="number"
                           value={entry.amountThb || ''}
@@ -655,7 +649,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                           }}
                           placeholder="0"
                           min="0"
-                          className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="field-input pl-8 pr-3"
                         />
                       </div>
                       {entry.currency !== 'THB' && (
@@ -664,7 +658,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                           onClick={() => handleFetchRate(entry)}
                           disabled={rateLoading[entry.id]}
                           title="Fetch official BOT exchange rate"
-                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap transition-colors"
+                          className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-desk border border-ink/25 hover:bg-desk/[0.05] disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap transition-colors"
                         >
                           {rateLoading[entry.id] ? (
                             <>
@@ -688,7 +682,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                     {/* Rate fetch result */}
                     {rate && (
-                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700">
+                      <div className="mt-2 p-2 text-xs text-ink border-2 border-desk">
                         <span className="font-medium">BOT rate on {rate.date}:</span>{' '}
                         1 {entry.currency} = {rate.rate.toFixed(4)} THB
                         {entry.amount > 0 && (
@@ -699,12 +693,12 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                       </div>
                     )}
                     {rateError[entry.id] && (
-                      <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-700">
+                      <div className="mt-2 p-2 border-desk text-xs text-ink border-2">
                         {rateError[entry.id]}
                       </div>
                     )}
 
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-ink-mute mt-1">
                       {rate
                         ? 'Rate auto-filled from Bank of Thailand — verify at bot.or.th before filing.'
                         : 'Enter manually or use "Fetch BOT rate" to auto-convert using the official Bank of Thailand rate.'}
@@ -713,14 +707,14 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                   {/* Foreign Tax Paid — currency selector with auto-conversion using same BOT rate */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                       Foreign Tax Already Paid
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       <select
                         value={effectiveTaxCurrency}
                         onChange={(e) => handleUpdateTaxPaid(entry.id, 'currency', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       >
                         <optgroup label="Common">
                           {COMMON_CURRENCIES.map(curr => (
@@ -743,7 +737,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                         onChange={(e) => handleUpdateTaxPaid(entry.id, 'original', parseFloat(e.target.value) || 0)}
                         placeholder="0"
                         min="0"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="field-input"
                       />
                     </div>
 
@@ -751,12 +745,12 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     {effectiveTaxCurrency !== 'THB' && (entry.foreignTaxPaidOriginal ?? 0) > 0 && (
                       <div className="mt-2">
                         {rate ? (
-                          <p className="text-xs text-green-600">
+                          <p className="text-xs text-ink">
                             = {entry.foreignTaxPaid.toLocaleString('en-US', { maximumFractionDigits: 2 })} THB
                             (same BOT rate on {rate.date})
                           </p>
                         ) : (
-                          <p className="text-xs text-amber-600">
+                          <p className="text-xs text-ink">
                             Fetch BOT rate above to auto-convert to THB
                           </p>
                         )}
@@ -766,17 +760,17 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                     {(() => {
                       const dtaStatus = getEntryDTAStatus(entry);
                       if (dtaStatus === false) return (
-                        <p className="text-xs text-amber-600 mt-1">
+                        <p className="text-xs text-ink mt-1">
                           No tax treaty with {entry.country} — foreign tax credit may not be available.
                         </p>
                       );
                       if (dtaStatus === null && entry.country) return (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-ink-mute mt-1">
                           Tax paid in the source country (verify DTA status at rd.go.th before claiming credit)
                         </p>
                       );
                       return (
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-ink-mute mt-1">
                           Tax paid in the source country (may be credited against Thai tax under the tax treaty)
                         </p>
                       );
@@ -785,7 +779,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
                   {/* Description */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-ink-soft mb-1">
                       Description (Optional)
                     </label>
                     <input
@@ -793,24 +787,24 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                       value={entry.description}
                       onChange={(e) => handleUpdateEntry(entry.id, 'description', e.target.value)}
                       placeholder="e.g., Freelance project payment"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="field-input"
                     />
                   </div>
 
                   {/* Taxability Status */}
-                  <div className={`p-3 rounded-lg ${
+                  <div className={`p-3 ${
                     taxability.dtaPensionExempt
-                      ? 'bg-blue-50 border border-blue-200'
+                      ? 'border border-ink/25'
                       : taxability.taxable
-                        ? 'bg-amber-50 border border-amber-200'
-                        : 'bg-gray-50 border border-gray-200'
+                        ? 'border border-desk'
+                        : 'border border-paper-rule'
                   }`}>
                     <p className={`text-sm font-medium ${
                       taxability.dtaPensionExempt
-                        ? 'text-blue-800'
+                        ? 'text-ink'
                         : taxability.taxable
-                          ? 'text-amber-700'
-                          : 'text-gray-600'
+                          ? 'text-ink'
+                          : 'text-ink-soft'
                     }`}>
                       {taxability.dtaPensionExempt
                         ? `DTA Exempt (${taxability.dtaArticle})`
@@ -819,7 +813,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                           : 'Not taxable'}
                     </p>
                     <p className={`text-xs ${
-                      taxability.dtaPensionExempt ? 'text-blue-700' : taxability.taxable ? 'text-amber-600' : 'text-gray-500'
+                      taxability.dtaPensionExempt ? 'text-desk' : taxability.taxable ? 'text-ink' : 'text-ink-mute'
                     }`}>
                       {taxability.reason}
                     </p>
@@ -834,7 +828,7 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
       {/* Add Entry Button */}
       <button
         onClick={handleAddEntry}
-        className="w-full py-3 px-6 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 transition-colors mb-6 flex items-center justify-center gap-2"
+        className="w-full py-3 px-6 border-2 border-dashed border-ink/25 text-ink-soft hover:border-desk hover:text-desk transition-colors mb-6 flex items-center justify-center gap-2"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -844,30 +838,30 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
 
       {/* Summary */}
       {formData.foreignIncomeEntries.length > 0 && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="font-semibold text-gray-800 mb-3">Summary</h3>
+        <div className="border p-4 border-ink/25">
+          <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">Summary</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-500">Total Foreign Income</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-ink-mute">Total Foreign Income</p>
+              <p className="text-lg font-semibold text-ink">
                 {totalForeignIncome.toLocaleString()} THB
               </p>
             </div>
             <div>
-              <p className="text-gray-500">Taxable Amount</p>
-              <p className="text-lg font-semibold text-green-600">
+              <p className="text-ink-mute">Taxable Amount</p>
+              <p className="text-lg font-semibold text-ink">
                 {taxableForeignIncome.toLocaleString()} THB
               </p>
             </div>
             <div>
-              <p className="text-gray-500">Foreign Tax Paid</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-ink-mute">Foreign Tax Paid</p>
+              <p className="text-lg font-semibold text-ink">
                 {totalForeignTaxPaid.toLocaleString()} THB
               </p>
             </div>
             <div>
-              <p className="text-gray-500">Number of Entries</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-ink-mute">Number of Entries</p>
+              <p className="text-lg font-semibold text-ink">
                 {formData.foreignIncomeEntries.length}
               </p>
             </div>

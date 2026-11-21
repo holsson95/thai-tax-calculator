@@ -70,16 +70,16 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-2">Enter your monthly income</h2>
-      <p className="text-gray-600 mb-4">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Enter your monthly income</h2>
+      <p className="text-ink-soft mb-4">
         Enter your income for each month. All taxable income including bonuses and housing allowances by the company should be included.
       </p>
 
       {/* Annual Total Summary */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="border border-ink/25 p-4 mb-6">
         <div className="flex justify-between items-center">
-          <span className="text-sm text-blue-700">Total Annual Income</span>
-          <span className="text-xl font-bold text-blue-700">
+          <span className="text-sm text-ink-soft">Total Annual Income</span>
+          <span className="text-xl font-bold text-ink-soft">
             ฿{getTotalAnnualIncome().toLocaleString()}
           </span>
         </div>
@@ -88,35 +88,35 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
       {/* Monthly Income Entries */}
       <div className="space-y-2 mb-6 max-h-80 overflow-y-auto">
         {MONTHS.map((month, index) => (
-          <div key={month} className="border border-gray-200 rounded-lg overflow-hidden">
+          <div key={month} className="border border-paper-rule overflow-hidden">
             <button
               onClick={() => setExpandedMonth(expandedMonth === index ? null : index)}
-              className="w-full px-4 py-3 flex justify-between items-center bg-gray-50 hover:bg-gray-100"
+              className="w-full px-4 py-3 flex justify-between items-center hover:bg-desk/[0.05] border border-ink/25"
             >
-              <span className="font-medium text-gray-800">{month}</span>
+              <span className="font-medium text-ink">{month}</span>
               <div className="flex items-center gap-4">
-                <span className="text-gray-600">
+                <span className="text-ink-soft">
                   ฿{getMonthTotal(monthlyData[index]).toLocaleString()}
                 </span>
-                <span className="text-gray-400">
+                <span className="text-ink-mute">
                   {expandedMonth === index ? '▲' : '▼'}
                 </span>
               </div>
             </button>
 
             {expandedMonth === index && (
-              <div className="p-4 space-y-3 bg-white">
+              <div className="p-4 space-y-3 bg-paper-white">
                 {/* Salary */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">Salary</label>
+                  <label className="block text-sm text-ink-soft mb-1">Salary</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute text-sm">฿</span>
                     <input
                       type="text"
                       inputMode="numeric"
                       value={formatNumber(monthlyData[index].salary)}
                       onChange={(e) => handleMonthChange(index, 'salary', e.target.value)}
-                      className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                      className="field-input pl-7 pr-3 h-10 text-sm"
                       placeholder="0"
                     />
                   </div>
@@ -124,15 +124,15 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
 
                 {/* Bonus */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">Bonus</label>
+                  <label className="block text-sm text-ink-soft mb-1">Bonus</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute text-sm">฿</span>
                     <input
                       type="text"
                       inputMode="numeric"
                       value={formatNumber(monthlyData[index].bonus)}
                       onChange={(e) => handleMonthChange(index, 'bonus', e.target.value)}
-                      className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                      className="field-input pl-7 pr-3 h-10 text-sm"
                       placeholder="0"
                     />
                   </div>
@@ -140,15 +140,15 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
 
                 {/* Housing Allowance */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">Housing Allowance</label>
+                  <label className="block text-sm text-ink-soft mb-1">Housing Allowance</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute text-sm">฿</span>
                     <input
                       type="text"
                       inputMode="numeric"
                       value={formatNumber(monthlyData[index].housingAllowance)}
                       onChange={(e) => handleMonthChange(index, 'housingAllowance', e.target.value)}
-                      className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                      className="field-input pl-7 pr-3 h-10 text-sm"
                       placeholder="0"
                     />
                   </div>
@@ -156,15 +156,15 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
 
                 {/* Other Income */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-1">Other Taxable Income</label>
+                  <label className="block text-sm text-ink-soft mb-1">Other Taxable Income</label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">฿</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute text-sm">฿</span>
                     <input
                       type="text"
                       inputMode="numeric"
                       value={formatNumber(monthlyData[index].otherIncome)}
                       onChange={(e) => handleMonthChange(index, 'otherIncome', e.target.value)}
-                      className="w-full pl-7 pr-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                      className="field-input pl-7 pr-3 h-10 text-sm"
                       placeholder="0"
                     />
                   </div>
@@ -176,17 +176,17 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
       </div>
 
       {/* Social Security Checkbox */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-paper-rule p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={includeSS}
             onChange={(e) => setIncludeSS(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            className="mt-1"
           />
           <div>
-            <span className="font-medium text-gray-800">Include Social Security Contributions</span>
-            <p className="text-sm text-gray-500 mt-1">
+            <span className="font-medium text-ink">Include Social Security Contributions</span>
+            <p className="text-sm text-ink-mute mt-1">
               Social security contributions are tax-deductible up to ฿10,500 per year (2026 limit).
             </p>
           </div>
@@ -194,21 +194,21 @@ const VariableIncomeStep: React.FC<MonthlyStepProps> = ({ formData, setFormData 
 
         {includeSS && (
           <div className="mt-4 ml-8">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-ink-soft mb-2">
               Estimated annual contribution (THB)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
               <input
                 type="text"
                 inputMode="numeric"
                 value={ssContribution ? parseInt(ssContribution).toLocaleString() : ''}
                 onChange={handleSSContributionChange}
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="field-input pl-8 pr-4"
                 placeholder="0"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Maximum: ฿{MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()} per year
             </p>
           </div>

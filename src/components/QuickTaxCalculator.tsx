@@ -5,6 +5,7 @@ import { track, taxBand } from '../utils/analytics';
 import { calculateThaiTax } from '../utils/tax';
 import { TAX_CONSTANTS } from '../types/taxForm';
 import { TAX_YEAR_CONFIG } from '../config/taxConfig';
+import { FormBox } from './ui/form';
 
 type Period = 'yearly' | 'monthly' | 'weekly';
 
@@ -50,20 +51,6 @@ interface QuickTaxCalculatorProps {
   /** Called whenever the estimate changes (null when no income is entered). */
   onResult?: (estimate: QuickEstimate | null) => void;
 }
-
-/** Square form box with a drawn cross when ticked (shared by radio and checkbox). */
-const FormBox: React.FC<{ checked: boolean }> = ({ checked }) => (
-  <span
-    aria-hidden="true"
-    className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center border-2 border-desk bg-paper-white peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-desk"
-  >
-    {checked && (
-      <svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-ink" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round">
-        <path d="M3 3l10 10M13 3L3 13" />
-      </svg>
-    )}
-  </span>
-);
 
 // Loaded only after a result exists and only if the leads API is configured,
 // so the homepage bundle does not grow.

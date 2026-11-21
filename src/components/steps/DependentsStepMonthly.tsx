@@ -74,28 +74,24 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-2">Dependents & Allowances</h2>
-      <p className="text-gray-600 mb-6">Tell us about your dependents to calculate your allowances.</p>
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Dependents & Allowances</h2>
+      <p className="text-ink-soft mb-6">Tell us about your dependents to calculate your allowances.</p>
 
       {/* Children Section */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Children</h3>
-        <div className="bg-gray-50 rounded-lg p-4">
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">Children</h3>
+        <div>
           {/* Eligibility Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm">
-            <p className="font-medium text-blue-800 mb-1">Eligibility Criteria:</p>
-            <ul className="text-blue-700 space-y-1">
+          <div className="note mb-4">
+            <p className="note-title">Eligibility criteria</p>
+            <ul className="space-y-1 text-ink-soft">
               <li>• Under 20 years old, OR under 25 and studying, OR legally incompetent</li>
               <li>• Earning less than ฿30,000 per year</li>
             </ul>
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
-            showValidationErrors && hasEligibleChildren && formData.children.length === 0
-              ? 'border-red-500'
-              : 'border-gray-200'
-          }`}>
+          <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={hasEligibleChildren}
@@ -107,14 +103,14 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                   setFormData({ ...formData, children: [], childrenEligibilityConfirmed: false });
                 }
               }}
-              className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+             
             />
-            <span className="text-gray-800">I have children who meet these criteria</span>
+            <span className="text-ink">I have children who meet these criteria</span>
           </label>
 
           {/* Validation Error */}
           {showValidationErrors && hasEligibleChildren && formData.children.length === 0 && (
-            <p className="mt-2 text-sm text-red-600">
+            <p className="field-error">
               Please add at least one child or uncheck the box above.
             </p>
           )}
@@ -123,12 +119,12 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           {hasEligibleChildren && (
             <div className="mt-4">
               <div className="flex items-center gap-4 mb-4">
-                <span className="text-gray-700">Number of children:</span>
+                <span className="text-ink-soft">Number of children:</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleRemoveChild}
                     disabled={formData.children.length === 0}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-count"
                     aria-label="Remove child"
                   >
                     -
@@ -136,7 +132,7 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                   <span className="w-8 text-center font-medium">{formData.children.length}</span>
                   <button
                     onClick={handleAddChild}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+                    className="btn-count"
                     aria-label="Add child"
                   >
                     +
@@ -152,27 +148,27 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                 const hasBonus = index >= 1 && child.birthYear >= MONTHLY_TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR;
 
                 return (
-                  <div key={index} className="bg-white border border-gray-200 rounded-lg p-3 mb-3">
+                  <div key={index} className="bg-paper-white border border-paper-rule p-3 mb-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-gray-700">Child {index + 1}</span>
-                      <span className="text-sm text-green-600 font-medium">
+                      <span className="font-medium text-ink-soft">Child {index + 1}</span>
+                      <span className="text-sm text-ink font-medium">
                         ฿{allowance.toLocaleString()}
                         {hasBonus && (
-                          <span className="text-xs text-green-500 ml-1">(+฿30k bonus)</span>
+                          <span className="text-xs text-ink-soft ml-1">(+฿30k bonus)</span>
                         )}
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <label className="text-sm text-gray-600">Birth year:</label>
+                      <label className="text-sm text-ink-soft">Birth year:</label>
                       <input
                         type="number"
                         value={child.birthYear}
                         onChange={(e) => handleChildBirthYearChange(index, parseInt(e.target.value) || CURRENT_YEAR)}
                         min={1900}
                         max={CURRENT_YEAR}
-                        className="w-24 px-2 py-1 border border-gray-300 rounded text-center"
+                        className="w-24 px-2 py-1 border border-ink/25 text-center"
                       />
-                      <span className="text-sm text-gray-500">Age: {age}</span>
+                      <span className="text-sm text-ink-mute">Age: {age}</span>
                     </div>
                     {showStudentOption && (
                       <label className="flex items-center gap-2 mt-2 cursor-pointer">
@@ -180,9 +176,9 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                           type="checkbox"
                           checked={child.isStudent || false}
                           onChange={(e) => handleChildStudentChange(index, e.target.checked)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+                         
                         />
-                        <span className="text-sm text-gray-600">Currently studying (required for ages 20-25)</span>
+                        <span className="text-sm text-ink-soft">Currently studying (required for ages 20-25)</span>
                       </label>
                     )}
                   </div>
@@ -190,8 +186,8 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
               })}
 
               {formData.children.length > 0 && (
-                <div className="text-right text-sm text-gray-600">
-                  Total children allowance: <span className="font-medium text-green-600">฿{getTotalChildAllowance().toLocaleString()}</span>
+                <div className="text-right text-sm text-ink-soft">
+                  Total children allowance: <span className="font-medium text-ink">฿{getTotalChildAllowance().toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -201,27 +197,23 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
 
       {/* Parents Section */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold text-gray-800 mb-3">Parents</h3>
-        <div className="bg-gray-50 rounded-lg p-4">
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">Parents</h3>
+        <div>
           {/* Eligibility Info */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm">
-            <p className="font-medium text-blue-800 mb-1">Eligibility Criteria:</p>
-            <ul className="text-blue-700 space-y-1">
+          <div className="note mb-4">
+            <p className="note-title">Eligibility criteria</p>
+            <ul className="space-y-1 text-ink-soft">
               <li>• Parent is 60 years or older</li>
               <li>• Parent's annual income is less than ฿30,000</li>
               <li>• You can claim up to {MONTHLY_TAX_CONSTANTS.MAX_PARENTS} parents (yours and spouse's)</li>
             </ul>
-            <p className="text-blue-600 mt-2">
+            <p className="text-ink-soft mt-2">
               Allowance: ฿{MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE.toLocaleString()} per eligible parent
             </p>
           </div>
 
           {/* Eligibility Checkbox */}
-          <label className={`flex items-center gap-3 cursor-pointer p-3 border rounded-lg bg-white ${
-            showValidationErrors && hasEligibleParents && formData.numberOfParents === 0
-              ? 'border-red-500'
-              : 'border-gray-200'
-          }`}>
+          <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
               checked={hasEligibleParents}
@@ -233,14 +225,14 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                   setFormData({ ...formData, numberOfParents: 0, parentsEligibilityConfirmed: false });
                 }
               }}
-              className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+             
             />
-            <span className="text-gray-800">I have parents who meet these criteria</span>
+            <span className="text-ink">I have parents who meet these criteria</span>
           </label>
 
           {/* Validation Error */}
           {showValidationErrors && hasEligibleParents && formData.numberOfParents === 0 && (
-            <p className="mt-2 text-sm text-red-600">
+            <p className="field-error">
               Please add at least one parent or uncheck the box above.
             </p>
           )}
@@ -249,12 +241,12 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           {hasEligibleParents && (
             <div className="mt-4">
               <div className="flex items-center gap-4">
-                <span className="text-gray-700">Number of parents:</span>
+                <span className="text-ink-soft">Number of parents:</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleParentsChange(-1)}
                     disabled={formData.numberOfParents === 0}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-count"
                     aria-label="Remove parent"
                   >
                     -
@@ -263,13 +255,13 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                   <button
                     onClick={() => handleParentsChange(1)}
                     disabled={formData.numberOfParents >= MONTHLY_TAX_CONSTANTS.MAX_PARENTS}
-                    className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="btn-count"
                     aria-label="Add parent"
                   >
                     +
                   </button>
                 </div>
-                <span className="text-sm text-green-600 font-medium">
+                <span className="text-sm text-ink font-medium">
                   ฿{(formData.numberOfParents * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE).toLocaleString()}
                 </span>
               </div>
@@ -279,9 +271,9 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
       </div>
 
       {/* Allowance Summary */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <h3 className="font-semibold text-green-800 mb-2">Total Allowances</h3>
-        <div className="text-sm text-green-700 space-y-1">
+      <div className="p-4 border-2 border-desk">
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">Total Allowances</h3>
+        <div className="text-sm text-ink space-y-1">
           <div className="flex justify-between">
             <span>Personal:</span>
             <span>฿{MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE.toLocaleString()}</span>
@@ -310,7 +302,7 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
               <span>฿{(formData.numberOfParents * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE).toLocaleString()}</span>
             </div>
           )}
-          <div className="flex justify-between font-semibold border-t border-green-300 pt-1 mt-2">
+          <div className="flex justify-between font-semibold border-t border-ink/25 pt-1 mt-2">
             <span>Total:</span>
             <span>฿{totalAllowance.toLocaleString()}</span>
           </div>

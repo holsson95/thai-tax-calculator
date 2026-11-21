@@ -122,20 +122,15 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-2">Tax Deductions</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Tax Deductions</h2>
+      <p className="text-ink-soft mb-6">
         Select any deductions you qualify for. These will reduce your taxable income.
       </p>
 
       {/* Senior Citizen Allowance */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+      <div className="border-desk p-4 mb-4 border-2">
         <div className="flex items-start gap-3 mb-3">
-          <div className="flex-shrink-0 mt-0.5">
-            <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <p className="text-sm text-amber-700">
+          <p className="text-sm text-ink">
             Taxpayers aged 65 or older are entitled to an additional ฿{MONTHLY_TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()} allowance.
           </p>
         </div>
@@ -145,9 +140,9 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
             type="checkbox"
             checked={formData.isAge65OrOlder}
             onChange={(e) => setFormData({ ...formData, isAge65OrOlder: e.target.checked })}
-            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+           
           />
-          <span className="text-gray-800">I am 65 years or older</span>
+          <span className="text-ink">I am 65 years or older</span>
         </label>
       </div>
 
@@ -158,45 +153,42 @@ const DeductionsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
           const hasError = showValidationErrors && isChecked && value === 0;
 
           return (
-            <div key={item.key} className={`border rounded-lg p-4 ${hasError ? 'border-red-500' : 'border-gray-200'}`}>
+            <div key={item.key} className={`border p-4 ${hasError ? 'border-desk' : 'border-paper-rule'}`}>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={isChecked}
                   onChange={(e) => handleCheckboxChange(item.hasKey, e.target.checked)}
-                  className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="mt-1"
                 />
                 <div className="flex-1">
-                  <span className="font-medium text-gray-800">{item.label}</span>
-                  <p className="text-sm text-gray-500">{item.description}</p>
+                  <span className="font-medium text-ink">{item.label}</span>
+                  <p className="text-sm text-ink-mute">{item.description}</p>
                 </div>
               </label>
 
               {isChecked && (
                 <div className="mt-3 ml-8">
-                  <label className="block text-sm text-gray-600 mb-1">
+                  <label className="block text-sm text-ink-soft mb-1">
                     Amount (THB)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">฿</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
                     <input
                       type="text"
                       value={formatNumber(value)}
                       onChange={(e) => handleValueChange(item.key, e.target.value, item.maxValue)}
-                      className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:ring-2 ${
-                        hasError
-                          ? 'border-red-500 focus:ring-red-200'
-                          : 'border-gray-300 focus:ring-blue-500'
-                      }`}
+                      className="field-input pl-8"
+            aria-invalid={!!(hasError)}
                       placeholder="0"
                     />
                   </div>
                   {hasError ? (
-                    <p className="text-sm text-red-600 mt-1">
+                    <p className="field-error">
                       Please enter an amount or uncheck this deduction.
                     </p>
                   ) : (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-ink-mute mt-1">
                       Maximum: ฿{item.maxValue.toLocaleString()} per year
                     </p>
                   )}

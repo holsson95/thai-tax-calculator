@@ -37,17 +37,17 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">What is your annual income?</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">What is your annual income?</h2>
+      <p className="text-ink-soft mb-6">
         Enter your total gross income for the year before any deductions.
       </p>
 
       <div className="mb-6">
-        <label htmlFor="annualIncome" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="annualIncome" className="block text-sm font-medium text-ink-soft mb-2">
           Annual Income (THB)
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
+          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ink-mute">฿</span>
           <input
             type="text"
             inputMode="decimal"
@@ -56,25 +56,21 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
             onChange={handleChange}
             onBlur={handleBlur}
             placeholder="0"
-            className={`w-full pl-8 pr-4 py-3 border rounded-lg text-lg focus:outline-none focus:ring-2 ${
-              error
-                ? 'border-red-500 focus:ring-red-200'
-                : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500'
-            }`}
+            className="field-input pl-8 h-12 text-lg"
             aria-describedby={error ? 'income-error' : undefined}
             aria-invalid={!!error}
           />
         </div>
         {error && (
-          <p id="income-error" className="mt-2 text-sm text-red-600">
+          <p id="income-error" className="field-error">
             {error}
           </p>
         )}
       </div>
 
-      <div className="bg-gray-50 rounded-lg p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">What to include:</h3>
-        <ul className="text-sm text-gray-600 space-y-1">
+      <div className="p-4 mb-6 border border-ink/25">
+        <h3 className="note-title">What to include:</h3>
+        <ul className="text-sm text-ink-soft space-y-1">
           <li>• Salary and wages</li>
           <li>• Bonuses and commissions</li>
           <li>• Freelance income</li>
@@ -84,7 +80,7 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
       </div>
 
       {/* Social Security Contribution */}
-      <div className="border border-gray-200 rounded-lg p-4">
+      <div className="border border-paper-rule p-4">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -96,13 +92,13 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
                 socialSecurityContribution: e.target.checked ? formData.socialSecurityContribution : 0,
               });
             }}
-            className="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="mt-1"
           />
           <div>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-ink-soft">
               I made social security contributions
             </span>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               If you paid into the Social Security Office (SSO), you can deduct up to ฿{TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()} for {TAX_YEAR_CONFIG.CURRENT_TAX_YEAR}.
             </p>
           </div>
@@ -110,11 +106,11 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
 
         {formData.includeSocialSecurity && (
           <div className="mt-4 ml-7">
-            <label htmlFor="socialSecurity" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="socialSecurity" className="block text-sm font-medium text-ink-soft mb-2">
               Total Social Security Contributions (THB)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ink-mute">฿</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -127,10 +123,10 @@ const AnnualIncomeStep: React.FC<StepProps> = ({ formData, setFormData }) => {
                   setFormData({ ...formData, socialSecurityContribution: cappedValue });
                 }}
                 placeholder="0"
-                className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                className="field-input pl-8 pr-4"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Maximum: ฿{TAX_CONSTANTS.MAX_SOCIAL_SECURITY.toLocaleString()}
             </p>
           </div>

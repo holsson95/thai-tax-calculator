@@ -6,6 +6,10 @@ import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData }
 import { calculateThaiTax, getTaxByBracket } from '../../utils/tax';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
+import { FieldLabel, ResultCell, SourceTicket, Stamp, StepHeading } from '../ui/form';
+import { RULES_TAX_YEAR } from '../../config/taxRules';
+
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // Calculate child allowance with birth year bonuses
 const calculateChildAllowance = (children: ChildData[]): number => {
@@ -350,68 +354,92 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">Estimated Monthly Withholding</h2>
+      <StepHeading title="Estimated Monthly Withholding">
+        What your employer should deduct from each month's pay, from the figures you entered.
+      </StepHeading>
 
-      {/* Main Result */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6 text-center">
-        <p className="text-sm text-gray-500 mb-1">Monthly Tax Withholding</p>
-        <p className="text-4xl font-bold text-blue-600">
-          ฿{calculateResult.monthlyWithholding.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
+      {/* Result box */}
+      <FieldLabel>Tax to withhold, tax year {RULES_TAX_YEAR}</FieldLabel>
+      <div className="relative border-2 border-desk" aria-live="polite">
+        <div className="grid grid-cols-1 divide-y-2 divide-desk sm:grid-cols-2 sm:divide-x-2 sm:divide-y-0">
+          <ResultCell
+            label="Monthly Tax Withholding"
+            value={`฿${calculateResult.monthlyWithholding.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+          />
+          <ResultCell
+            label="Per year"
+            value={`฿${calculateResult.annualTax.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+          />
+        </div>
+        <div className="border-t-2 border-desk pb-7 pl-4 pr-4 pt-2 text-xs text-ink-soft sm:py-2 sm:pr-36">
           Effective Rate: {calculateResult.effectiveRate.toFixed(2)}%
-        </p>
+        </div>
+        <Stamp className="absolute -bottom-4 right-3 sm:-top-5 sm:bottom-auto">
+          {calculateResult.annualTax === 0 ? 'No tax due' : 'Estimate'}
+        </Stamp>
       </div>
 
+      {/* The twelve months: one unbroken row; scrolls sideways on phones, never wraps */}
+      <div className="mt-8 min-w-0 max-w-full overflow-x-auto [mask-image:linear-gradient(to_right,black_82%,transparent)] sm:overflow-visible sm:[mask-image:none]">
+        <ol className="grid w-max grid-cols-[repeat(12,56px)] border-2 border-desk sm:w-auto sm:grid-cols-12" aria-label="Withholding per month">
+          {MONTH_SHORT.map((m, idx) => (
+            <li key={m} className={`flex min-w-0 flex-col items-center py-2 ${idx > 0 ? 'border-l border-desk/60' : ''}`}>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">{m}</span>
+              <span className="mt-1 font-mono text-[11px] font-semibold tabular-nums text-ink">
+                {Math.round(calculateResult.monthlyWithholding).toLocaleString('en-US')}
+              </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <p className="mt-2 text-xs leading-snug text-ink-soft">
+        An even split of the annual estimate. Employers project withholding from each month's pay, so your payslip can
+        differ in months with a bonus or a salary change.
+      </p>
+      <SourceTicket year={RULES_TAX_YEAR} className="mt-3" />
+
       {/* Take-Home Income */}
-      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
+      <div className="mt-8">
+        <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
+      </div>
 
       {/* Summary */}
-      <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Annual Income</span>
-          <span className="font-medium">฿{calculateResult.annualIncome.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Total Deductions</span>
-          <span className="font-medium">-฿{calculateResult.totalDeductions.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Taxable Income</span>
-          <span className="font-medium">฿{calculateResult.taxableIncome.toLocaleString()}</span>
-        </div>
-        <div className="flex justify-between text-sm border-t border-gray-200 pt-2">
-          <span className="text-gray-600">Annual Tax</span>
-          <span className="font-medium">฿{calculateResult.annualTax.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span>
-        </div>
+      <div className="mb-8">
+        <FieldLabel>The year, line by line</FieldLabel>
+        <ul>
+          <li className="form-line"><span>Annual Income</span><span>฿{calculateResult.annualIncome.toLocaleString()}</span></li>
+          <li className="form-line"><span>Total Deductions</span><span>−฿{calculateResult.totalDeductions.toLocaleString()}</span></li>
+          <li className="form-line"><span>Taxable Income</span><span>฿{calculateResult.taxableIncome.toLocaleString()}</span></li>
+          <li className="form-total"><span>Annual Tax</span><span>฿{calculateResult.annualTax.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span></li>
+        </ul>
       </div>
 
       {/* How Your Tax Was Calculated */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">How Your Tax Was Calculated</h3>
         <TaxFlowDiagram steps={flowSteps} />
       </div>
 
       {/* Toggle Details Button */}
       <button
         onClick={() => setShowDetails(!showDetails)}
-        className="w-full py-2 text-blue-600 font-medium flex items-center justify-center gap-2 hover:bg-blue-50 rounded-lg mb-4"
+        className="btn-secondary mb-4 w-full"
+        aria-expanded={showDetails}
       >
         {showDetails ? 'Hide Details' : 'Show All Values & Edit'}
-        <span>{showDetails ? '▲' : '▼'}</span>
       </button>
 
       {/* Editable Values Section */}
       {showDetails && (
-        <div className="border border-gray-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-gray-500 mb-4">
+        <div className="mb-6 border-2 border-desk p-4">
+          <p className="text-sm text-ink-mute mb-4">
             Edit values below to see how changes affect your tax estimate. Changes update instantly.
           </p>
 
-          <div className="space-y-3">
+          <div>
             {editableValues.map((item) => (
-              <div key={item.key} className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">{item.label}</span>
+              <div key={item.key} className="flex items-center justify-between gap-4 border-b border-paper-rule py-2 last:border-b-0">
+                <span className="text-sm text-ink-soft">{item.label}</span>
                 {item.editable ? (
                   <div className="relative">
                     {editingField === item.key ? (
@@ -421,25 +449,25 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
                         onChange={(e) => handleValueChange(item.key, e.target.value, item.maxValue)}
                         onBlur={() => setEditingField(null)}
                         autoFocus
-                        className="w-32 px-2 py-1 text-right border border-blue-500 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                        className="field-input w-32 text-right h-10 text-sm"
                       />
                     ) : (
                       <button
                         onClick={() => setEditingField(item.key)}
-                        className="w-32 px-2 py-1 text-right text-blue-600 hover:bg-blue-50 rounded border border-transparent hover:border-blue-200 text-sm"
+                        className="w-32 border-2 border-transparent px-2 py-1 text-right font-mono text-sm tabular-nums text-desk underline decoration-desk/40 underline-offset-4 hover:border-desk hover:no-underline"
+                        aria-label={`Edit ${item.label}`}
                       >
                         ฿{item.value.toLocaleString()}
-                        <span className="ml-1 text-xs">✎</span>
                       </button>
                     )}
                     {item.maxValue && (
-                      <p className="text-xs text-gray-400 text-right">Max: ฿{item.maxValue.toLocaleString()}</p>
+                      <p className="text-xs text-ink-mute text-right">Max: ฿{item.maxValue.toLocaleString()}</p>
                     )}
                   </div>
                 ) : (
-                  <span className="text-sm text-gray-500 w-32 text-right">
+                  <span className="w-32 text-right font-mono text-sm tabular-nums text-ink-mute">
                     ฿{item.value.toLocaleString()}
-                    <span className="ml-1 text-xs text-gray-400">(fixed)</span>
+                    <span className="ml-1 text-xs text-ink-mute">(fixed)</span>
                   </span>
                 )}
               </div>
@@ -454,7 +482,7 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       {/* Start Over Button */}
       <button
         onClick={onStartOver}
-        className="w-full py-3 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300"
+        className="btn-secondary w-full"
       >
         Start Over
       </button>

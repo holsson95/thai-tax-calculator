@@ -20,10 +20,9 @@ import { track, taxBand } from '../../utils/analytics';
 import type { LeadContext } from '../../utils/leadContext';
 import Turnstile from './Turnstile';
 
-const inputCls =
-  'w-full px-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent';
-const labelCls = 'block text-sm font-medium text-gray-800 mb-1';
-const errCls = 'text-xs text-red-700 mt-1';
+const inputCls = 'field-input font-sans';
+const labelCls = 'field-name';
+const errCls = 'text-xs text-ink mt-1';
 
 export const LAST_LEAD_KEY = 'mtt-last-lead-v1';
 
@@ -118,10 +117,10 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4" aria-labelledby="lead-form-title">
       <div>
-        <h3 id="lead-form-title" className="text-lg font-semibold text-gray-900">
+        <h3 id="lead-form-title" className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">
           Request a free 15-minute call
         </h3>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-ink-soft">
           {PARTNER.partnerName} will contact you. We have filled in what we know from your calculation; check it and add anything else.
         </p>
       </div>
@@ -139,7 +138,7 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
         </div>
         <div>
           <label htmlFor="lead-phone" className={labelCls}>
-            WhatsApp / phone <span className="font-normal text-gray-500">(optional)</span>
+            WhatsApp / phone <span className="font-normal text-ink-mute">(optional)</span>
           </label>
           <input id="lead-phone" type="tel" className={inputCls} autoComplete="tel" value={phone} onChange={(e) => setPhone(e.target.value)} aria-invalid={!!errors.phone} />
           {errors.phone && <p className={errCls}>{errors.phone}</p>}
@@ -156,7 +155,7 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
         </div>
         <div>
           <label htmlFor="lead-daysInThailand" className={labelCls}>
-            Days in Thailand this year <span className="font-normal text-gray-500">(optional)</span>
+            Days in Thailand this year <span className="font-normal text-ink-mute">(optional)</span>
           </label>
           <input id="lead-daysInThailand" type="number" inputMode="numeric" min={0} max={366} className={inputCls} value={days} onChange={(e) => setDays(e.target.value)} aria-invalid={!!errors.daysInThailand} />
           {errors.daysInThailand && <p className={errCls}>{errors.daysInThailand}</p>}
@@ -181,8 +180,8 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
             return (
               <label
                 key={t.value}
-                className={`cursor-pointer select-none rounded-full border px-3 py-1.5 text-sm focus-within:ring-2 focus-within:ring-blue-500 ${
-                  on ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-300 text-gray-700'
+                className={`cursor-pointer select-none border-2 px-3 py-1.5 text-sm focus-within:ring-2 focus-within:ring-desk ${
+                  on ? 'bg-desk border-desk text-white' : 'bg-paper-white border-desk/40 text-ink-soft hover:border-desk'
                 }`}
               >
                 <input type="checkbox" className="sr-only" checked={on} onChange={() => toggleType(t.value)} />
@@ -199,8 +198,8 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
           {URGENCY_OPTIONS.map((u) => (
             <label
               key={u.value}
-              className={`cursor-pointer rounded-lg border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-blue-500 ${
-                urgency === u.value ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-300 bg-white'
+              className={`cursor-pointer border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-desk ${
+                urgency === u.value ? 'border-desk ring-1 ring-desk' : 'border-ink/25 bg-paper-white'
               }`}
             >
               <input type="radio" name="lead-urgency" className="sr-only" checked={urgency === u.value} onChange={() => setUrgency(u.value)} />
@@ -213,7 +212,7 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
 
       <div>
         <label htmlFor="lead-notes" className={labelCls}>
-          Anything else? <span className="font-normal text-gray-500">(optional)</span>
+          Anything else? <span className="font-normal text-ink-mute">(optional)</span>
         </label>
         <textarea id="lead-notes" rows={3} maxLength={MAX_NOTES} className={inputCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
       </div>
@@ -224,25 +223,25 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
         <input id="lead-website" tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
       </div>
 
-      <div className="rounded-lg bg-gray-50 border border-gray-200 p-3">
-        <label className="flex items-start gap-3 text-sm text-gray-800 cursor-pointer">
+      <div className="border border-paper-rule p-3 border border-ink/25">
+        <label className="flex items-start gap-3 text-sm text-ink cursor-pointer">
           <input
             id="lead-consent"
             type="checkbox"
-            className="mt-0.5 h-4 w-4 rounded border-gray-300"
+            className="mt-0.5 h-4 w-4 border-ink/25"
             checked={consent}
             onChange={(e) => setConsent(e.target.checked)}
             aria-invalid={!!errors.consent}
           />
           <span>
             {consentText}{' '}
-            <Link to="/privacy/#leads" className="text-blue-600 hover:underline">Privacy policy</Link>
+            <Link to="/privacy/#leads" className="text-desk hover:underline">Privacy policy</Link>
           </span>
         </label>
         {errors.consent && <p className={errCls}>{errors.consent}</p>}
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-ink-mute mt-2">
           My Thai Taxes may receive a referral fee from {PARTNER.partnerName}.{' '}
-          <Link to="/how-this-site-is-funded/" className="text-blue-600 hover:underline">How this site is funded</Link>. This is not tax advice;
+          <Link to="/how-this-site-is-funded/" className="text-desk hover:underline">How this site is funded</Link>. This is not tax advice;
           any advice comes from the firm.
         </p>
       </div>
@@ -250,14 +249,14 @@ const LeadForm: React.FC<Props> = ({ context, onCancel }) => {
       {needsTurnstile && <Turnstile siteKey={PARTNER.turnstileSiteKey} onToken={setToken} />}
 
       {serverError && (
-        <p role="alert" className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">{serverError}</p>
+        <p role="alert" className="text-sm text-ink border border-desk p-3 border-2 border-desk">{serverError}</p>
       )}
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <button type="submit" disabled={submitting} className="w-full sm:w-auto rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-60">
+        <button type="submit" disabled={submitting} className="w-full sm:w-auto bg-desk px-6 py-3 font-semibold text-white hover:bg-desk-deep disabled:opacity-60">
           {submitting ? 'Sending…' : 'Send my request'}
         </button>
-        <button type="button" onClick={onCancel} className="w-full sm:w-auto rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 hover:bg-gray-50">
+        <button type="button" onClick={onCancel} className="w-full sm:w-auto border border-ink/25 px-6 py-3 font-medium text-ink-soft hover:bg-desk/[0.05]">
           Cancel
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
@@ -19,7 +19,9 @@ import ForeignIncomeCalculatorPage from './pages/ForeignIncomeCalculatorPage';
 import FundingPage from './pages/FundingPage';
 import ThankYouPage from './pages/ThankYouPage';
 import AdminLeadsPage from './pages/AdminLeadsPage';
-import LastUpdated from './components/LastUpdated';
+import CalculatorFrame, { SheetLoading } from './components/calculator/CalculatorFrame';
+import { AnnualReference, MonthlyReference, ANNUAL_INTRO, MONTHLY_INTRO } from './components/calculator/reference';
+import { RULES_TAX_YEAR } from './config/taxRules';
 import { PAGE_LAST_UPDATED } from './config/contentDates';
 import {
   ANNUAL_TAX_META,
@@ -35,7 +37,7 @@ const MonthlyWithholding = React.lazy(() => import('./components/MonthlyWithhold
 // (server AND initial client render, so they match) and the Suspense fallback shown while the
 // lazy AnnualTaxWizard chunk is loading after hydration.
 const AnnualTaxFallback: React.FC = () => (
-  <div className="bg-gray-100 min-h-screen py-8 px-4">
+  <>
     <Helmet>
       <title>{ANNUAL_TAX_META.title}</title>
       <meta name="description" content={ANNUAL_TAX_META.description} />
@@ -46,51 +48,21 @@ const AnnualTaxFallback: React.FC = () => (
       <meta property="og:type" content="website" />
       <script type="application/ld+json">{JSON.stringify(ANNUAL_TAX_SCHEMA)}</script>
     </Helmet>
-    <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
-      </div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Annual Tax Calculator</h1>
-      <LastUpdated date={PAGE_LAST_UPDATED.annualTax} className="mb-3" />
-      <p className="text-gray-600 mb-4">
-        Estimate your annual Thai personal income tax liability for free. Walk through a
-        guided form covering income, deductions, and allowances, and get a full breakdown
-        of your tax owed — plus a downloadable PDF summary.
-      </p>
-      <ul className="text-gray-600 text-sm space-y-1.5 mb-6 list-disc list-inside">
-        <li>Supports salaried employees, freelancers, sole proprietors, and company owners</li>
-        <li>Covers standard allowances, deductions, and progressive tax brackets</li>
-        <li>Free, no signup required, runs entirely in your browser</li>
-      </ul>
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">Thailand's progressive tax brackets</h2>
-      <p className="text-gray-600 text-sm mb-6">
-        Thailand taxes income progressively: the first 150,000 THB of taxable income is
-        exempt, and income above that is taxed in increasing bands from 5% up to 35% for
-        taxable income over 5,000,000 THB. Your effective tax rate is always lower than
-        your top marginal rate, since only the income within each bracket is taxed at
-        that bracket's rate.
-      </p>
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
-      <div className="space-y-3 mb-6">
-        <div>
-          <p className="text-sm font-medium text-gray-800">Who should use this calculator?</p>
-          <p className="text-sm text-gray-600">
-            Anyone filing a Thai PND 90/91 return — salaried employees, freelancers, sole
-            proprietors, and company owners — including expats with foreign income
-            remitted to Thailand.
-          </p>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
-          <p className="text-sm text-gray-600">
-            No. Your answers are kept only in your browser's session storage and are not sent
-            to a server unless you choose to request a specialist review or email yourself a breakdown.
-          </p>
-        </div>
-      </div>
-      <p className="text-center text-gray-500">Loading calculator…</p>
-    </div>
-  </div>
+    <CalculatorFrame
+      title="Annual Tax Calculator"
+      crumb="Annual tax"
+      updated={PAGE_LAST_UPDATED.annualTax}
+      intro={ANNUAL_INTRO}
+      paper="canary"
+      tab={`Annual return · tax year ${RULES_TAX_YEAR}`}
+      reference={<AnnualReference />}
+    >
+      <SheetLoading>
+        Supports salaried employees, freelancers, sole proprietors, and company owners. Covers standard allowances,
+        deductions, and progressive tax brackets. Free, no signup required, runs entirely in your browser.
+      </SheetLoading>
+    </CalculatorFrame>
+  </>
 );
 
 // Static fallback/pre-load content for /monthly-withholding/. Same role as
@@ -98,7 +70,7 @@ const AnnualTaxFallback: React.FC = () => (
 // initial client render, so they match) and the Suspense fallback shown while the
 // lazy MonthlyWithholding chunk is loading after hydration.
 const MonthlyWithholdingFallback: React.FC = () => (
-  <div className="bg-gray-100 min-h-screen py-8 px-4">
+  <>
     <Helmet>
       <title>{MONTHLY_WITHHOLDING_META.title}</title>
       <meta name="description" content={MONTHLY_WITHHOLDING_META.description} />
@@ -109,39 +81,18 @@ const MonthlyWithholdingFallback: React.FC = () => (
       <meta property="og:type" content="website" />
       <script type="application/ld+json">{JSON.stringify(MONTHLY_WITHHOLDING_SCHEMA)}</script>
     </Helmet>
-    <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 max-w-2xl w-full mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <Link to="/" className="text-gray-500 hover:text-gray-700 flex items-center gap-1 text-sm">Home</Link>
-      </div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Monthly Withholding Estimator</h1>
-      <LastUpdated date={PAGE_LAST_UPDATED.monthlyWithholding} className="mb-3" />
-      <p className="text-gray-600 mb-4">
-        Check whether the right amount of tax is being deducted from your monthly paycheck.
-        Enter your salary, bonuses, and deductions to see what your employer should be
-        withholding — useful for verifying payslips, planning for a salary change, or
-        estimating the tax impact of a bonus.
-      </p>
-      <h2 className="text-lg font-semibold text-gray-900 mb-2">Frequently asked questions</h2>
-      <div className="space-y-3 mb-6">
-        <div>
-          <p className="text-sm font-medium text-gray-800">Is this the same as my annual tax liability?</p>
-          <p className="text-sm text-gray-600">
-            No — this estimates what should be withheld from a given month's pay. For your
-            full year's tax liability across all income sources, use the{' '}
-            <Link to="/annual-tax/" className="text-blue-600 hover:underline">annual tax calculator</Link>.
-          </p>
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-800">Is my data saved anywhere?</p>
-          <p className="text-sm text-gray-600">
-            No. The calculation runs entirely in your browser and nothing you enter is sent
-            to a server unless you choose to request a specialist review or email yourself a breakdown.
-          </p>
-        </div>
-      </div>
-      <p className="text-center text-gray-500">Loading calculator…</p>
-    </div>
-  </div>
+    <CalculatorFrame
+      title="Monthly Withholding Estimator"
+      crumb="Monthly withholding"
+      updated={PAGE_LAST_UPDATED.monthlyWithholding}
+      intro={MONTHLY_INTRO}
+      paper="pink"
+      tab={`Monthly withholding · tax year ${RULES_TAX_YEAR}`}
+      reference={<MonthlyReference />}
+    >
+      <SheetLoading />
+    </CalculatorFrame>
+  </>
 );
 
 // Renders the plain fallback (no Suspense boundary at all) until the first client-side effect

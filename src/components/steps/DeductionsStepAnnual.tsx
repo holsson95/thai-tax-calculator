@@ -47,28 +47,28 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
   };
 
   return (
-    <div className={`border rounded-lg p-4 mb-3 ${hasValidationError ? 'border-red-500' : 'border-gray-200'}`}>
+    <div className={`border p-4 mb-3 ${hasValidationError ? 'border-desk' : 'border-paper-rule'}`}>
       <label className="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
           checked={hasDeduction}
           onChange={(e) => onToggle(e.target.checked)}
-          className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+         
         />
         <div className="flex-1">
-          <span className="font-medium text-gray-800">{label}</span>
-          <span className="text-sm text-gray-500 ml-2">(max ฿{maxAmount.toLocaleString()})</span>
+          <span className="font-medium text-ink">{label}</span>
+          <span className="text-sm text-ink-mute ml-2">(max ฿{maxAmount.toLocaleString()})</span>
         </div>
       </label>
 
       {description && (
-        <p className="text-sm text-gray-500 mt-1 ml-8">{description}</p>
+        <p className="text-sm text-ink-mute mt-1 ml-8">{description}</p>
       )}
 
       {hasDeduction && (
         <div className="mt-3 ml-8 animate-fadeIn">
           <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">฿</span>
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ink-mute">฿</span>
             <input
               type="text"
               inputMode="decimal"
@@ -77,21 +77,18 @@ const DeductionItem: React.FC<DeductionItemProps> = ({
               onChange={handleAmountChange}
               onBlur={handleBlur}
               placeholder="0"
-              className={`w-full pl-8 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                error || hasValidationError
-                  ? 'border-red-500 focus:ring-red-200'
-                  : 'border-gray-300 focus:ring-blue-200 focus:border-blue-500'
-              }`}
+              className="field-input pl-8"
+            aria-invalid={!!(error || hasValidationError)}
               aria-describedby={error || hasValidationError ? `${id}-error` : undefined}
             />
           </div>
           {(error || hasValidationError) && (
-            <p id={`${id}-error`} className="mt-1 text-sm text-red-600">
+            <p id={`${id}-error`} className="field-error">
               {error || 'Please enter an amount or uncheck this deduction.'}
             </p>
           )}
           {amount > 0 && amount <= maxAmount && (
-            <p className="mt-1 text-sm text-green-600">
+            <p className="mt-1 text-sm text-ink">
               Deduction: ฿{Math.min(amount, maxAmount).toLocaleString()}
             </p>
           )}
@@ -181,20 +178,15 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, show
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">Additional Deductions</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Additional Deductions</h2>
+      <p className="text-ink-soft mb-6">
         Select the deductions that apply to you. These reduce your taxable income.
       </p>
 
       {/* Senior Citizen Allowance */}
-      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+      <div className="border-desk p-4 mb-4 border-2">
         <div className="flex items-start gap-3 mb-3">
-          <div className="flex-shrink-0 mt-0.5">
-            <svg className="h-5 w-5 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <p className="text-sm text-amber-700">
+          <p className="text-sm text-ink">
             Taxpayers aged 65 or older are entitled to an additional ฿{TAX_CONSTANTS.SENIOR_ALLOWANCE.toLocaleString()} allowance.
           </p>
         </div>
@@ -204,9 +196,9 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, show
             type="checkbox"
             checked={formData.isAge65OrOlder}
             onChange={(e) => setFormData({ ...formData, isAge65OrOlder: e.target.checked })}
-            className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
+           
           />
-          <span className="text-gray-800">I am 65 years or older</span>
+          <span className="text-ink">I am 65 years or older</span>
         </label>
       </div>
 
@@ -228,10 +220,10 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, show
       </div>
 
       {/* Total Deductions Summary */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div className="p-4 border-2 border-desk">
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-green-800">Total Deductions:</span>
-          <span className="text-xl font-bold text-green-600">
+          <span className="font-semibold text-ink">Total Deductions:</span>
+          <span className="text-xl font-bold text-ink">
             ฿{getTotalDeductions().toLocaleString()}
           </span>
         </div>

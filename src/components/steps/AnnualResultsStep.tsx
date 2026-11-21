@@ -8,6 +8,8 @@ import { getTaxByBracket } from '../../utils/tax';
 import { generatePdfFilename } from '../../utils/pdfFilename';
 import TaxFlowDiagram, { TaxFlowStep } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
+import { FieldLabel, ResultCell, SourceTicket, Stamp, StepHeading } from '../ui/form';
+import { RULES_TAX_YEAR } from '../../config/taxRules';
 
 interface AnnualResultsStepProps {
   formData: TaxFormData;
@@ -51,8 +53,8 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
 
   const isRefund = result.refundOrOwed > 0;
   const refundOrOwedLabel = isRefund ? 'Tax Refund' : 'Additional Tax Owed';
-  const refundOrOwedColor = isRefund ? 'text-green-600' : 'text-red-600';
-  const refundOrOwedBg = isRefund ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
+  const isOwed = result.refundOrOwed < 0;
+  const stampText = isRefund ? 'Refund' : isOwed ? 'Balance due' : result.taxOwed === 0 ? 'No tax due' : 'Estimate';
 
   // Calculate tax by bracket for breakdown
   const taxBrackets = getTaxByBracket(result.taxableIncome).map((b) => ({
@@ -87,85 +89,67 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">Your Tax Calculation Results</h2>
-      <p className="text-gray-600 mb-6 text-center">
-        Based on the information you provided
-      </p>
+      <StepHeading title="Your Tax Calculation Results">Based on the information you provided</StepHeading>
 
-      {/* Main Result Card */}
-      <div className={`${refundOrOwedBg} border-2 rounded-xl p-6 mb-6 text-center`}>
-        <p className="text-sm text-gray-600 mb-1">{refundOrOwedLabel}</p>
-        <p className={`text-4xl font-bold ${refundOrOwedColor}`}>
-          {formatThb(Math.abs(result.refundOrOwed))}
-        </p>
-        {isRefund ? (
-          <p className="text-sm text-green-600 mt-2">
-            You've overpaid your taxes and may claim a refund
-          </p>
-        ) : result.refundOrOwed < 0 ? (
-          <p className="text-sm text-red-600 mt-2">
-            You owe additional tax beyond what was withheld
-          </p>
-        ) : (
-          <p className="text-sm text-gray-600 mt-2">
-            Your withholding matches your tax liability
-          </p>
-        )}
+      {/* Result box */}
+      <FieldLabel>Estimated Thai income tax, tax year {RULES_TAX_YEAR}</FieldLabel>
+      <div className="relative border-2 border-desk" aria-live="polite">
+        <div className="grid grid-cols-1 divide-y-2 divide-desk sm:grid-cols-2 sm:divide-x-2 sm:divide-y-0">
+          <ResultCell label="Tax for the year" value={formatThb(result.taxOwed)} />
+          <ResultCell
+            label={refundOrOwedLabel}
+            value={formatThb(Math.abs(result.refundOrOwed))}
+            testId="refund-or-owed"
+          />
+        </div>
+        <div className="border-t-2 border-desk pb-7 pl-4 pr-4 pt-2 text-xs text-ink-soft sm:py-2 sm:pr-40">
+          {isRefund ? (
+            <p data-outcome="refund">You've overpaid your taxes and may claim a refund</p>
+          ) : isOwed ? (
+            <p data-outcome="owed">You owe additional tax beyond what was withheld</p>
+          ) : (
+            <p data-outcome="settled">Your withholding matches your tax liability</p>
+          )}
+        </div>
+        <Stamp className="absolute -bottom-4 right-3 sm:-top-5 sm:bottom-auto">{stampText}</Stamp>
       </div>
+      <SourceTicket year={RULES_TAX_YEAR} className="mt-6 sm:mt-2" />
 
       {/* Take-Home Income */}
-      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Gross Income</p>
-          <p className="text-xl font-semibold text-gray-800">{formatThb(result.grossIncome)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Total Allowances</p>
-          <p className="text-xl font-semibold text-green-600">-{formatThb(result.totalAllowances)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Total Deductions</p>
-          <p className="text-xl font-semibold text-green-600">-{formatThb(result.totalDeductions)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Taxable Income</p>
-          <p className="text-xl font-semibold text-gray-800">{formatThb(result.taxableIncome)}</p>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Tax Owed</p>
-          <p className="text-xl font-semibold text-blue-600">{formatThb(result.taxOwed)}</p>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Tax Withheld</p>
-          <p className="text-xl font-semibold text-blue-600">{formatThb(result.taxWithheld)}</p>
-        </div>
+      <div className="mt-8">
+        <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
       </div>
 
-      {/* Effective Tax Rate */}
-      <div className="bg-gray-100 rounded-lg p-4 mb-6 text-center">
-        <p className="text-sm text-gray-500">Effective Tax Rate</p>
-        <p className="text-2xl font-bold text-gray-800">{formatPercent(result.effectiveRate)}</p>
+      {/* The return, line by line */}
+      <div className="mb-8">
+        <FieldLabel>Your return, line by line</FieldLabel>
+        <ul>
+          <li className="form-line"><span>Gross Income</span><span>{formatThb(result.grossIncome)}</span></li>
+          <li className="form-line"><span>Total Allowances</span><span>−{formatThb(result.totalAllowances)}</span></li>
+          <li className="form-line"><span>Total Deductions</span><span>−{formatThb(result.totalDeductions)}</span></li>
+          <li className="form-line font-semibold"><span>Taxable Income</span><span>{formatThb(result.taxableIncome)}</span></li>
+          <li className="form-line"><span>Tax Owed</span><span>{formatThb(result.taxOwed)}</span></li>
+          <li className="form-line"><span>Tax Withheld</span><span>{formatThb(result.taxWithheld)}</span></li>
+          <li className="form-total"><span>Effective Tax Rate</span><span>{formatPercent(result.effectiveRate)}</span></li>
+        </ul>
       </div>
 
       {/* How Your Tax Was Calculated */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">How Your Tax Was Calculated</h3>
         <TaxFlowDiagram steps={flowSteps} />
       </div>
 
       {/* Collapsible Breakdown */}
-      <div className="border border-gray-200 rounded-lg mb-6">
+      <div className="mb-6 border-2 border-desk">
         <button
           onClick={() => setShowBreakdown(!showBreakdown)}
-          className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+          className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-desk/[0.05]"
           aria-expanded={showBreakdown}
         >
-          <span className="font-medium text-gray-800">Detailed Breakdown</span>
+          <span className="text-[15px] font-bold text-ink">Detailed Breakdown</span>
           <svg
-            className={`w-5 h-5 text-gray-500 transition-transform ${showBreakdown ? 'rotate-180' : ''}`}
+            className={`w-5 h-5 text-ink-mute transition-transform ${showBreakdown ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -175,36 +159,36 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
         </button>
 
         {showBreakdown && (
-          <div className="p-4 border-t border-gray-200 animate-fadeIn">
+          <div className="border-t-2 border-desk px-4 pb-4 pt-3 [&>div+div]:mt-5">
             {/* Allowances Breakdown */}
             <div className="mb-4">
-              <h4 className="font-medium text-gray-700 mb-2">Allowances</h4>
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Personal</span>
+              <h4 className="field-label mb-1 text-ink-mute">Allowances</h4>
+              <div>
+                <div className="form-line">
+                  <span className="text-ink-soft">Personal</span>
                   <span>{formatThb(result.breakdown.personalAllowance)}</span>
                 </div>
                 {result.breakdown.spouseAllowance > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Spouse</span>
+                  <div className="form-line">
+                    <span className="text-ink-soft">Spouse</span>
                     <span>{formatThb(result.breakdown.spouseAllowance)}</span>
                   </div>
                 )}
                 {result.breakdown.seniorAllowance > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Senior (65+)</span>
+                  <div className="form-line">
+                    <span className="text-ink-soft">Senior (65+)</span>
                     <span>{formatThb(result.breakdown.seniorAllowance)}</span>
                   </div>
                 )}
                 {result.breakdown.childAllowance > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Children</span>
+                  <div className="form-line">
+                    <span className="text-ink-soft">Children</span>
                     <span>{formatThb(result.breakdown.childAllowance)}</span>
                   </div>
                 )}
                 {result.breakdown.parentAllowance > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Parents</span>
+                  <div className="form-line">
+                    <span className="text-ink-soft">Parents</span>
                     <span>{formatThb(result.breakdown.parentAllowance)}</span>
                   </div>
                 )}
@@ -214,59 +198,59 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
             {/* Deductions Breakdown */}
             {result.totalDeductions > 0 && (
               <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2">Deductions</h4>
-                <div className="text-sm space-y-1">
+                <h4 className="field-label mb-1 text-ink-mute">Deductions</h4>
+                <div>
                   {result.breakdown.standardDeduction > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Expense Deduction (50%)</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Expense Deduction (50%)</span>
                       <span>{formatThb(result.breakdown.standardDeduction)}</span>
                     </div>
                   )}
                   {result.breakdown.socialSecurity > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Social Security</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Social Security</span>
                       <span>{formatThb(result.breakdown.socialSecurity)}</span>
                     </div>
                   )}
                   {result.breakdown.lifeInsurance > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Life Insurance</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Life Insurance</span>
                       <span>{formatThb(result.breakdown.lifeInsurance)}</span>
                     </div>
                   )}
                   {result.breakdown.healthInsurance > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Health Insurance</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Health Insurance</span>
                       <span>{formatThb(result.breakdown.healthInsurance)}</span>
                     </div>
                   )}
                   {result.breakdown.pensionFund > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Pension Fund</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Pension Fund</span>
                       <span>{formatThb(result.breakdown.pensionFund)}</span>
                     </div>
                   )}
                   {result.breakdown.providentFund > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Provident Fund</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Provident Fund</span>
                       <span>{formatThb(result.breakdown.providentFund)}</span>
                     </div>
                   )}
                   {result.breakdown.rmf > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">RMF</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">RMF</span>
                       <span>{formatThb(result.breakdown.rmf)}</span>
                     </div>
                   )}
                   {result.breakdown.ssf > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">SSF</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">SSF</span>
                       <span>{formatThb(result.breakdown.ssf)}</span>
                     </div>
                   )}
                   {result.breakdown.donations > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Donations</span>
+                    <div className="form-line">
+                      <span className="text-ink-soft">Donations</span>
                       <span>{formatThb(result.breakdown.donations)}</span>
                     </div>
                   )}
@@ -276,17 +260,17 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
 
             {/* Tax Bracket Breakdown */}
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Tax by Bracket</h4>
-              <div className="text-sm space-y-1">
+              <h4 className="field-label mb-1 text-ink-mute">Tax by Bracket</h4>
+              <div>
                 {taxBrackets.map((bracket) => (
                   <div key={bracket.label} className="flex justify-between">
-                    <span className="text-gray-600">
+                    <span className="text-ink-soft">
                       {bracket.label} ({bracket.rate}%)
                     </span>
                     <span>{formatThb(bracket.tax)}</span>
                   </div>
                 ))}
-                <div className="flex justify-between font-medium border-t border-gray-200 pt-1 mt-2">
+                <div className="form-total mt-1">
                   <span>Total Tax</span>
                   <span>{formatThb(result.taxOwed)}</span>
                 </div>
@@ -297,21 +281,18 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div className="note-strong mb-6">
         <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
           <div>
-            <h4 className="font-medium text-yellow-800">Disclaimer</h4>
-            <p className="text-sm text-yellow-700 mt-1">
+            <h4 className="note-title">Disclaimer</h4>
+            <p className="text-sm text-ink mt-1">
               This calculator provides an estimate only. Tax laws are complex and your actual tax
               liability may differ. Please consult with a qualified tax professional or the{' '}
               <a
                 href="https://www.rd.go.th"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-yellow-900"
+                className="underline hover:text-ink"
               >
                 Thai Revenue Department
               </a>
@@ -328,7 +309,7 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
       <button
         onClick={handleDownloadPDF}
         disabled={isGeneratingPDF}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mb-3 disabled:opacity-50"
+        className="btn-primary mb-3 w-full"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -339,7 +320,7 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
       {/* Start Over Button */}
       <button
         onClick={onStartOver}
-        className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+        className="btn-secondary w-full"
       >
         Start Over
       </button>

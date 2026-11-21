@@ -96,14 +96,14 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">Business Profile</h2>
-      <p className="text-gray-600 mb-6">
+      <h2 className="display text-2xl leading-tight text-ink sm:text-[28px] mb-2">Business Profile</h2>
+      <p className="text-ink-soft mb-6">
         Tell us about your business to determine the applicable tax deductions.
       </p>
 
       {/* Business Name */}
       <div className="mb-6">
-        <label htmlFor="businessName" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="businessName" className="block text-sm font-medium text-ink-soft mb-2">
           Business Name
         </label>
         <input
@@ -113,15 +113,12 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
           onChange={(e) => updateBusinessProfile({ businessName: e.target.value })}
           onBlur={() => setTouched({ ...touched, businessName: true })}
           placeholder="e.g., My Consulting Services"
-          className={`w-full px-4 py-3 border-2 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-            showNameError
-              ? 'border-red-300 focus:border-red-500'
-              : 'border-gray-200 focus:border-blue-500'
-          }`}
+          className="field-input h-12 text-lg"
+            aria-invalid={!!(showNameError)}
           aria-describedby="name-error"
         />
         {showNameError && (
-          <p id="name-error" className="mt-1 text-sm text-red-600">
+          <p id="name-error" className="field-error">
             Please enter your business name
           </p>
         )}
@@ -129,10 +126,10 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
 
       {/* Business Category */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-ink-soft mb-2">
           Business Category
         </label>
-        <p className="text-sm text-gray-500 mb-3">
+        <p className="text-sm text-ink-mute mb-3">
           Select the category that best describes your business activities. This determines your
           flat-rate expense deduction.
         </p>
@@ -142,27 +139,27 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
               key={key}
               type="button"
               onClick={() => handleCategorySelect(key as BusinessCategory)}
-              className={`p-3 border-2 rounded-lg text-left transition-all ${
+              className={`p-3 border-2 text-left transition-all ${
                 businessProfile.businessCategory === key
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                  ? 'border-desk'
+                  : 'border-paper-rule hover:border-ink/25 hover:bg-desk/[0.05]'
               }`}
             >
-              <div className="font-medium text-gray-800">{label}</div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="font-medium text-ink">{label}</div>
+              <div className="text-xs text-ink-mute mt-1">
                 {BUSINESS_CATEGORY_DESCRIPTIONS[key as BusinessCategory]}
               </div>
             </button>
           ))}
         </div>
         {showCategoryError && (
-          <p className="mt-2 text-sm text-red-600">Please select a business category</p>
+          <p className="field-error">Please select a business category</p>
         )}
       </div>
 
       {/* Registration Type */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-ink-soft mb-2">
           Business Registration
         </label>
         <div className="space-y-2">
@@ -171,14 +168,14 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
               key={type.value}
               type="button"
               onClick={() => handleRegistrationTypeSelect(type.value)}
-              className={`w-full p-3 border-2 rounded-lg text-left transition-all ${
+              className={`w-full p-3 border-2 text-left transition-all ${
                 businessProfile.registrationType === type.value
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                  ? 'border-desk'
+                  : 'border-paper-rule hover:border-ink/25 hover:bg-desk/[0.05]'
               }`}
             >
-              <div className="font-medium text-gray-800">{type.label}</div>
-              <div className="text-xs text-gray-500">{type.description}</div>
+              <div className="font-medium text-ink">{type.label}</div>
+              <div className="text-xs text-ink-mute">{type.description}</div>
             </button>
           ))}
         </div>
@@ -186,7 +183,7 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
 
       {/* Years in Operation */}
       <div className="mb-6">
-        <label htmlFor="yearsInOperation" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="yearsInOperation" className="block text-sm font-medium text-ink-soft mb-2">
           Years in Operation (optional)
         </label>
         <div className="relative max-w-xs">
@@ -198,39 +195,39 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
             onChange={handleYearsChange}
             onBlur={() => setTouched({ ...touched, yearsInOperation: true })}
             placeholder="e.g., 3"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="field-input h-12 text-lg"
           />
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500">years</span>
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-mute">years</span>
         </div>
       </div>
 
       {/* Additional Options */}
       <div className="mb-6 space-y-3">
-        <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+        <label className="flex items-center gap-3 cursor-pointer p-3 border hover:border-ink/25 transition-colors border-ink/25">
           <input
             type="checkbox"
             checked={businessProfile.hasPhysicalLocation}
             onChange={(e) => updateBusinessProfile({ hasPhysicalLocation: e.target.checked })}
-            className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+           
           />
           <div>
-            <span className="text-gray-800 font-medium">Physical business location</span>
-            <p className="text-xs text-gray-500">
+            <span className="text-ink font-medium">Physical business location</span>
+            <p className="text-xs text-ink-mute">
               Do you have a shop, office, or other physical business premises?
             </p>
           </div>
         </label>
 
-        <label className="flex items-center gap-3 cursor-pointer p-3 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+        <label className="flex items-center gap-3 cursor-pointer p-3 border hover:border-ink/25 transition-colors border-ink/25">
           <input
             type="checkbox"
             checked={formData.hasInventory}
             onChange={(e) => setFormData({ ...formData, hasInventory: e.target.checked })}
-            className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500"
+           
           />
           <div>
-            <span className="text-gray-800 font-medium">Hold inventory</span>
-            <p className="text-xs text-gray-500">
+            <span className="text-ink font-medium">Hold inventory</span>
+            <p className="text-xs text-ink-mute">
               Do you purchase and hold goods for resale?
             </p>
           </div>
@@ -238,18 +235,9 @@ const BusinessProfileStep: React.FC<SoleProprietorStepProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="border border-ink/25 p-4 mb-6">
         <div className="flex items-start gap-3">
-          <div className="flex-shrink-0 mt-0.5">
-            <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="text-sm text-blue-700">
+          <div className="text-sm text-ink-soft">
             <p className="font-medium mb-1">Flat-rate vs. Actual Expenses</p>
             <p>
               Based on your business category, you may be eligible for flat-rate expense deductions.

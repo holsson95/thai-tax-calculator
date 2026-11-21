@@ -41,7 +41,7 @@ describe('/foreign-income-tax-calculator/ page', () => {
     for (const f of FOREIGN_INCOME_CALC_FAQS) {
       expect(text).toContain(f.answer);
     }
-    expect(html).toContain('Loading calculator');
+    expect(html).toContain('Loading the form');
   });
 
   it('every FAQ source and related article id resolves', () => {

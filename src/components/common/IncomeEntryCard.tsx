@@ -57,16 +57,16 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
   return (
     <div
-      className={`border-2 rounded-lg overflow-hidden transition-all ${
+      className={`border-2 overflow-hidden transition-all ${
         errors.length > 0 && showError
-          ? 'border-red-300'
-          : 'border-gray-200'
+          ? 'border-desk'
+          : 'border-paper-rule'
       }`}
     >
       {/* Entry Header */}
       <div
         className={`p-4 flex justify-between items-center ${
-          isExpanded ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'
+          isExpanded ? '' : 'bg-paper-white hover:bg-desk/[0.05]'
         }`}
       >
         <button
@@ -74,23 +74,23 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
           onClick={onToggle}
           aria-expanded={isExpanded}
           aria-controls={isExpanded ? fieldId('details') : undefined}
-          className="flex items-center gap-3 flex-1 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+          className="flex items-center gap-3 flex-1 text-left focus:outline-none focus:ring-2 focus:ring-desk"
         >
-          <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium" aria-hidden="true">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-desk font-mono text-sm font-semibold text-ink" aria-hidden="true">
             {index + 1}
           </span>
           <span className="sr-only">
             {isExpanded ? 'Collapse' : 'Expand'} {headerLabel}
           </span>
           <span aria-hidden="true">
-            <p className="font-medium text-gray-800">
+            <p className="font-medium text-ink">
               {incomeTypeInfo?.shortLabel || 'New Income Source'}
               {entry.payerName && ` - ${entry.payerName}`}
             </p>
-            <div className="flex items-center gap-3 text-sm text-gray-500">
+            <div className="flex items-center gap-3 text-sm text-ink-mute">
               <span>฿{entry.grossAmount.toLocaleString()}</span>
               {entry.withholdingAmount > 0 && (
-                <span className="text-green-600">
+                <span className="text-ink">
                   WHT: ฿{entry.withholdingAmount.toLocaleString()}
                 </span>
               )}
@@ -109,7 +109,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               e.stopPropagation();
               onRemove();
             }}
-            className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 text-desk hover:text-ink hover:bg-desk/[0.05] transition-colors"
             aria-label="Remove entry"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +117,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
             </svg>
           </button>
           <svg
-            className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+            className={`w-5 h-5 text-ink-mute transition-transform ${isExpanded ? 'rotate-180' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -130,11 +130,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
       {/* Entry Details (Expanded) */}
       {isExpanded && (
-        <div id={fieldId('details')} className="p-4 border-t border-gray-200 bg-white space-y-4">
+        <div id={fieldId('details')} className="p-4 border-t border-paper-rule bg-paper-white space-y-4">
           {/* Error Messages */}
           {errors.length > 0 && showError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <ul className="text-sm text-red-600 list-disc list-inside">
+            <div className="border-desk p-3 border-2">
+              <ul className="text-sm text-ink list-disc list-inside">
                 {errors.map((err, i) => (
                   <li key={i}>{err}</li>
                 ))}
@@ -144,7 +144,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Income Type */}
           <div>
-            <label htmlFor={fieldId('incomeType')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('incomeType')} className="block text-sm font-medium text-ink-soft mb-1">
               Income Type *
             </label>
             <select
@@ -152,7 +152,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               value={entry.incomeType}
               onChange={(e) => onUpdate('incomeType', e.target.value as IncomeType)}
               onBlur={() => handleBlur('incomeType')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field-input"
             >
               {incomeTypeOptions.map(option => (
                 <option key={option.value} value={option.value}>
@@ -161,7 +161,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               ))}
             </select>
             {incomeTypeInfo && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-ink-mute mt-1">
                 {incomeTypeInfo.description}
               </p>
             )}
@@ -169,18 +169,15 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Income Type Info Box */}
           {incomeTypeInfo && (
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+            <div className="border border-ink/25 p-3">
               <div className="flex items-start gap-2">
-                <svg className="w-4 h-4 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
                 <div className="text-sm">
-                  <p className="text-blue-700">
+                  <p className="text-desk">
                     <strong>Flat Rate Deduction:</strong> {(incomeTypeInfo.flatRate * 100).toFixed(0)}%
                     {incomeTypeInfo.flatRateCap && ` (capped at ฿${incomeTypeInfo.flatRateCap.toLocaleString()})`}
                   </p>
                   {incomeTypeInfo.notes && (
-                    <p className="text-blue-600 mt-1">{incomeTypeInfo.notes}</p>
+                    <p className="text-desk mt-1">{incomeTypeInfo.notes}</p>
                   )}
                 </div>
               </div>
@@ -189,11 +186,11 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
           {/* Gross Amount */}
           <div>
-            <label htmlFor={fieldId('grossAmount')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('grossAmount')} className="block text-sm font-medium text-ink-soft mb-1">
               Gross Amount (THB) *
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
               <input
                 id={fieldId('grossAmount')}
                 type="number"
@@ -203,21 +200,21 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
                 onBlur={() => handleBlur('grossAmount')}
                 placeholder="0"
                 min="0"
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="field-input pl-8 pr-3"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Total income before any deductions or withholding
             </p>
           </div>
 
           {/* Withholding Amount */}
           <div>
-            <label htmlFor={fieldId('withholdingAmount')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('withholdingAmount')} className="block text-sm font-medium text-ink-soft mb-1">
               Withholding Tax Deducted (THB)
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">฿</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-mute">฿</span>
               <input
                 id={fieldId('withholdingAmount')}
                 type="number"
@@ -227,17 +224,17 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
                 onBlur={() => handleBlur('withholdingAmount')}
                 placeholder="0"
                 min="0"
-                className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="field-input pl-8 pr-3"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Tax already withheld by the payer (shown on withholding certificate)
             </p>
           </div>
 
           {/* Month Received */}
           <div>
-            <label htmlFor={fieldId('monthReceived')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('monthReceived')} className="block text-sm font-medium text-ink-soft mb-1">
               Month Received *
             </label>
             <select
@@ -245,7 +242,7 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               value={entry.monthReceived}
               onChange={(e) => onUpdate('monthReceived', parseInt(e.target.value, 10))}
               onBlur={() => handleBlur('monthReceived')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field-input"
             >
               <option value={0}>Select month...</option>
               {months.map(month => (
@@ -254,14 +251,14 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
                 </option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-ink-mute mt-1">
               Used for PND94 mid-year filing requirement (Jan-Jun income)
             </p>
           </div>
 
           {/* Payer Name */}
           <div>
-            <label htmlFor={fieldId('payerName')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('payerName')} className="block text-sm font-medium text-ink-soft mb-1">
               Payer/Client Name
             </label>
             <input
@@ -271,13 +268,13 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               onChange={(e) => onUpdate('payerName', e.target.value)}
               onBlur={() => handleBlur('payerName')}
               placeholder="e.g., ABC Company Ltd."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field-input"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor={fieldId('description')} className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor={fieldId('description')} className="block text-sm font-medium text-ink-soft mb-1">
               Description (Optional)
             </label>
             <input
@@ -287,20 +284,20 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
               onChange={(e) => onUpdate('description', e.target.value)}
               onBlur={() => handleBlur('description')}
               placeholder="e.g., Consulting project, Software development"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="field-input"
             />
           </div>
 
           {/* Calculated Flat Rate Deduction Preview */}
           {entry.grossAmount > 0 && incomeTypeInfo && incomeTypeInfo.flatRate > 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-sm text-green-700">
+            <div className="p-3 border-2 border-desk">
+              <p className="text-sm text-ink">
                 <strong>Flat Rate Deduction Preview:</strong>{' '}
                 ฿{(entry.grossAmount * incomeTypeInfo.flatRate).toLocaleString()}
                 {' '}({(incomeTypeInfo.flatRate * 100).toFixed(0)}% of ฿{entry.grossAmount.toLocaleString()})
               </p>
               {incomeTypeInfo.flatRateCap && (
-                <p className="text-xs text-green-600 mt-1">
+                <p className="text-xs text-ink mt-1">
                   Note: Total salary deduction is capped at ฿{incomeTypeInfo.flatRateCap.toLocaleString()} across all salary entries combined
                 </p>
               )}

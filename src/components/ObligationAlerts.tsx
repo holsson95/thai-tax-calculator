@@ -12,11 +12,11 @@ interface PND94AlertProps {
 export const PND94Alert: React.FC<PND94AlertProps> = ({ result }) => {
   if (!result.required) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div className="p-4 border-2 border-desk">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
             <svg
-              className="w-5 h-5 text-green-500"
+              className="w-5 h-5 text-desk"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -30,10 +30,10 @@ export const PND94Alert: React.FC<PND94AlertProps> = ({ result }) => {
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-green-800">
+            <h4 className="text-sm font-medium text-ink">
               PND94 Not Required
             </h4>
-            <p className="text-sm text-green-700 mt-1">
+            <p className="text-sm text-ink mt-1">
               Your Jan-Jun qualifying income (
               <span className="font-medium">
                 ฿{result.halfYearIncome.toLocaleString()}
@@ -47,11 +47,11 @@ export const PND94Alert: React.FC<PND94AlertProps> = ({ result }) => {
   }
 
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+    <div className="border-desk p-4 border-2">
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           <svg
-            className="w-5 h-5 text-amber-500"
+            className="w-5 h-5 text-desk"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -65,29 +65,29 @@ export const PND94Alert: React.FC<PND94AlertProps> = ({ result }) => {
           </svg>
         </div>
         <div className="flex-1">
-          <h4 className="text-sm font-medium text-amber-800">
+          <h4 className="text-sm font-medium text-ink">
             PND94 Mid-Year Filing Required
           </h4>
-          <p className="text-sm text-amber-700 mt-1">
+          <p className="text-sm text-ink mt-1">
             Your Jan-Jun qualifying income (
             <span className="font-medium">
               ฿{result.halfYearIncome.toLocaleString()}
             </span>
             ) exceeds ฿{result.threshold.toLocaleString()}.
           </p>
-          <div className="mt-3 bg-white/50 rounded p-3 space-y-2">
+          <div className="mt-3 bg-white/50 p-3 space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-amber-700">Estimated Provisional Tax:</span>
-              <span className="font-medium text-amber-900">
+              <span className="text-ink">Estimated Provisional Tax:</span>
+              <span className="font-medium text-ink">
                 ฿{result.provisionalTax.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-amber-700">Filing Deadline:</span>
-              <span className="font-medium text-amber-900">{result.dueDate}</span>
+              <span className="text-ink">Filing Deadline:</span>
+              <span className="font-medium text-ink">{result.dueDate}</span>
             </div>
           </div>
-          <p className="text-xs text-amber-600 mt-2">
+          <p className="text-xs text-ink mt-2">
             PND94 requires filing for income types under Sections 40(5)-(8) of the
             Revenue Code, including rental, freelance, contractor, and business
             income.
@@ -108,11 +108,11 @@ interface VATAlertProps {
 export const VATAlert: React.FC<VATAlertProps> = ({ result }) => {
   if (!result.required) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div className="p-4 border-2 border-desk">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0">
             <svg
-              className="w-5 h-5 text-green-500"
+              className="w-5 h-5 text-desk"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -126,10 +126,10 @@ export const VATAlert: React.FC<VATAlertProps> = ({ result }) => {
             </svg>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-green-800">
+            <h4 className="text-sm font-medium text-ink">
               VAT Registration Not Required
             </h4>
-            <p className="text-sm text-green-700 mt-1">
+            <p className="text-sm text-ink mt-1">
               Your annual turnover (
               <span className="font-medium">
                 ฿{result.turnover.toLocaleString()}
@@ -143,11 +143,11 @@ export const VATAlert: React.FC<VATAlertProps> = ({ result }) => {
   }
 
   return (
-    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+    <div className="border-desk p-4 border-2">
       <div className="flex items-start gap-3">
         <div className="flex-shrink-0">
           <svg
-            className="w-5 h-5 text-red-500"
+            className="w-5 h-5 text-desk"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -161,18 +161,18 @@ export const VATAlert: React.FC<VATAlertProps> = ({ result }) => {
           </svg>
         </div>
         <div className="flex-1">
-          <h4 className="text-sm font-medium text-red-800">
+          <h4 className="text-sm font-medium text-ink">
             VAT Registration Required
           </h4>
-          <p className="text-sm text-red-700 mt-1">
+          <p className="text-sm text-ink mt-1">
             Your annual turnover (
             <span className="font-medium">
               ฿{result.turnover.toLocaleString()}
             </span>
             ) exceeds the ฿{result.threshold.toLocaleString()} threshold.
           </p>
-          <div className="mt-3 bg-white/50 rounded p-3">
-            <div className="flex items-center gap-2 text-sm text-red-800">
+          <div className="mt-3 bg-white/50 p-3">
+            <div className="flex items-center gap-2 text-sm text-ink">
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -195,7 +195,7 @@ export const VATAlert: React.FC<VATAlertProps> = ({ result }) => {
               </span>
             </div>
           </div>
-          <p className="text-xs text-red-600 mt-2">
+          <p className="text-xs text-ink mt-2">
             Once registered, you must charge 7% VAT on all qualifying sales and
             file VAT returns monthly (PP.30).
           </p>
@@ -222,10 +222,10 @@ export const ObligationAlerts: React.FC<ObligationAlertsProps> = ({
   // If no obligations and not showing all, just show a summary
   if (!hasAnyObligation && !showAll) {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+      <div className="p-4 border-2 border-desk">
         <div className="flex items-center gap-3">
           <svg
-            className="w-5 h-5 text-green-500"
+            className="w-5 h-5 text-desk"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -238,10 +238,10 @@ export const ObligationAlerts: React.FC<ObligationAlertsProps> = ({
             />
           </svg>
           <div>
-            <h4 className="text-sm font-medium text-green-800">
+            <h4 className="text-sm font-medium text-ink">
               No Additional Tax Obligations
             </h4>
-            <p className="text-sm text-green-700">
+            <p className="text-sm text-ink">
               Based on your income, you don't have PND94 or VAT registration
               requirements.
             </p>
@@ -253,11 +253,11 @@ export const ObligationAlerts: React.FC<ObligationAlertsProps> = ({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Tax Obligations</h3>
+      <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">Tax Obligations</h3>
 
       {hasAnyObligation && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-          <p className="text-sm text-blue-800">
+        <div className="border border-ink/25 p-3 mb-4">
+          <p className="text-sm text-ink">
             <span className="font-medium">Important:</span> Based on your income,
             you have the following tax obligations to fulfill.
           </p>
@@ -270,8 +270,8 @@ export const ObligationAlerts: React.FC<ObligationAlertsProps> = ({
       </div>
 
       {hasAnyObligation && (
-        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600">
+        <div className="mt-4 p-3 border border-ink/25">
+          <p className="text-xs text-ink-soft">
             <span className="font-medium">Disclaimer:</span> This is an estimate
             based on the information provided. Consult with a tax professional
             for accurate assessment of your obligations.
@@ -299,15 +299,15 @@ export const ObligationSummary: React.FC<ObligationSummaryProps> = ({
   }
 
   return (
-    <div className="border-t border-gray-200 pt-4 mt-4">
-      <h4 className="text-sm font-medium text-gray-700 mb-2">
+    <div className="border-t border-paper-rule pt-4 mt-4">
+      <h4 className="note-title">
         Additional Obligations
       </h4>
       <ul className="space-y-2">
         {pnd94.required && (
           <li className="flex items-center gap-2 text-sm">
-            <span className="w-2 h-2 bg-amber-500 rounded-full" />
-            <span className="text-gray-700">
+            <span className="w-2 h-2 bg-desk" />
+            <span className="text-ink-soft">
               PND94 filing required - Est. tax:{' '}
               <span className="font-medium">
                 ฿{pnd94.provisionalTax.toLocaleString()}
@@ -318,8 +318,8 @@ export const ObligationSummary: React.FC<ObligationSummaryProps> = ({
         )}
         {vat.required && (
           <li className="flex items-center gap-2 text-sm">
-            <span className="w-2 h-2 bg-red-500 rounded-full" />
-            <span className="text-gray-700">
+            <span className="w-2 h-2 bg-desk" />
+            <span className="text-ink-soft">
               VAT registration required (turnover: ฿{vat.turnover.toLocaleString()}
               )
             </span>
@@ -327,7 +327,7 @@ export const ObligationSummary: React.FC<ObligationSummaryProps> = ({
         )}
       </ul>
       {urgentItems.length > 0 && (
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-ink-mute mt-2">
           Action items: {urgentItems.join(', ')}
         </p>
       )}

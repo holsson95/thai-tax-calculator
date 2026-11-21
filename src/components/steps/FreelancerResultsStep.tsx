@@ -11,6 +11,8 @@ import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
 import { generatePdfFilename } from '../../utils/pdfFilename';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
+import { FieldLabel, ResultCell, SourceTicket, Stamp, StepHeading } from '../ui/form';
+import { RULES_TAX_YEAR } from '../../config/taxRules';
 
 interface FreelancerResultsStepProps {
   formData: FreelancerFormData;
@@ -72,8 +74,6 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
   const refundOrOwed = totalWithholding - result.grossTaxBeforeCredits;
   const isRefund = refundOrOwed > 0;
   const refundOrOwedLabel = isRefund ? 'Tax Refund' : 'Additional Tax Owed';
-  const refundOrOwedColor = isRefund ? 'text-green-600' : 'text-red-600';
-  const refundOrOwedBg = isRefund ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200';
 
   // Calculate tax by bracket for breakdown
   const taxBrackets = getTaxByBracket(result.taxableIncome).map((b) => ({
@@ -124,25 +124,15 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-2 text-center">
-        Your Tax Calculation Results
-      </h2>
-      <p className="text-gray-600 mb-6 text-center">
-        Based on your freelance/self-employment income
-      </p>
+      <StepHeading title="Your Tax Calculation Results">Based on your freelance/self-employment income</StepHeading>
 
       {/* LTR Visa Benefit Notice */}
       {result.ltrBenefitApplied && (
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-purple-100">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
+        <div className="note mb-6">
+          <div>
             <div>
-              <h3 className="font-semibold text-purple-800">LTR Visa Tax Benefits Applied</h3>
-              <ul className="text-sm text-purple-700 mt-1 space-y-1">
+              <h3 className="note-title">LTR Visa Tax Benefits Applied</h3>
+              <ul className="text-sm text-ink-soft mt-1 space-y-1">
                 {result.ltrForeignIncomeExempt && (
                   <li>• Foreign income is tax exempt under your LTR visa status</li>
                 )}
@@ -157,21 +147,18 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
       {/* DTA Warning - shown when foreign tax paid but no treaty */}
       {totalDTACreditDisallowed > 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+        <div className="note-strong mb-6">
           <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
             <div>
-              <h3 className="font-semibold text-amber-800">Double Taxation Risk</h3>
-              <p className="text-sm text-amber-700 mt-1">
+              <h3 className="note-title">Double Taxation Risk</h3>
+              <p className="text-sm text-ink mt-1">
                 {formatThb(totalDTACreditDisallowed)} in foreign taxes paid cannot be credited because{' '}
                 {missingDTAEntries.length === 1
                   ? `${missingDTAEntries[0].entry.country} has`
                   : 'some countries have'} no tax treaty with Thailand.
                 You may be taxed on this income in both countries.
               </p>
-              <p className="text-xs text-amber-600 mt-1">
+              <p className="text-xs text-ink mt-1">
                 Consider consulting a tax professional about available relief options.
               </p>
             </div>
@@ -179,100 +166,96 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
         </div>
       )}
 
-      {/* Main Result Card */}
-      <div className={`${refundOrOwedBg} border-2 rounded-xl p-6 mb-6 text-center`}>
-        <p className="text-sm text-gray-600 mb-1">{refundOrOwedLabel}</p>
-        <p className={`text-4xl font-bold ${refundOrOwedColor}`}>
-          {formatThb(Math.abs(refundOrOwed))}
-        </p>
-        {isRefund ? (
-          <p className="text-sm text-green-600 mt-2">
-            You've overpaid your taxes and may claim a refund
-          </p>
-        ) : refundOrOwed < 0 ? (
-          <p className="text-sm text-red-600 mt-2">
-            You owe additional tax beyond what was withheld
-          </p>
-        ) : (
-          <p className="text-sm text-gray-600 mt-2">
-            Your withholding matches your tax liability
-          </p>
-        )}
+      {/* Result box */}
+      <FieldLabel>Estimated Thai income tax, tax year {RULES_TAX_YEAR}</FieldLabel>
+      <div className="relative border-2 border-desk" aria-live="polite">
+        <div className="grid grid-cols-1 divide-y-2 divide-desk sm:grid-cols-2 sm:divide-x-2 sm:divide-y-0">
+          <ResultCell label="Tax for the year" value={formatThb(result.grossTaxBeforeCredits)} />
+          <ResultCell label={refundOrOwedLabel} value={formatThb(Math.abs(refundOrOwed))} testId="refund-or-owed" />
+        </div>
+        <div className="border-t-2 border-desk pb-7 pl-4 pr-4 pt-2 text-xs text-ink-soft sm:py-2 sm:pr-40">
+          {isRefund ? (
+            <p data-outcome="refund">You've overpaid your taxes and may claim a refund</p>
+          ) : refundOrOwed < 0 ? (
+            <p data-outcome="owed">You owe additional tax beyond what was withheld</p>
+          ) : (
+            <p data-outcome="settled">Your withholding matches your tax liability</p>
+          )}
+        </div>
+        <Stamp className="absolute -bottom-4 right-3 sm:-top-5 sm:bottom-auto">
+          {isRefund ? 'Refund' : refundOrOwed < 0 ? 'Balance due' : result.grossTaxBeforeCredits === 0 ? 'No tax due' : 'Estimate'}
+        </Stamp>
       </div>
+      <SourceTicket year={RULES_TAX_YEAR} className="mt-6 sm:mt-2" />
 
       {/* Take-Home Income */}
-      <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Total Gross Income</p>
-          <p className="text-xl font-semibold text-gray-800">{formatThb(result.grossIncome)}</p>
-          {result.foreignIncomeTotal > 0 && (
-            <p className="text-xs text-gray-500 mt-1">
-              Thai: {formatThb(result.thaiIncomeTotal)} + Foreign: {formatThb(result.taxableForeignIncome)}
-            </p>
-          )}
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Expense Deduction</p>
-          <p className="text-xl font-semibold text-green-600">-{formatThb(result.expenseDeduction)}</p>
-          <p className="text-xs text-gray-500 mt-1">{getExpenseDeductionLabel()}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Total Allowances</p>
-          <p className="text-xl font-semibold text-green-600">-{formatThb(result.totalAllowances)}</p>
-        </div>
-        <div className="bg-gray-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Taxable Income</p>
-          <p className="text-xl font-semibold text-gray-800">{formatThb(result.taxableIncome)}</p>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Tax Owed</p>
-          <p className="text-xl font-semibold text-blue-600">{formatThb(result.grossTaxBeforeCredits)}</p>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-4 text-center">
-          <p className="text-sm text-gray-500">Tax Credits</p>
-          <p className="text-xl font-semibold text-blue-600">{formatThb(totalWithholding)}</p>
-          {result.foreignTaxCredits > 0 && (
-            <p className="text-xs text-gray-500 mt-1">
-              Incl. foreign tax credit: {formatThb(result.foreignTaxCredits)}
-            </p>
-          )}
-        </div>
+      <div className="mt-8">
+        <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />
       </div>
 
-      {/* Effective Tax Rate */}
-      <div className="bg-gray-100 rounded-lg p-4 mb-6 text-center">
-        <p className="text-sm text-gray-500">Effective Tax Rate</p>
-        <p className="text-2xl font-bold text-gray-800">{formatPercent(result.effectiveRate)}</p>
+      {/* The return, line by line */}
+      <div className="mb-8">
+        <FieldLabel>Your return, line by line</FieldLabel>
+        <ul>
+          <li className="form-line">
+            <span>
+              Total Gross Income
+              {result.foreignIncomeTotal > 0 && (
+                <span className="block text-xs text-ink-mute">
+                  Thai: {formatThb(result.thaiIncomeTotal)} + Foreign: {formatThb(result.taxableForeignIncome)}
+                </span>
+              )}
+            </span>
+            <span>{formatThb(result.grossIncome)}</span>
+          </li>
+          <li className="form-line">
+            <span>
+              Expense Deduction
+              <span className="block text-xs text-ink-mute">{getExpenseDeductionLabel()}</span>
+            </span>
+            <span>−{formatThb(result.expenseDeduction)}</span>
+          </li>
+          <li className="form-line"><span>Total Allowances</span><span>−{formatThb(result.totalAllowances)}</span></li>
+          <li className="form-line font-semibold"><span>Taxable Income</span><span>{formatThb(result.taxableIncome)}</span></li>
+          <li className="form-line"><span>Tax Owed</span><span>{formatThb(result.grossTaxBeforeCredits)}</span></li>
+          <li className="form-line">
+            <span>
+              Tax Credits
+              {result.foreignTaxCredits > 0 && (
+                <span className="block text-xs text-ink-mute">Incl. foreign tax credit: {formatThb(result.foreignTaxCredits)}</span>
+              )}
+            </span>
+            <span>{formatThb(totalWithholding)}</span>
+          </li>
+          <li className="form-total"><span>Effective Tax Rate</span><span>{formatPercent(result.effectiveRate)}</span></li>
+        </ul>
       </div>
 
       {/* Expense Comparison (if auto_compare) */}
       {result.expenseComparison && (
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
-          <h4 className="font-medium text-purple-800 mb-2">Expense Comparison Result</h4>
+        <div className="note mb-6">
+          <h4 className="note-title">Expense Comparison Result</h4>
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className={`p-3 rounded ${result.expenseComparison.recommended === 'flat' ? 'bg-purple-100' : 'bg-white'}`}>
-              <p className="text-gray-600">Flat-Rate</p>
-              <p className="font-semibold text-purple-800">
+            <div className={`p-3 ${result.expenseComparison.recommended === 'flat' ? 'border-2 border-desk' : 'border border-ink/25'}`}>
+              <p className="text-ink-soft">Flat-Rate</p>
+              <p className="font-mono font-semibold tabular-nums text-ink">
                 {formatThb(result.expenseComparison.flatRateDeduction)}
               </p>
               {result.expenseComparison.recommended === 'flat' && (
-                <span className="text-xs text-purple-600">✓ Selected</span>
+                <span className="field-label text-ink">Selected</span>
               )}
             </div>
-            <div className={`p-3 rounded ${result.expenseComparison.recommended === 'actual' ? 'bg-purple-100' : 'bg-white'}`}>
-              <p className="text-gray-600">Actual Expenses</p>
-              <p className="font-semibold text-purple-800">
+            <div className={`p-3 ${result.expenseComparison.recommended === 'actual' ? 'border-2 border-desk' : 'border border-ink/25'}`}>
+              <p className="text-ink-soft">Actual Expenses</p>
+              <p className="font-mono font-semibold tabular-nums text-ink">
                 {formatThb(result.expenseComparison.actualDeduction)}
               </p>
               {result.expenseComparison.recommended === 'actual' && (
-                <span className="text-xs text-purple-600">✓ Selected</span>
+                <span className="field-label text-ink">Selected</span>
               )}
             </div>
           </div>
-          <p className="text-xs text-purple-600 mt-2">
+          <p className="text-xs text-ink-soft mt-2">
             Tax savings from optimal choice: ~{formatThb(result.expenseComparison.taxSavings)}
           </p>
         </div>
@@ -280,27 +263,27 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
       {/* How Your Tax Was Calculated */}
       <div className="mb-6">
-        <h3 className="font-medium text-gray-800 mb-3">How Your Tax Was Calculated</h3>
+        <h3 className="field-label mb-3 block border-b-2 border-desk pb-1.5 text-ink">How Your Tax Was Calculated</h3>
         <TaxFlowDiagram steps={flowSteps} />
       </div>
 
       {/* Tax Obligations Section */}
-      <div className="border border-gray-200 rounded-lg mb-6">
+      <div className="mb-6 border-2 border-desk">
         <button
           onClick={() => setShowObligations(!showObligations)}
-          className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+          className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-desk/[0.05]"
           aria-expanded={showObligations}
         >
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-800">Tax Obligations</span>
+            <span className="text-[15px] font-bold text-ink">Tax Obligations</span>
             {obligations.hasAnyObligation && (
-              <span className="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">
+              <span className="field-label border border-desk px-1.5 py-0.5 text-ink">
                 Action Required
               </span>
             )}
           </div>
           <svg
-            className={`w-5 h-5 text-gray-500 transition-transform ${showObligations ? 'rotate-180' : ''}`}
+            className={`w-5 h-5 text-ink-mute transition-transform ${showObligations ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -310,7 +293,7 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
         </button>
 
         {showObligations && (
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-paper-rule">
             <ObligationAlerts result={obligations} showAll />
           </div>
         )}
@@ -323,15 +306,15 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
       </div>
 
       {/* Collapsible Detailed Breakdown */}
-      <div className="border border-gray-200 rounded-lg mb-6">
+      <div className="mb-6 border-2 border-desk">
         <button
           onClick={() => setShowBreakdown(!showBreakdown)}
-          className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+          className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-desk/[0.05]"
           aria-expanded={showBreakdown}
         >
-          <span className="font-medium text-gray-800">Detailed Breakdown</span>
+          <span className="text-[15px] font-bold text-ink">Detailed Breakdown</span>
           <svg
-            className={`w-5 h-5 text-gray-500 transition-transform ${showBreakdown ? 'rotate-180' : ''}`}
+            className={`w-5 h-5 text-ink-mute transition-transform ${showBreakdown ? 'rotate-180' : ''}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -341,15 +324,15 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
         </button>
 
         {showBreakdown && (
-          <div className="p-4 border-t border-gray-200 animate-fadeIn">
+          <div className="border-t-2 border-desk px-4 pb-4 pt-3 [&>div+div]:mt-5">
             {/* Income by Type */}
             {result.incomeByType.size > 0 && (
               <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2">Income by Type</h4>
-                <div className="text-sm space-y-1">
+                <h4 className="field-label mb-1 text-ink-mute">Income by Type</h4>
+                <div>
                   {Array.from(result.incomeByType.entries()).map(([type, amount]) => (
                     <div key={type} className="flex justify-between">
-                      <span className="text-gray-600">
+                      <span className="text-ink-soft">
                         {INCOME_TYPE_INFO[type as IncomeType]?.shortLabel || type}
                       </span>
                       <span>{formatThb(amount)}</span>
@@ -362,48 +345,48 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
             {/* Foreign Income Taxability */}
             {result.foreignIncomeTaxability.length > 0 && (
               <div className="mb-4">
-                <h4 className="font-medium text-gray-700 mb-2">Foreign Income Analysis</h4>
+                <h4 className="field-label mb-1 text-ink-mute">Foreign Income Analysis</h4>
                 {result.ltrForeignIncomeExempt && (
-                  <div className="bg-purple-50 border border-purple-100 rounded p-2 mb-2">
-                    <p className="text-xs text-purple-700">
+                  <div className="border border-ink/25 p-2 mb-2">
+                    <p className="text-xs text-ink-soft">
                       <strong>LTR Visa Exemption:</strong> All foreign income is tax exempt under your visa status.
                     </p>
                   </div>
                 )}
                 <div className="text-sm space-y-2">
                   {result.foreignIncomeTaxability.map((item, idx) => (
-                    <div key={idx} className="p-2 bg-gray-50 rounded">
+                    <div key={idx} className="p-2 border border-ink/25">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-gray-600">
+                          <span className="text-ink-soft">
                             {item.entry.country} - {item.entry.description || 'Foreign Income'}
                           </span>
                           {/* DTA badge */}
                           {item.hasDTA === true && (
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">Tax Treaty</span>
+                            <span className="text-xs px-1.5 py-0.5 text-ink">Tax Treaty</span>
                           )}
                           {item.hasDTA === false && (
-                            <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">No Treaty</span>
+                            <span className="text-xs px-1.5 py-0.5 text-ink">No Treaty</span>
                           )}
                         </div>
-                        <span className={`ml-2 shrink-0 ${item.isTaxable ? 'text-red-600' : 'text-green-600'}`}>
+                        <span className={`ml-2 shrink-0 ${item.isTaxable ? 'text-ink' : 'text-ink'}`}>
                           {item.isTaxable ? 'Taxable' : 'Exempt'}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">{item.reason}</p>
+                      <p className="text-xs text-ink-mute mt-1">{item.reason}</p>
                       {item.isTaxable && (
                         <div className="text-xs mt-1 space-y-0.5">
-                          <p className="text-gray-600">
+                          <p className="text-ink-soft">
                             Taxable amount: {formatThb(item.taxableAmount)}
                           </p>
                           {item.entry.foreignTaxPaid > 0 && (
                             <>
                               {item.dtaCreditAllowed ? (
-                                <p className="text-green-600">
+                                <p className="text-ink">
                                   Foreign tax credit: {formatThb(item.foreignTaxCredit)}
                                 </p>
                               ) : (
-                                <p className="text-amber-600">
+                                <p className="text-ink">
                                   Foreign tax credit blocked: {formatThb(item.dtaCreditDisallowed)} (no tax treaty with {item.entry.country})
                                 </p>
                               )}
@@ -419,11 +402,11 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
 
             {/* Tax Bracket Breakdown */}
             <div>
-              <h4 className="font-medium text-gray-700 mb-2">Tax Calculation</h4>
-              <div className="text-sm space-y-1">
+              <h4 className="field-label mb-1 text-ink-mute">Tax Calculation</h4>
+              <div>
                 {/* LTR Flat Rate Tax (if applicable) */}
                 {result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0 && (
-                  <div className="flex justify-between text-purple-700 bg-purple-50 p-2 rounded mb-2">
+                  <div className="flex justify-between text-ink-soft p-2 mb-2 border border-ink/25">
                     <span>Employment Income (LTR 17% flat rate)</span>
                     <span>{formatThb(result.ltrFlatRateTax)}</span>
                   </div>
@@ -433,11 +416,11 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                 {taxBrackets.length > 0 && (
                   <>
                     {result.ltrFlatRateTax !== undefined && result.ltrFlatRateTax > 0 && (
-                      <p className="text-xs text-gray-500 mb-1">Other income (progressive rates):</p>
+                      <p className="text-xs text-ink-mute mb-1">Other income (progressive rates):</p>
                     )}
                     {taxBrackets.map((bracket) => (
                       <div key={bracket.label} className="flex justify-between">
-                        <span className="text-gray-600">
+                        <span className="text-ink-soft">
                           {bracket.label} ({bracket.rate}%)
                         </span>
                         <span>{formatThb(bracket.tax)}</span>
@@ -446,7 +429,7 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                   </>
                 )}
 
-                <div className="flex justify-between font-medium border-t border-gray-200 pt-1 mt-2">
+                <div className="form-total mt-1">
                   <span>Total Tax</span>
                   <span>{formatThb(result.grossTaxBeforeCredits)}</span>
                 </div>
@@ -457,14 +440,11 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
       </div>
 
       {/* Disclaimer */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+      <div className="note-strong mb-6">
         <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
           <div>
-            <h4 className="font-medium text-yellow-800">Important Disclaimer</h4>
-            <p className="text-sm text-yellow-700 mt-1">
+            <h4 className="note-title">Important Disclaimer</h4>
+            <p className="text-sm text-ink mt-1">
               This calculator provides an estimate for freelance/self-employment income. Tax laws
               for business income are complex and your actual tax liability may differ. Please
               consult with a qualified tax professional or the{' '}
@@ -472,14 +452,14 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
                 href="https://www.rd.go.th"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline hover:text-yellow-900"
+                className="underline hover:text-ink"
               >
                 Thai Revenue Department
               </a>
               {' '}for official guidance.
             </p>
             {result.expenseMethod !== 'force_flat' && (
-              <p className="text-sm text-yellow-700 mt-2">
+              <p className="text-sm text-ink mt-2">
                 <strong>Note:</strong> If using actual expenses, you must keep proper documentation
                 (receipts, invoices) to support your deductions.
               </p>
@@ -495,7 +475,7 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
       <button
         onClick={handleDownloadPDF}
         disabled={isGeneratingPDF}
-        className="w-full py-3 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 mb-3 disabled:opacity-50"
+        className="btn-primary mb-3 w-full"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -506,7 +486,7 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
       {/* Start Over Button */}
       <button
         onClick={onStartOver}
-        className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+        className="btn-secondary w-full"
       >
         Start Over
       </button>
