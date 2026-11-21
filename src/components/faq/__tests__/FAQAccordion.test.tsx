@@ -11,13 +11,21 @@ const renderAccordion = (props: React.ComponentProps<typeof FAQAccordion>) =>
   );
 
 describe('FAQAccordion', () => {
-  it('renders the question and toggles the answer open/closed', () => {
+  it('renders the question folded, with the answer in the markup, and opens on click', () => {
     renderAccordion({ question: 'Is this taxable?', answer: 'It depends.' });
-    expect(screen.getByText('Is this taxable?')).toBeInTheDocument();
-    expect(screen.queryByText('It depends.')).not.toBeInTheDocument();
+    const details = screen.getByText('Is this taxable?').closest('details')!;
+    expect(details).not.toBeNull();
+    expect(details.open).toBe(false);
+    // Folded answers stay in the static HTML for readers without JavaScript and for crawlers.
+    expect(details).toHaveTextContent('It depends.');
 
-    fireEvent.click(screen.getByRole('button', { name: /Is this taxable\?/ }));
-    expect(screen.getByText('It depends.')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Is this taxable?'));
+    expect(details.open).toBe(true);
+  });
+
+  it('starts open when defaultOpen is set', () => {
+    renderAccordion({ question: 'Q', answer: 'A', defaultOpen: true });
+    expect(screen.getByText('Q').closest('details')!.open).toBe(true);
   });
 
   it('renders a "Read more" link when relatedArticleSlug resolves to a real article', () => {
