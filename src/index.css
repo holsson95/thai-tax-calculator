@@ -267,6 +267,10 @@
   .sheet-table td {
     @apply border-b border-paper-rule px-2 py-2 align-top text-ink-soft first:pl-0 last:pr-0;
   }
+  /* Row headings read as the form line's label, not as a column head. */
+  .sheet-table tbody th {
+    @apply border-b border-paper-rule px-2 py-2 text-left align-top text-sm font-normal normal-case tracking-normal text-ink-soft first:pl-0;
+  }
   .sheet-table td.figure,
   .sheet-table th.figure {
     @apply whitespace-nowrap text-right font-mono tabular-nums text-ink;

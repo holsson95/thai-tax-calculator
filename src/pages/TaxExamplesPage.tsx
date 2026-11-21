@@ -2,47 +2,82 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import TaxExampleCard from '../components/TaxExampleCard';
-import { taxExamples, getTaxExampleById } from '../data/taxExamples';
+import CalculateTaxCTA from '../components/CalculateTaxCTA';
+import ArrowIcon from '../components/ui/ArrowIcon';
+import { taxExamples, getTaxExampleById, TaxExample } from '../data/taxExamples';
 import LastUpdated from '../components/LastUpdated';
 import { PAGE_LAST_UPDATED } from '../config/contentDates';
+import { RULES_TAX_YEAR } from '../config/taxRules';
+import { formatThb } from '../utils/taxCalculations';
 
 const SITE_URL = 'https://mythaitaxes.com';
 
-const SECTIONS: { heading: string; description: string; exampleIds: string[] }[] = [
+const SECTIONS: { id: string; heading: string; description: string; exampleIds: string[] }[] = [
   {
+    id: 'basic-flow',
     heading: 'The basic flow: from salary to tax owed',
     description: 'How gross income becomes taxable income, and how that taxable income becomes a tax bill.',
     exampleIds: ['simple-employee'],
   },
   {
+    id: 'marginal-vs-effective',
     heading: 'Marginal rate vs. effective rate',
     description:
       'Your tax bracket is the rate on your last slice of income, not the rate on all of it. These examples show the gap at different income levels.',
     exampleIds: ['lower-income-employee', 'middle-income-employee', 'high-income-employee'],
   },
   {
+    id: 'bracket-threshold',
     heading: 'Crossing a bracket threshold',
     description:
       'Does earning a little more push your whole income into a higher bracket? These two examples, ฿2,000 apart, show exactly what changes.',
     exampleIds: ['bracket-threshold-below', 'bracket-threshold-above'],
   },
   {
+    id: 'deductions',
     heading: 'How deductions change the result',
     description: 'The same salary, with and without an insurance premium and provident fund contribution.',
     exampleIds: ['deductions-impact'],
   },
   {
+    id: 'walkthrough',
     heading: 'A full calculator walkthrough',
     description: 'A realistic profile — married, one child, several deductions — computed exactly as the calculator would compute it.',
     exampleIds: ['calculator-walkthrough'],
   },
   {
+    id: 'freelance-foreign-pension',
     heading: 'Freelance income, foreign remittance, and pensions',
     description:
       'Salaried employees are not the only tax situation on this site. These examples cover the flat-rate business-income deduction, why the same remitted amount can be taxable or exempt depending on when it was earned, and how a DTA can exempt one foreign pension while taxing another.',
     exampleIds: ['freelancer-business-income', 'foreign-income-remittance-timing', 'foreign-pension-dta-exemption'],
   },
 ];
+
+const RELATED_READING = [
+  { to: '/articles/thai-tax-brackets-explained/', label: 'Thai Income Tax Brackets 2025/2026 Explained' },
+  { to: '/articles/maximizing-tax-deductions-thailand/', label: 'Thailand Tax Deductions: Full Guide for Expats' },
+  { to: '/methodology/', label: 'How Thai Income Tax Is Calculated' },
+  { to: '/sources/', label: 'Tax Sources & References' },
+];
+
+const sectionExamples = (ids: string[]): TaxExample[] =>
+  ids.map((id) => getTaxExampleById(id)).filter((e): e is TaxExample => e !== undefined);
+
+/** The part of an example's title before the colon: "Simple Employee", "Freelance Consultant". */
+const shortTitle = (title: string) => title.split(':')[0];
+
+/** The boxed part number, as on the foreign income form's numbered parts. */
+const PartNumber: React.FC<{ n: number; size?: 'sm' | 'md' }> = ({ n, size = 'md' }) => (
+  <span
+    aria-hidden="true"
+    className={`inline-flex shrink-0 items-center justify-center border-2 border-desk font-mono font-bold tabular-nums text-ink ${
+      size === 'md' ? 'h-9 w-9 text-base' : 'h-6 w-6 text-xs'
+    }`}
+  >
+    {n}
+  </span>
+);
 
 const TaxExamplesPage: React.FC = () => {
   const title = 'Thailand Income Tax Examples: Worked Calculations by Concept | MyThaiTaxes';
@@ -58,8 +93,39 @@ const TaxExamplesPage: React.FC = () => {
     url: canonicalUrl,
   };
 
+  const contents = (
+    <ol className="space-y-3">
+      {SECTIONS.map((section, i) => (
+        <li key={section.id}>
+          <a
+            href={`#${section.id}`}
+            className="flex items-start gap-2.5 text-sm font-semibold leading-snug text-ink transition-colors hover:text-desk"
+          >
+            <PartNumber n={i + 1} size="sm" />
+            <span className="pt-0.5">{section.heading}</span>
+          </a>
+          <ul className="ml-[34px] mt-1">
+            {sectionExamples(section.exampleIds).map((example) => (
+              <li key={example.id}>
+                <a
+                  href={`#${example.id}`}
+                  className="flex items-baseline justify-between gap-3 py-1 text-[13px] leading-snug text-ink-soft transition-colors hover:text-desk"
+                >
+                  <span>{shortTitle(example.title)}</span>
+                  <span className="shrink-0 font-mono text-[11px] tabular-nums text-ink-mute">
+                    {formatThb(example.taxOwed)}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  );
+
   return (
-    <div className="py-8">
+    <div className="mx-auto max-w-6xl px-4 pb-20 pt-10 sm:px-6 lg:px-10 lg:pt-14">
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -71,101 +137,105 @@ const TaxExamplesPage: React.FC = () => {
         <script type="application/ld+json">{JSON.stringify(webPageSchema)}</script>
       </Helmet>
 
-      <div className="max-w-3xl mx-auto px-4">
-        <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-            Thailand Income Tax Examples
-          </h1>
-          <p className="text-gray-600 leading-relaxed">
-            See how Thailand personal income tax is calculated for different income levels and
-            situations. Every number below is computed by the same engine that powers the{' '}
-            <Link to="/annual-tax/" className="text-blue-600 hover:underline">Annual Tax Calculator</Link>{' '}
-            — not typed by hand — so these examples can't drift from what the calculator would actually
-            show you.
-          </p>
-          <LastUpdated date={PAGE_LAST_UPDATED.taxExamples} className="mt-3" />
-        </header>
-
-        <div className="flex gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-10 text-sm text-amber-800">
-          <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>
-            These are illustrative example profiles, not tax advice for any specific person. Figures use
-            the 2026 tax year rules documented on the{' '}
-            <Link to="/sources/" className="underline hover:text-amber-900 font-medium">Sources &amp; References</Link>{' '}
-            page — several of which are strong secondary sources rather than fetched primary government
-            documents. Verify your own situation with the{' '}
-            <Link to="/annual-tax/" className="underline hover:text-amber-900 font-medium">calculator</Link>{' '}
-            or a licensed Thai tax advisor.
-          </span>
-        </div>
-
-        <nav className="mb-10 bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">On this page</p>
-          <ul className="space-y-1 text-sm">
-            {SECTIONS.map((section) => (
-              <li key={section.heading}>
-                <a href={`#${section.exampleIds[0]}`} className="text-blue-600 hover:underline">
-                  {section.heading}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="space-y-14">
-          {SECTIONS.map((section) => (
-            <section key={section.heading}>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">{section.heading}</h2>
-              <p className="text-gray-600 mb-5">{section.description}</p>
-              <div className="space-y-6">
-                {section.exampleIds.map((id) => {
-                  const example = getTaxExampleById(id);
-                  return example ? <TaxExampleCard key={id} example={example} /> : null;
-                })}
-              </div>
-            </section>
-          ))}
-        </div>
-
-        <div className="bg-blue-50 rounded-xl p-6 text-center my-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">See your own numbers</h2>
-          <p className="text-gray-600 mb-4">
-            These examples use illustrative profiles. Enter your real income, allowances, and deductions
-            to get your own taxable income, tax owed, and effective rate.
-          </p>
-          <Link
-            to="/annual-tax/"
-            className="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-          >
-            Start Calculator
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+      {/* Header */}
+      <header className="max-w-[46rem]">
+        <h1 className="display text-4xl leading-[1.08] text-ink sm:text-5xl">Thailand Income Tax Examples</h1>
+        <p className="mt-4 text-[17px] leading-relaxed text-ink-soft">
+          See how Thailand personal income tax is calculated for different income levels and situations. Every number
+          below is computed by the same engine that powers the{' '}
+          <Link to="/annual-tax/" className="font-semibold text-desk underline decoration-desk/40 hover:decoration-desk">
+            Annual Tax Calculator
           </Link>
+{' '}
+          — not typed by hand — so these examples can't drift from what the calculator would actually show you.
+        </p>
+        <LastUpdated date={PAGE_LAST_UPDATED.taxExamples} className="mt-4" />
+        <p className="mt-3 max-w-prose text-[13px] leading-relaxed text-ink-mute">
+          These are illustrative example profiles, not tax advice for any specific person. Figures use the{' '}
+          {RULES_TAX_YEAR} tax year rules documented on the{' '}
+          <Link to="/sources/" className="font-semibold text-desk underline">
+            Sources &amp; References
+          </Link>{' '}
+          page, several of which are strong secondary sources rather than fetched primary government documents. Verify
+          your own situation with the{' '}
+          <Link to="/annual-tax/" className="font-semibold text-desk underline">
+            calculator
+          </Link>{' '}
+          or a licensed Thai tax advisor.
+        </p>
+      </header>
+
+      <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,46rem)_15rem] lg:gap-14">
+        <div className="min-w-0">
+          {/* Contents, phones and tablets */}
+          <details className="group on-paper mb-10 bg-paper-white shadow-sheet-sm lg:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 [&::-webkit-details-marker]:hidden">
+              <span className="field-label text-ink">On this page</span>
+              <span className="flex items-center gap-2 font-mono text-xs text-ink-mute">
+                {taxExamples.length} examples
+                <ArrowIcon className="h-4 w-4 rotate-90 transition-transform group-open:-rotate-90" />
+              </span>
+            </summary>
+            <div className="border-t-2 border-desk px-5 pb-4 pt-4">{contents}</div>
+          </details>
+
+          <div className="space-y-16">
+            {SECTIONS.map((section, i) => (
+              <section key={section.id} id={section.id} aria-labelledby={`${section.id}-heading`} className="scroll-mt-24">
+                <div className="flex items-start gap-4 border-b-2 border-desk pb-3">
+                  <PartNumber n={i + 1} />
+                  <h2 id={`${section.id}-heading`} className="display pt-0.5 text-2xl leading-tight text-ink sm:text-[28px]">
+                    {section.heading}
+                  </h2>
+                </div>
+                <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-ink-soft">{section.description}</p>
+                <div className="mt-7 space-y-8">
+                  {sectionExamples(section.exampleIds).map((example) => (
+                    <TaxExampleCard key={example.id} example={example} />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+
+          <div className="perforation mt-16 text-ink/30" aria-hidden="true" />
+
+          <div className="mt-12">
+            <CalculateTaxCTA
+              heading="See your own numbers"
+              description="These examples use illustrative profiles. Enter your real income, allowances, and deductions to get your own taxable income, tax owed, and effective rate."
+              primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
+            />
+          </div>
+
+          <section aria-labelledby="related-reading-heading" className="on-paper mt-10 bg-paper-white shadow-sheet-sm">
+            <h2 id="related-reading-heading" className="display border-b-2 border-desk px-5 py-4 text-xl text-ink sm:px-6">
+              Related reading
+            </h2>
+            <ul className="px-5 sm:px-6">
+              {RELATED_READING.map(({ to, label }) => (
+                <li key={to} className="border-b border-paper-rule last:border-b-0">
+                  <Link
+                    to={to}
+                    className="group flex items-baseline justify-between gap-4 py-3 text-[15px] font-semibold leading-snug text-ink transition-colors hover:text-desk"
+                  >
+                    {label}
+                    <ArrowIcon className="h-4 w-4 shrink-0 self-center text-ink-mute transition-transform group-hover:translate-x-0.5 group-hover:text-desk" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
 
-        <section>
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Related reading</h2>
-          <ul className="space-y-2">
-            {[
-              { to: '/articles/thai-tax-brackets-explained/', label: 'Thai Income Tax Brackets 2025/2026 Explained' },
-              { to: '/articles/maximizing-tax-deductions-thailand/', label: 'Thailand Tax Deductions: Full Guide for Expats' },
-              { to: '/methodology/', label: 'How Thai Income Tax Is Calculated' },
-              { to: '/sources/', label: 'Tax Sources & References' },
-            ].map(({ to, label }) => (
-              <li key={to} className="flex gap-2">
-                <span className="text-blue-500">→</span>
-                <Link to={to} className="text-blue-600 hover:underline">{label}</Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <p className="text-xs text-gray-400 mt-8">
-          {taxExamples.length} worked examples · Tax year 2026
-        </p>
+        {/* Contents, desktop */}
+        <aside className="sticky top-24 hidden max-h-[calc(100vh-7rem)] overflow-y-auto lg:block" aria-label="On this page">
+          <p className="field-label flex items-baseline justify-between border-b-2 border-desk pb-1.5 text-ink">
+            On this page
+            <span className="font-mono normal-case tracking-normal text-ink-mute">tax owed</span>
+          </p>
+          <div className="mt-4">{contents}</div>
+        </aside>
       </div>
     </div>
   );

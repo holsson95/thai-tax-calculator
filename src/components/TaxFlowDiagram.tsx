@@ -15,72 +15,60 @@ interface TaxFlowDiagramProps {
   steps: TaxFlowStep[];
 }
 
-function Arrow() {
-  return (
-    <div className="flex justify-center py-1" aria-hidden="true">
-      <svg className="w-5 h-5 text-ink-mute" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v15m0 0l-6-6m6 6l6-6" />
-      </svg>
-    </div>
-  );
-}
-
+/**
+ * A calculation written out as ruled form lines (DESIGN.md "Results": totals and breakdowns
+ * are ruled form lines). Starting amounts are plain lines, subtractions carry a minus,
+ * each subtotal is ruled off with a 2px desk line, and the bracket step lists each band
+ * indented under its label.
+ */
 export default function TaxFlowDiagram({ steps }: TaxFlowDiagramProps) {
   return (
-    <div>
-      {steps.map((step, index) => (
-        <div key={index}>
-          {index > 0 && <Arrow />}
-
-          {step.kind === 'brackets' ? (
-            <div className="border p-4 border-ink/25">
-              <p className="text-sm font-medium text-ink-soft mb-2">{step.label}</p>
-              <div className="text-sm space-y-1">
-                {step.brackets.length === 0 ? (
-                  <p className="text-ink-mute">No tax due at this income level</p>
-                ) : (
-                  step.brackets.map((bracket) => (
-                    <div key={bracket.label} className="flex justify-between">
-                      <span className="text-ink-soft">
+    <ol className="text-[15px] leading-snug">
+      {steps.map((step, index) => {
+        if (step.kind === 'brackets') {
+          return (
+            <li key={index} className="border-b border-paper-rule py-2.5">
+              <p className="text-ink-soft">{step.label}</p>
+              {step.brackets.length === 0 ? (
+                <p className="mt-1.5 pl-4 text-sm text-ink-mute">No tax due at this income level</p>
+              ) : (
+                <ul className="mt-1.5 space-y-1 border-l border-ink/25 pl-4">
+                  {step.brackets.map((bracket) => (
+                    <li key={bracket.label} className="flex items-baseline justify-between gap-4 text-sm">
+                      <span className="font-mono text-[13px] tabular-nums text-ink-soft">
                         {bracket.label} ({bracket.rate}%)
                       </span>
-                      <span>{formatThb(bracket.tax)}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          ) : (
-            <div
-              className={
-                step.kind === 'subtract'
-                  ? 'border border-ink/25 px-4 py-3 flex justify-between items-center gap-4 border-2 border-desk'
-                  : step.kind === 'result'
-                  ? 'border-2 border-ink/25 px-4 py-3 flex justify-between items-center gap-4 border border-ink/25'
-                  : 'border border-paper-rule px-4 py-3 flex justify-between items-center gap-4 border border-ink/25'
-              }
+                      <span className="whitespace-nowrap font-mono tabular-nums text-ink">{formatThb(bracket.tax)}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          );
+        }
+
+        const isResult = step.kind === 'result';
+        return (
+          <li
+            key={index}
+            className={`flex items-baseline justify-between gap-4 ${
+              isResult ? 'border-t-2 border-desk pb-2.5 pt-2.5 font-bold text-ink' : 'border-b border-paper-rule py-2.5'
+            } ${isResult && index > 0 && steps[index - 1].kind !== 'brackets' ? '-mt-px' : ''}`}
+          >
+            <span className="min-w-0">
+              <span className={isResult ? 'text-ink' : step.kind === 'start' ? 'font-semibold text-ink' : 'text-ink-soft'}>
+                {step.label}
+              </span>
+              {step.sublabel && <span className="mt-0.5 block text-xs font-normal text-ink-mute">{step.sublabel}</span>}
+            </span>
+            <span
+              className={`whitespace-nowrap font-mono tabular-nums ${isResult ? 'text-base text-ink' : 'text-sm text-ink'}`}
             >
-              <div>
-                <p className={step.kind === 'result' ? 'font-medium text-ink' : 'text-ink-soft'}>
-                  {step.label}
-                </p>
-                {step.sublabel && <p className="text-xs text-ink-mute mt-0.5">{step.sublabel}</p>}
-              </div>
-              <p
-                className={
-                  step.kind === 'subtract'
-                    ? 'font-semibold text-ink whitespace-nowrap'
-                    : step.kind === 'result'
-                    ? 'font-bold text-desk text-lg whitespace-nowrap'
-                    : 'font-semibold text-ink whitespace-nowrap'
-                }
-              >
-                {step.kind === 'subtract' ? `-${formatThb(step.amount)}` : formatThb(step.amount)}
-              </p>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+              {step.kind === 'subtract' ? `-${formatThb(step.amount)}` : formatThb(step.amount)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
