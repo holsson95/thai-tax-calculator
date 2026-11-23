@@ -54,9 +54,10 @@ All commands run from this folder (`cloudflare-worker/leads-api`).
 7. **Cloudflare Access** (protects `/admin/*`):
    - Zero Trust dashboard → Access → Applications → *Add* → Self-hosted.
    - Domain: your `*.workers.dev` hostname, path `admin`.
-     (mythaitaxes.com's DNS is not on Cloudflare, so the admin lives on the Worker's own hostname.
-     Alternatively: Workers → your Worker → Settings → Domains & Routes → workers.dev →
-     *Enable Cloudflare Access*.)
+     (mythaitaxes.com's DNS is not on Cloudflare, so the admin lives on the Worker's own hostname.)
+     Do NOT use the one-click *Enable Cloudflare Access* toggle on the Worker's workers.dev
+     setting on its own: it protects the whole hostname, which blocks `/api/*` (the site's form)
+     and `/unsubscribe` (email links). If you used it, edit that Access application's path to `admin`.
    - Policy: *Allow* → Emails → your email.
    - Copy the **Application Audience (AUD) tag** into `ACCESS_AUD` and your team domain
      (`<team>.cloudflareaccess.com`) into `ACCESS_TEAM_DOMAIN` in `wrangler.toml`, then redeploy.
