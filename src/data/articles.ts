@@ -1179,8 +1179,8 @@ Foreign income was taxable only if:
 - Earned abroad AND
 - Remitted to Thailand in the same year
 
-**2024 Onwards:**
-Foreign income remitted to Thailand is taxable regardless of when earned.
+**2024 Onwards (Order Por. 161/2566):**
+Foreign income is taxable when brought into Thailand, in that year or any later year, if it was earned on or after 1 January 2024 in a year you were a Thai tax resident. Income earned before 2024 keeps the old rule (Por. 162/2566), and savings are not income. Check your own transfers with the [foreign income calculator](/foreign-income-tax-calculator/).
 
 ### If You're a Non-Resident (<180 Days):
 - Only Thai-sourced income is taxable
@@ -1246,9 +1246,11 @@ Given the complexity, consider consulting:
 Digital nomad taxation is evolving. Thailand is increasing enforcement on foreign income. Plan carefully, document thoroughly, and consider professional advice for your specific situation.
     `,
     publishedAt: '2024-07-01',
+    updatedAt: '2026-11-24',
     readTime: 9,
     category: 'Freelance',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Foreign Income & Remittance Rules', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]
   },
@@ -1400,9 +1402,9 @@ For expats, DTAs are the primary legal tool to reduce or eliminate the risk of p
 Prior to January 1, 2024, Thailand only taxed foreign income remitted in the same year it was earned. You could legally defer bringing money in until the following year and pay no Thai tax. That loophole is now closed.
 
 **Under the new rules (effective January 1, 2024):**
-- Any foreign income brought into Thailand by a Thai tax resident is taxable
-- This applies regardless of when the income was earned
-- DTAs are now the primary tool to avoid double taxation
+- Foreign income earned on or after 1 January 2024, in a year you were a Thai tax resident, is taxable when brought into Thailand, even in a later year (Por. 161/2566)
+- Income earned before 2024 is not caught by the new rule (Por. 162/2566)
+- DTAs are now the primary tool to avoid double taxation on income that is caught. The [foreign income calculator](/foreign-income-tax-calculator/) shows which transfers are
 
 ## How the Foreign Tax Credit Works
 
@@ -1519,9 +1521,11 @@ The Australia-Thailand DTA includes provisions for pensions, government service 
 - Annual tax return: PND.90 form (rd.go.th)
     `,
     publishedAt: '2026-02-17',
+    updatedAt: '2026-11-24',
     readTime: 12,
     category: 'International',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
       { label: 'Thai Revenue Department — Foreign Tax Credits & Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
     ],
@@ -1588,11 +1592,11 @@ For context, 400,000 THB is approximately £9,000, $11,000 USD, or AUD 17,000 at
 
 ### Foreign Pension Income
 
-As of **1 January 2024**, any foreign income (including pension income) that you bring into Thailand is taxable, regardless of when it was earned.
+Since **1 January 2024** (Order Por. 161/2566), foreign income, including pension income, is taxable when you bring it into Thailand if it was paid on or after that date in a year you were a Thai tax resident. Income from before 2024 keeps the old rule (Por. 162/2566). Whether a particular pension is actually taxed in Thailand also depends on the tax treaty with the paying country and the type of pension.
 
-This applies to:
-- **UK State Pension** — if you transfer it to Thailand, it's assessable income
-- **US Social Security** — if remitted to Thailand, potentially taxable
+This can apply to:
+- **UK State Pension**: if you transfer it to Thailand, subject to the UK-Thailand treaty
+- **US Social Security**: under the US-Thailand treaty (Article 20(2)), social security benefits are taxable only in the US, so not in Thailand
 - **Australian Superannuation payments** — if remitted to Thailand
 - **Private or occupational pensions** — same rules apply
 - **Annuity payments** — taxable if remitted
@@ -1721,9 +1725,11 @@ If you have substantial overseas income and qualify, the LTR Wealthy Pensioner v
 For complex situations — particularly those involving multiple countries, government pensions, or large investment portfolios — consider consulting a Thai tax advisor with experience in expat and retirement matters.
     `,
     publishedAt: '2026-03-03',
+    updatedAt: '2026-11-24',
     readTime: 10,
     category: 'Retirement',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
@@ -1750,7 +1756,7 @@ The answer depends on three things:
 
 Before 2024, Thailand had a useful planning tool: foreign income was only taxable in Thailand if remitted in the same year it was earned. Many retirees used this to shift money from earlier-earned savings without Thai tax.
 
-**From 1 January 2024, this loophole closed.** All foreign income — including pension payments — brought into Thailand by a Thai tax resident is taxable, regardless of when it was earned. This makes understanding your tax treaty much more important.
+**From 1 January 2024, this loophole closed** (Order Por. 161/2566). Pension payments received on or after that date, in a year you were a Thai tax resident, are assessable when brought into Thailand, even in a later year, unless a tax treaty says otherwise. Payments received before 2024 keep the old rule (Por. 162/2566). This makes understanding your tax treaty much more important. The [foreign income calculator](/foreign-income-tax-calculator/) lets you check transfers one by one.
 
 ---
 
@@ -1910,9 +1916,11 @@ Pension taxation across borders is genuinely complex. For most nationalities, yo
 The cost of advice is typically far less than the cost of errors or missed credits.
     `,
     publishedAt: '2026-03-03',
+    updatedAt: '2026-11-24',
     readTime: 11,
     category: 'Retirement',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Double Tax Agreements (full list)', url: 'https://www.rd.go.th/english/766.html' },
       { label: 'Thai Revenue Department — Foreign Income & Tax Treaty Relief', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
@@ -2452,7 +2460,7 @@ If you are in Thailand from January through July — roughly 180 days — you ar
 | Foreign income remitted to Thailand | Not taxable | Taxable (since 2024) |
 | Foreign income kept abroad | Not taxable | Not taxable |
 
-The key change for residents is the 2024 rule: any foreign income you remit (transfer, withdraw, or spend) in Thailand is now assessable income, regardless of when it was originally earned. Income left in an overseas account and never brought into Thailand is not taxed here.
+The key change for residents is the 2024 rule (Order Por. 161/2566): foreign income earned on or after 1 January 2024, in a year you were resident, is assessable when you bring it into Thailand, even in a later year. Income earned before 2024 is not caught (Por. 162/2566), and savings are not income. The [foreign income calculator](/foreign-income-tax-calculator/) checks this transfer by transfer. Income left in an overseas account and never brought into Thailand is not taxed here.
 
 ---
 
@@ -2554,9 +2562,11 @@ US citizens face the unique challenge of US citizenship-based taxation regardles
 | Pay tax abroad on the same income | Claim a DTA foreign tax credit |
     `,
     publishedAt: '2026-03-05',
+    updatedAt: '2026-11-24',
     readTime: 8,
     category: 'International',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
       { label: 'Thai Revenue Code Section 41 — Tax Residency', url: 'https://www.rd.go.th/english/index-eng.html' },
     ]

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { calculateThaiTax } from '../../utils/tax';
 import { getArticleBySlug, getRelatedArticles, articles } from '../articles';
+import { faqData } from '../faq';
 import { getTaxExampleById } from '../taxExamples';
 
 describe('thai-tax-brackets-explained article numbers', () => {
@@ -94,5 +95,19 @@ describe('foreign-income articles (remittance rule and calculator links)', () =>
     const tax = calculateThaiTax(3_000_000);
     expect(article.content).toContain(`฿${Math.round(tax).toLocaleString('en-US')}`);
     expect(article.content).toContain('Highly-Skilled Professionals do not get the foreign-income exemption');
+  });
+});
+
+describe('site-wide: the 2024 remittance rule is not overstated', () => {
+  // Por. 162/2566 keeps income earned before 2024 outside the new rule, so no
+  // page may say foreign income is taxable "regardless of when it was earned".
+  it('no article says it', () => {
+    for (const article of articles) {
+      expect(article.content, article.slug).not.toMatch(/regardless of when/i);
+    }
+  });
+
+  it('no FAQ answer says it', () => {
+    expect(JSON.stringify(faqData)).not.toMatch(/regardless of when/i);
   });
 });

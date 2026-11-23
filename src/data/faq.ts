@@ -18,7 +18,7 @@ export const faqData: FAQCategory[] = [
     items: [
       {
         question: 'Do I pay tax on money I bring to Thailand when I move here?',
-        answer: 'Whether money you bring into Thailand is taxable depends on whether it is income or capital. Capital — savings you accumulated before becoming a Thai tax resident — is generally not assessable income and is not taxed when brought in. Income — money you earned — that is remitted (transferred, withdrawn, or spent) in Thailand is taxable if you are a Thai tax resident (present in Thailand for 180 or more days in a year). Since January 2024, this applies regardless of when the income was earned. If you are moving to Thailand for the first time, document the source of any large transfers (bank statements, pay slips, investment records) to demonstrate that the funds are pre-residency savings rather than current income.',
+        answer: 'Whether money you bring into Thailand is taxable depends on whether it is income or capital. Capital — savings you accumulated before becoming a Thai tax resident — is generally not assessable income and is not taxed when brought in. Income — money you earned — that is remitted (transferred, withdrawn, or spent) in Thailand is taxable if you are a Thai tax resident (present in Thailand for 180 or more days in a year). Since January 2024 (Order Por. 161/2566) this covers income earned on or after 1 January 2024, in a year you were a Thai tax resident, even if you bring it in a later year. Income earned before 2024 is not caught (Por. 162/2566). If you are moving to Thailand for the first time, document the source of any large transfers (bank statements, pay slips, investment records) to demonstrate that the funds are pre-residency savings rather than current income.',
         relatedArticleSlug: 'transferring-money-to-thailand-tax-rules',
         sourceId: 'mahanakorn-remittance-rule',
       },
@@ -221,7 +221,7 @@ export const faqData: FAQCategory[] = [
       },
       {
         question: 'Is foreign income taxable in Thailand?',
-        answer: 'For Thai tax residents, foreign income brought into Thailand is taxable. Recent changes require foreign income remitted to Thailand to be declared regardless of when it was earned. Tax treaties may provide exemptions or credits.',
+        answer: 'For Thai tax residents, foreign income brought into Thailand is taxable. Since 2024 (Order Por. 161/2566), this covers foreign income earned on or after 1 January 2024 in a year you were resident, whenever you bring it in; income earned before 2024 keeps the old rule (Por. 162/2566). Tax treaties may provide exemptions or credits.',
         relatedArticleSlug: 'foreign-income-thailand-tax',
         sourceId: 'mahanakorn-remittance-rule',
       },
