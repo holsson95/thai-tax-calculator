@@ -1,6 +1,6 @@
 import { annualTaxInputSchema } from './taxTool';
 
-const WORKER_URL = 'https://mythaitaxes-mcp.hannwill999.workers.dev';
+const WORKER_URL = 'https://mythaitaxes-mcp.mythaitaxes.workers.dev';
 
 const breakdownSchema = {
   type: 'object',
