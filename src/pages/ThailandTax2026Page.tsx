@@ -276,6 +276,12 @@ const ThailandTax2026Page: React.FC = () => {
               already paid can offset the Thai tax on the same income.
             </p>
             <p>
+              To check which of your own transfers are taxable, use the{' '}
+              <Link to="/foreign-income-tax-calculator/">foreign income calculator</Link>. It goes through each
+              transfer: when the money was earned, whether you were resident that year, and whether it is
+              savings or income.
+            </p>
+            <p>
               Conceptual overview: <Link to="/articles/foreign-income-thailand-tax/">What Counts as Foreign Income in Thailand</Link>.{' '}
               Remittance mechanics and timing examples: <Link to="/articles/transferring-money-to-thailand-tax-rules/">Transferring Money to Thailand: 2024 Tax Rules</Link>.{' '}
               Foreign tax credits and treaties: <Link to="/articles/double-tax-agreements-thailand/">Thai Double Tax Treaties</Link>.
