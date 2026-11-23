@@ -28,8 +28,8 @@ SITE_URL = "https://mythaitaxes.com"
 FROM_EMAIL = "My Thai Taxes <hello@mythaitaxes.com>"
 REPLY_TO_EMAIL = "info@mythaitaxes.com"
 # Cloudflare Access (protects /admin/*). Leave empty and the admin stays locked (503).
-ACCESS_TEAM_DOMAIN = ""   # e.g. "yourteam.cloudflareaccess.com"
-ACCESS_AUD = ""           # the Application Audience (AUD) tag of the Access application
+ACCESS_TEAM_DOMAIN = "mythaitaxes.cloudflareaccess.com"
+ACCESS_AUD = "75e22b8d8aabe063b4ee86f5471e149736772c581f6dbb3268fcb3ecfbb6cf2b"
 
 # Secrets — set with `npx wrangler secret put NAME` (never commit):
 #   RESEND_API_KEY         Resend API key
