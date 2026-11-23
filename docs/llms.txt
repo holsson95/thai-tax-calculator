@@ -11,8 +11,8 @@ My Thai Taxes helps individuals estimate their Thai personal income tax (PIT), u
 
 ## API for AI agents and developers
 
-- [MCP tool endpoint](https://mythaitaxes-mcp.hannwill999.workers.dev/mcp): Stateless MCP (Streamable HTTP, JSON-only) endpoint exposing `calculate_thai_annual_income_tax` — computes Thai PIT for a salaried employee from income, marital status, dependents, and deductions. Free, no API key required.
-- [REST endpoint](https://mythaitaxes-mcp.hannwill999.workers.dev/api/calculate-annual-tax): The same calculation as a plain `POST` JSON endpoint, for non-MCP clients.
+- [MCP tool endpoint](https://mythaitaxes-mcp.mythaitaxes.workers.dev/mcp): Stateless MCP (Streamable HTTP, JSON-only) endpoint exposing `calculate_thai_annual_income_tax` — computes Thai PIT for a salaried employee from income, marital status, dependents, and deductions. Free, no API key required.
+- [REST endpoint](https://mythaitaxes-mcp.mythaitaxes.workers.dev/api/calculate-annual-tax): The same calculation as a plain `POST` JSON endpoint, for non-MCP clients.
 
 ## Reference
 
