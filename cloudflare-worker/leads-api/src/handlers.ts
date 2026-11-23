@@ -34,6 +34,43 @@ export interface HandlerResult {
 
 const json = (status: number, body: unknown): HandlerResult => ({ status, body });
 
+export interface HealthStatus {
+  ok: true;
+  partnerEnabled: boolean;
+  partnerName: string;
+  configured: {
+    resend: boolean;
+    appSecret: boolean;
+    partnerEmails: boolean;
+    partnerWebhook: boolean;
+    turnstile: boolean;
+    adminAccess: boolean;
+  };
+}
+
+const isSet = (v?: string) => !!v && v.trim().length > 0;
+
+/**
+ * GET /api/health — lets `npm run partner:check` confirm the deployed Worker uses the
+ * same partner as the site build (a mismatch makes every lead fail the consent check)
+ * and that the secrets exist. Booleans only: never echoes a secret or partner address.
+ */
+export function healthStatus(env: Env, partner: PartnerConfig = PARTNER): HealthStatus {
+  return {
+    ok: true,
+    partnerEnabled: partner.enabled,
+    partnerName: partner.partnerName,
+    configured: {
+      resend: isSet(env.RESEND_API_KEY),
+      appSecret: isSet(env.APP_SECRET),
+      partnerEmails: isSet(env.PARTNER_EMAILS),
+      partnerWebhook: isSet(env.PARTNER_WEBHOOK_URL),
+      turnstile: isSet(env.TURNSTILE_SECRET_KEY),
+      adminAccess: isSet(env.ACCESS_AUD) && isSet(env.ACCESS_TEAM_DOMAIN),
+    },
+  };
+}
+
 export const RATE_LIMIT_PER_HOUR = { lead: 5, subscribe: 10 };
 
 async function rateLimited(deps: Deps, env: Env, ip: string, bucket: keyof typeof RATE_LIMIT_PER_HOUR): Promise<boolean> {

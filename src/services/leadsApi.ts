@@ -1,5 +1,5 @@
 import { PARTNER } from '../config/partner';
-import type { LeadSubmission } from '../shared/leads';
+import { buildBookingUrl, generateLeadId, type LeadSubmission } from '../shared/leads';
 
 export interface LeadResponse {
   ok: boolean;
@@ -32,7 +32,21 @@ export interface SubscribeRequest {
   website?: string;
 }
 
+/** Local preview (VITE_PARTNER_PREVIEW=1 on the dev server): fake a successful reply, send nothing. */
+function previewReply(path: string): unknown {
+  if (path === '/api/leads') {
+    const leadId = generateLeadId(new Date(), (n) => crypto.getRandomValues(new Uint8Array(n)));
+    return { ok: true, leadId, bookingUrl: buildBookingUrl(PARTNER.bookingUrl, leadId), duplicate: false };
+  }
+  return { ok: true };
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
+  if (PARTNER.previewMode) {
+    console.info('[partner preview] not sent:', path, body);
+    await new Promise((r) => setTimeout(r, 400));
+    return previewReply(path) as T;
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15_000);
   try {

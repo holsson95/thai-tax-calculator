@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:partner-preview": "VITE_PARTNER_PREVIEW=1 vite",
     "build": "tsc && vite build && BUILD_SSR=1 vite build --ssr src/entry-server.tsx && node scripts/prerender.mjs && rm -rf dist-ssr && cp docs/index.html docs/404.html",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "partner:check": "node scripts/partner-check.mjs"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",

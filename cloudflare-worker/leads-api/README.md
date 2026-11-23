@@ -77,6 +77,10 @@ All commands run from this folder (`cloudflare-worker/leads-api`).
    form's consent sentence names `partnerName`; the Worker rejects a lead whose consent named a
    different partner, so the two must be deployed together.
 
+   Before pushing, run `npm run partner:check` from the repo root: it compares this file with
+   the deployed Worker (`GET /api/health`) and fails if leads would be rejected. Step-by-step
+   launch runbook: [PARTNER_LAUNCH.md](../../PARTNER_LAUNCH.md).
+
    - `enabled: false` + `leadsApiBaseUrl` set → the CTA becomes "Email me my breakdown" only.
    - `leadsApiBaseUrl` empty → no CTA at all (site behaves as before).
 
@@ -90,6 +94,11 @@ All commands run from this folder (`cloudflare-worker/leads-api`).
 - A daily cron deletes leads and breakdown-only subscribers not updated for 24 months (the
   period stated in the Privacy Policy — change `RETENTION_MONTHS` in `src/handlers.ts` and the
   policy together).
+
+## Health check
+
+`GET /api/health` returns the partner name and switch this Worker was deployed with, plus
+true/false for each secret (never the values). Used by `npm run partner:check`.
 
 ## Webhook format
 

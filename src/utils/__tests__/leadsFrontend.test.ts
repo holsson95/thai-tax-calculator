@@ -40,7 +40,7 @@ describe('partner config', () => {
 
   it('exposes only public fields', () => {
     expect(Object.keys(PARTNER).sort()).toEqual(
-      ['bookingUrl', 'enabled', 'leadCtaTaxThresholdThb', 'leadsApiBaseUrl', 'partnerName', 'turnstileSiteKey'].sort()
+      ['bookingUrl', 'enabled', 'leadCtaTaxThresholdThb', 'leadsApiBaseUrl', 'partnerName', 'previewMode', 'turnstileSiteKey'].sort()
     );
   });
 });

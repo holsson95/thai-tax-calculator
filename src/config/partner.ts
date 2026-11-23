@@ -12,16 +12,44 @@ export interface PartnerPublicConfig {
   leadCtaTaxThresholdThb: number;
   leadsApiBaseUrl: string;
   turnstileSiteKey: string;
+  /** Local preview only (see PARTNER_LAUNCH.md): partner shown as active, submissions mocked, nothing sent. */
+  previewMode?: boolean;
 }
 
-export const PARTNER: PartnerPublicConfig = {
-  enabled: raw.enabled,
-  partnerName: raw.partnerName,
-  bookingUrl: raw.bookingUrl,
-  leadCtaTaxThresholdThb: raw.leadCtaTaxThresholdThb,
-  leadsApiBaseUrl: raw.leadsApiBaseUrl.replace(/\/$/, ''),
-  turnstileSiteKey: raw.turnstileSiteKey,
-};
+type RawPartnerConfig = Omit<PartnerPublicConfig, 'previewMode'>;
+
+export const PREVIEW_PARTNER_NAME = 'Example Tax Firm (preview)';
+
+/**
+ * Applies the local preview switch. Preview needs BOTH a dev server and
+ * VITE_PARTNER_PREVIEW=1, so a production build can never show it.
+ */
+export function resolvePartnerConfig(r: RawPartnerConfig, env: { dev: boolean; preview: boolean }): PartnerPublicConfig {
+  const base: PartnerPublicConfig = {
+    enabled: r.enabled,
+    partnerName: r.partnerName,
+    bookingUrl: r.bookingUrl,
+    leadCtaTaxThresholdThb: r.leadCtaTaxThresholdThb,
+    leadsApiBaseUrl: r.leadsApiBaseUrl.replace(/\/$/, ''),
+    turnstileSiteKey: r.turnstileSiteKey,
+    previewMode: false,
+  };
+  if (!(env.dev && env.preview)) return base;
+  return {
+    ...base,
+    enabled: true,
+    partnerName: PREVIEW_PARTNER_NAME,
+    bookingUrl: 'https://example.com/book-a-call',
+    leadsApiBaseUrl: 'https://preview.invalid',
+    turnstileSiteKey: '',
+    previewMode: true,
+  };
+}
+
+export const PARTNER: PartnerPublicConfig = resolvePartnerConfig(raw, {
+  dev: !!import.meta.env?.DEV,
+  preview: import.meta.env?.VITE_PARTNER_PREVIEW === '1',
+});
 
 const isPlaceholder = (s: string) => !s.trim() || /^\[.*\]$/.test(s.trim());
 

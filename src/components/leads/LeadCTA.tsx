@@ -56,6 +56,11 @@ const LeadCTA: React.FC<Props> = ({ context }) => {
       aria-label="Specialist review"
       className={`mt-6 p-5 sm:p-6 ${high ? 'border-2 border-desk' : 'border border-paper-rule bg-paper-white'}`}
     >
+      {PARTNER.previewMode && (
+        <p className="mb-3 inline-block border border-dashed border-ink/40 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-ink-mute">
+          Local preview: nothing is sent
+        </p>
+      )}
       {open ? (
         <Suspense fallback={<p className="text-sm text-ink-mute">Loading form…</p>}>
           <LeadForm context={context} onCancel={() => setOpen(false)} />

@@ -26,6 +26,7 @@ import {
   handleSubscribe,
   handleUnsubscribe,
   HandlerResult,
+  healthStatus,
   runRetention,
 } from './handlers';
 import { D1Store } from './store';
@@ -196,6 +197,10 @@ export default {
 
     const cors = corsHeaders(req, env);
     if (req.method === 'OPTIONS' && url.pathname.startsWith('/api/')) return new Response(null, { status: 204, headers: cors });
+
+    if (req.method === 'GET' && url.pathname === '/api/health') {
+      return jsonResponse({ status: 200, body: healthStatus(env) }, { ...cors, 'Cache-Control': 'no-store' });
+    }
 
     if (req.method === 'POST' && (url.pathname === '/api/leads' || url.pathname === '/api/subscribe')) {
       if (!cors['Access-Control-Allow-Origin']) return new Response('Forbidden origin', { status: 403, headers: cors });
