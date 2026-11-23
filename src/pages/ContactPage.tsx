@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { PageHeader } from '../components/layout/InfoPage';
+import ArrowIcon from '../components/ui/ArrowIcon';
 
 const SITE_URL = 'https://mythaitaxes.com';
 const CONTACT_EMAIL = 'info@mythaitaxes.com';
@@ -14,7 +16,7 @@ const ContactPage: React.FC = () => {
     'Report incorrect tax information, a calculator bug, or suggest a correction, or get in touch with My Thai Taxes.';
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <div className="mx-auto max-w-[52rem] px-4 pb-20 pt-10 sm:px-6 lg:pt-14">
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -25,28 +27,31 @@ const ContactPage: React.FC = () => {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Contact</h1>
+      <PageHeader
+        title="Contact"
+        intro={
+          <p>
+            Every issue below goes to the same inbox and is read by the person who maintains this site.
+            Using the right link helps route your message correctly — see{' '}
+            <Link to="/about/" className="font-semibold text-desk underline decoration-desk/40 hover:decoration-desk">About</Link> for how figures are
+            sourced and reviewed.
+          </p>
+        }
+      />
 
-      <div className="space-y-8 text-gray-700 leading-relaxed">
+      <div className="on-paper mt-8 bg-paper-white px-5 text-ink shadow-sheet-sm sm:px-8">
 
-        <p>
-          Every issue below goes to the same inbox and is read by the person who maintains this site.
-          Using the right link helps route your message correctly — see{' '}
-          <Link to="/about/" className="text-blue-600 hover:underline">About</Link> for how figures are
-          sourced and reviewed.
-        </p>
-
-        <div className="border border-gray-200 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">
+        <section className="border-b border-paper-rule py-6 last:border-b-0">
+          <h2 className="display text-xl leading-snug text-ink">
             Found an incorrect calculation or outdated tax rule? Tell us.
           </h2>
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Every rate, threshold, and allowance used in the calculator is tracked in the{' '}
             <a
               href="https://github.com/holsson95/thai-tax-calculator/blob/main/TAX_RULES.md"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline"
+              className="font-semibold text-desk underline decoration-desk/40 hover:decoration-desk"
             >
               Thai Tax Rules Registry
             </a>
@@ -59,15 +64,16 @@ const ContactPage: React.FC = () => {
               '[Tax Rule Correction] ',
               'Which figure or rule is incorrect?\n\nWhat tax year does it apply to?\n\nWhat should it be, and do you have a source (link or document)?\n'
             )}
-            className="inline-block text-sm font-medium text-blue-600 hover:underline"
+            className="btn-text group mt-4"
           >
-            Report incorrect tax information →
+            Report incorrect tax information
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
-        </div>
+        </section>
 
-        <div className="border border-gray-200 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Found a calculator bug?</h2>
-          <p className="text-sm text-gray-600 mb-3">
+        <section className="border-b border-paper-rule py-6 last:border-b-0">
+          <h2 className="display text-xl leading-snug text-ink">Found a calculator bug?</h2>
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             If the annual tax calculator or monthly withholding estimator produces a result that looks
             wrong, crashes, or behaves unexpectedly, please report it — include which calculator you were
             using and the inputs that triggered the issue so it can be reproduced.
@@ -77,15 +83,16 @@ const ContactPage: React.FC = () => {
               '[Bug Report] ',
               'Which calculator? (Annual Tax / Monthly Withholding)\n\nWhat inputs did you enter?\n\nWhat result did you expect, and what did you get instead?\n'
             )}
-            className="inline-block text-sm font-medium text-blue-600 hover:underline"
+            className="btn-text group mt-4"
           >
-            Report a calculator bug →
+            Report a calculator bug
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
-        </div>
+        </section>
 
-        <div className="border border-gray-200 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">Suggest a correction</h2>
-          <p className="text-sm text-gray-600 mb-3">
+        <section className="border-b border-paper-rule py-6 last:border-b-0">
+          <h2 className="display text-xl leading-snug text-ink">Suggest a correction</h2>
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Spotted an error, unclear explanation, or outdated statement in an article, the FAQ, or
             anywhere else on the site that isn't a calculator figure? Suggest a correction, including a
             link to the page.
@@ -95,33 +102,35 @@ const ContactPage: React.FC = () => {
               '[Correction Suggestion] ',
               'Which page is this about? (link)\n\nWhat should be corrected?\n'
             )}
-            className="inline-block text-sm font-medium text-blue-600 hover:underline"
+            className="btn-text group mt-4"
           >
-            Suggest a correction →
+            Suggest a correction
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
-        </div>
+        </section>
 
-        <div className="border border-gray-200 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">General contact</h2>
-          <p className="text-sm text-gray-600 mb-3">
+        <section className="border-b border-paper-rule py-6 last:border-b-0">
+          <h2 className="display text-xl leading-snug text-ink">General contact</h2>
+          <p className="mt-2 max-w-prose text-[15px] leading-relaxed text-ink-soft">
             Questions, feedback, partnership inquiries, or anything else not covered above.
           </p>
           <a
             href={mailto('[General Inquiry] ', '')}
-            className="inline-block text-sm font-medium text-blue-600 hover:underline"
+            className="btn-text group mt-4"
           >
-            Send a general message →
+            Send a general message
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
-        </div>
-
-        <p className="text-sm text-gray-500">
-          Prefer email directly?{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">
-            {CONTACT_EMAIL}
-          </a>
-        </p>
+        </section>
 
       </div>
+
+      <p className="mt-6 text-sm text-ink-soft">
+        Prefer email directly?{' '}
+        <a href={`mailto:${CONTACT_EMAIL}`} className="font-mono font-semibold text-desk underline decoration-desk/40 hover:decoration-desk">
+          {CONTACT_EMAIL}
+        </a>
+      </p>
     </div>
   );
 };

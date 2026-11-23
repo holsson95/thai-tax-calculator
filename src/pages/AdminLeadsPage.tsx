@@ -10,22 +10,22 @@ import { PARTNER, isLeadsApiConfigured } from '../config/partner';
 const AdminLeadsPage: React.FC = () => {
   const url = isLeadsApiConfigured() ? `${PARTNER.leadsApiBaseUrl}/admin/leads` : null;
   return (
-    <div className="max-w-xl mx-auto px-4 py-16">
+    <div className="mx-auto max-w-[52rem] px-4 pb-24 pt-14 sm:px-6">
       <Helmet>
         <title>Admin | My Thai Taxes</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <h1 className="text-2xl font-bold text-gray-900 mb-3">Leads admin</h1>
+      <h1 className="display text-3xl text-ink">Leads admin</h1>
       {url ? (
-        <p className="text-gray-700">
+        <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-ink-soft">
           The leads admin is protected by Cloudflare Access.{' '}
-          <a href={url} className="text-blue-600 hover:underline" rel="nofollow">
+          <a href={url} className="font-semibold text-desk underline" rel="nofollow">
             Open the leads admin
           </a>
           .
         </p>
       ) : (
-        <p className="text-gray-700">The leads API is not configured yet (set leadsApiBaseUrl in partner.config.json).</p>
+        <p className="mt-3 max-w-prose text-[15px] leading-relaxed text-ink-soft">The leads API is not configured yet (set leadsApiBaseUrl in partner.config.json).</p>
       )}
     </div>
   );

@@ -14,6 +14,10 @@
   body {
     @apply bg-paper-ground text-ink font-sans antialiased;
   }
+  input::placeholder,
+  textarea::placeholder {
+    color: #A8AEC2;
+  }
   ::selection {
     background: #F0E4BF;
     color: #25304A;
@@ -81,6 +85,26 @@
   .article-body > * + * {
     @apply mt-5;
   }
+  /* Pages that group their prose in <section>s (Privacy, Methodology). */
+  .article-body section > * + * {
+    @apply mt-5;
+  }
+  .article-body > section + section {
+    @apply mt-12;
+  }
+  .article-body section[id] {
+    @apply scroll-mt-24;
+  }
+  /* Note boxes inside a prose sheet keep their own tight spacing. */
+  .article-body :is(.note, .note-strong) > :first-child {
+    @apply mt-0;
+  }
+  .article-body :is(.note, .note-strong) > h3 {
+    @apply field-label mb-2 text-ink;
+  }
+  .article-body :is(.note, .note-strong) ul {
+    @apply mt-0 space-y-1.5 pl-5 text-sm;
+  }
   .article-body h2 {
     @apply display mt-12 scroll-mt-24 border-b-2 border-desk pb-2 text-2xl leading-tight text-ink sm:text-[28px];
   }
@@ -115,6 +139,9 @@
   }
   .article-body li > ul {
     @apply mt-2 space-y-1 text-[16px] text-ink-soft;
+  }
+  .article-body code {
+    @apply font-mono text-[0.88em] text-ink;
   }
   .article-body pre {
     @apply mt-3 overflow-x-auto border-l border-paper-rule bg-paper-ground px-4 py-3 font-mono text-[13px] leading-relaxed text-ink-soft;

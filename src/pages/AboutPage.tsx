@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import InfoPage from '../components/layout/InfoPage';
+import ArrowIcon from '../components/ui/ArrowIcon';
 
 const SITE_URL = 'https://mythaitaxes.com';
 const CONTACT_EMAIL = 'info@mythaitaxes.com';
@@ -12,7 +14,7 @@ const AboutPage: React.FC = () => {
     'What My Thai Taxes is, why it was built, how the tax calculations work, how figures are sourced and reviewed, and who maintains the site.';
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
+    <InfoPage title="About My Thai Taxes">
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
@@ -23,11 +25,7 @@ const AboutPage: React.FC = () => {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">About My Thai Taxes</h1>
-
-      <div className="space-y-6 text-gray-700 leading-relaxed">
-
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">What is My Thai Taxes?</h2>
+        <h2>What is My Thai Taxes?</h2>
 
         <p>
           My Thai Taxes is a free online calculator and information resource designed to help individuals
@@ -36,7 +34,7 @@ const AboutPage: React.FC = () => {
           you through Thailand's tax system in plain language — without requiring an accounting background.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">Why we built it</h2>
+        <h2>Why we built it</h2>
 
         <p>
           Thailand's personal income tax rules can be confusing, especially for expats and digital nomads
@@ -49,23 +47,23 @@ const AboutPage: React.FC = () => {
           tax position rather than just trusting a number.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">How the calculations work</h2>
+        <h2>How the calculations work</h2>
 
         <p>
-          The <Link to="/annual-tax/" className="text-blue-600 hover:underline">annual tax calculator</Link>{' '}
+          The <Link to="/annual-tax/">annual tax calculator</Link>{' '}
           follows the same structure the Revenue Department uses for a PND90/91 return: it takes your
           income by type, applies the relevant flat-rate or actual-expense deduction, subtracts your
           allowances (personal, spouse, children, parents, insurance, retirement funds, donations, and
           so on), and runs the resulting taxable income through Thailand's progressive tax brackets
           (0% to 35%). The{' '}
-          <Link to="/monthly-withholding/" className="text-blue-600 hover:underline">monthly withholding
+          <Link to="/monthly-withholding/">monthly withholding
           estimator</Link>{' '}
           uses the same underlying logic to check whether the right amount of tax is being deducted from
           a salary each month. Every step is shown in the results, not hidden behind a single output
           number — you can see exactly which deduction, allowance, or bracket produced your result.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">How information is sourced</h2>
+        <h2>How information is sourced</h2>
 
         <p>
           Every tax rule, rate, and threshold used in the calculator is tracked in a public sources
@@ -74,7 +72,7 @@ const AboutPage: React.FC = () => {
             href={TAX_RULES_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
+           
           >
             Thai Tax Rules Registry
           </a>{' '}
@@ -87,7 +85,7 @@ const AboutPage: React.FC = () => {
           confidence is lower than quietly guess.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">Who maintains the site</h2>
+        <h2>Who maintains the site</h2>
 
         <p>
           My Thai Taxes is built and maintained independently by a single developer. It is not run by a
@@ -96,20 +94,20 @@ const AboutPage: React.FC = () => {
           project aimed at making Thai tax information more transparent and accessible.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">How often information is reviewed</h2>
+        <h2>How often information is reviewed</h2>
 
         <p>
           Tax rules and figures are reviewed periodically, and whenever a change to Thai tax law is
           identified. Each figure in the calculator is tracked in the sources registry above along with
           its source and verification status, so outdated or disputed values can be caught and corrected
           rather than sitting unnoticed. If you spot something that looks wrong or out of date, please{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">let us know</a> —
+          <a href={`mailto:${CONTACT_EMAIL}`}>let us know</a> —
           see Contact below.
         </p>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">What the site offers</h2>
+        <h2>What the site offers</h2>
 
-        <ul className="space-y-3">
+        <ul className="!list-none !space-y-0 !pl-0">
           {[
             {
               title: 'Annual Tax Calculator',
@@ -132,19 +130,19 @@ const AboutPage: React.FC = () => {
               to: '/faq/',
             },
           ].map(({ title, desc, to }) => (
-            <li key={to} className="flex gap-3">
-              <span className="text-blue-500 mt-1 flex-shrink-0">→</span>
-              <span>
-                <Link to={to} className="font-medium text-gray-900 hover:text-blue-500 transition-colors">
-                  {title}
-                </Link>
-                {' — '}{desc}
-              </span>
+            <li key={to} className="border-b border-paper-rule last:border-b-0">
+              <Link to={to} className="group flex items-start justify-between gap-4 py-3 !no-underline">
+                <span>
+                  <span className="block text-[16px] font-bold text-ink transition-colors group-hover:text-desk">{title}</span>
+                  <span className="mt-0.5 block text-[15px] font-normal leading-relaxed text-ink-soft">{desc}</span>
+                </span>
+                <ArrowIcon className="mt-1 h-4 w-4 shrink-0 text-ink-mute transition-transform group-hover:translate-x-0.5 group-hover:text-desk" />
+              </Link>
             </li>
           ))}
         </ul>
 
-        <h2 id="for-developers" className="text-xl font-semibold text-gray-900 pt-2">
+        <h2 id="for-developers">
           For developers &amp; AI agents
         </h2>
 
@@ -154,30 +152,30 @@ const AboutPage: React.FC = () => {
           one. No API key or account required.
         </p>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg px-5 py-4 text-sm text-gray-800 space-y-3">
+        <div className="note space-y-4 text-ink">
           <div>
-            <span className="font-medium text-gray-900">MCP endpoint</span>{' '}
-            (Streamable HTTP, tool name <code className="text-xs bg-white px-1 py-0.5 rounded border border-blue-200">calculate_thai_annual_income_tax</code>):
-            <pre className="mt-2 bg-white border border-blue-200 rounded p-3 text-xs overflow-x-auto">
-              https://mythaitaxes-mcp.hannwill999.workers.dev/mcp
+            <span className="font-bold text-ink">MCP endpoint</span>{' '}
+            (Streamable HTTP, tool name <code>calculate_thai_annual_income_tax</code>):
+            <pre className="!mt-2">
+              https://mythaitaxes-mcp.mythaitaxes.workers.dev/mcp
             </pre>
           </div>
           <div>
-            <span className="font-medium text-gray-900">REST endpoint</span> (plain <code className="text-xs bg-white px-1 py-0.5 rounded border border-blue-200">POST</code> JSON, same calculation):
-            <pre className="mt-2 bg-white border border-blue-200 rounded p-3 text-xs overflow-x-auto">
-{`curl -X POST https://mythaitaxes-mcp.hannwill999.workers.dev/api/calculate-annual-tax \\
+            <span className="font-bold text-ink">REST endpoint</span> (plain <code>POST</code> JSON, same calculation):
+            <pre className="!mt-2">
+{`curl -X POST https://mythaitaxes-mcp.mythaitaxes.workers.dev/api/calculate-annual-tax \\
   -H "Content-Type: application/json" \\
   -d '{"annualIncome": 800000, "maritalStatus": "married"}'`}
             </pre>
           </div>
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-ink-mute">
             Covers salaried-employee income tax for now. Results are estimates — see the disclaimer below.
           </p>
         </div>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">Disclaimer</h2>
+        <h2>Disclaimer</h2>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-lg px-5 py-4 text-sm text-amber-800">
+        <div className="note-strong">
           The calculators and articles on this site are for informational and estimation purposes only.
           They do not constitute professional tax advice and should not be relied upon as a substitute
           for guidance from a qualified Thai tax advisor or accountant. Tax rules can change — always
@@ -186,26 +184,23 @@ const AboutPage: React.FC = () => {
             href="https://www.rd.go.th/english/"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-amber-900 font-medium"
           >
             Thai Revenue Department
           </a>{' '}
           or a licensed professional before filing.
         </div>
 
-        <h2 className="text-xl font-semibold text-gray-900 pt-2">Contact</h2>
+        <h2>Contact</h2>
 
         <p>
           For questions, feedback, or corrections, reach out at{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-blue-600 hover:underline">
+          <a href={`mailto:${CONTACT_EMAIL}`}>
             {CONTACT_EMAIL}
           </a>
           . If you spot an error in any article or calculator, please get in touch — accuracy matters
           and updates are made as Thai tax rules change.
         </p>
-
-      </div>
-    </div>
+    </InfoPage>
   );
 };
 
