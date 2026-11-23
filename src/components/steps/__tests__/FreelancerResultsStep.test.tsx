@@ -1,10 +1,15 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import type { ReactElement } from 'react';
 import FreelancerResultsStep from '../FreelancerResultsStep';
 import { createDefaultFreelancerFormData } from '../../../types/freelancerForm';
 
 const toBlobMock = vi.fn(() => Promise.resolve(new Blob(['pdf'], { type: 'application/pdf' })));
 const pdfMock = vi.fn(() => ({ toBlob: toBlobMock }));
+
+// The results pages include links (e.g. in the email-breakdown box), so they need a router.
+const render = (ui: ReactElement) => rtlRender(ui, { wrapper: MemoryRouter });
 
 vi.mock('@react-pdf/renderer', () => ({
   pdf: () => pdfMock(),

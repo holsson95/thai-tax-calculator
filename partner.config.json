@@ -6,6 +6,6 @@
   "leadCtaTaxThresholdThb": 50000,
   "duplicateWindowDays": 90,
   "deliverDuplicatesToPartner": false,
-  "leadsApiBaseUrl": "",
+  "leadsApiBaseUrl": "https://mythaitaxes-leads.mythaitaxes.workers.dev",
   "turnstileSiteKey": "0x4AAAAAAGPEa7Y1qM6S44ZF"
 }

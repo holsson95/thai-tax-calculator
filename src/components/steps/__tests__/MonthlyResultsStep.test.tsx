@@ -1,7 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render as rtlRender, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import type { ReactElement } from 'react';
 import MonthlyResultsStep from '../MonthlyResultsStep';
 import { MonthlyFormData, MonthlyIncomeEntry } from '../../../types/taxForm';
+
+// The results pages include links (e.g. in the email-breakdown box), so they need a router.
+const render = (ui: ReactElement) => rtlRender(ui, { wrapper: MemoryRouter });
 
 const createEmptyMonthEntry = (): MonthlyIncomeEntry => ({
   salary: 0,
