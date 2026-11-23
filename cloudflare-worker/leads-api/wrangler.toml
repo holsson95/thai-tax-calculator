@@ -2,6 +2,11 @@ name = "mythaitaxes-leads"
 main = "src/index.ts"
 compatibility_date = "2026-05-03"
 
+# mythaitaxes.com DNS is at GoDaddy, so the API and admin live on the workers.dev host.
+workers_dev = true
+# No per-version preview hostnames: one public address to protect.
+preview_urls = false
+
 # Free plan: Workers + D1 + Turnstile + Access (Zero Trust free tier) are all $0.
 # Setup steps: see cloudflare-worker/leads-api/README.md
 
