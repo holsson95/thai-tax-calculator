@@ -306,3 +306,8 @@ One frame (`components/layout/InfoPage`): `PageHeader` (display h1, lead paragra
 ## Tailwind defaults
 
 The migration is complete: no legacy components or migration overrides remain. Tailwind's own `gray-*` and `blue-*` scales, the `rounded`/`-lg`/`-xl`/`-2xl`/`-3xl` radii and the `shadow`/`shadow-sm/md/lg` classes are back to Tailwind's values, so don't use them: they fall outside the one-ink palette and square paper. Use the ink, desk and paper tokens, square corners (`rounded-md` only for sheet tabs, folder tabs and the stamp; `rounded-full` for circles) and the Sheet / Small Sheet shadows. The default border and ring colours point at paper-rule and desk in tailwind.config.js, and input placeholders are set in src/index.css, because Tailwind's preflight would otherwise pull them from its gray and blue scales.
+
+## Brand images
+
+- **Favicon** (`public/favicon.svg`, plus `favicon-32.png` and `apple-touch-icon.png`): the header's stacked-sheets mark (sky, canary, warm white with desk rules) on a square desk tile, with the rules thickened to stay legible at 16px.
+- **Link preview** (`public/og-image.png`, 1200×630): the home hero on the desk, with the headline, its subline and the quick-estimate form on a copy stack. It's set once in `index.html` (`og:image`, `twitter:card`), so every page shares it. Its source is `scripts/brand/og-image.html`. After editing the HTML or the favicon SVG, re-render the PNGs with `scripts/brand/render.cjs` (the header of that script says how). Keep tax figures off the image: it can't update when the rates change.

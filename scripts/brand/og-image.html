@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- Source for public/og-image.png (1200x630 link preview). Re-render with
+     scripts/brand/render.cjs after editing; uses the site's own fonts and tokens. -->
+<html><head><meta charset="utf-8"><style>
+@font-face{font-family:Manrope;src:url(../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2) format('woff2');font-weight:200 800}
+@font-face{font-family:JBM;src:url(../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2) format('woff2');font-weight:100 800}
+*{box-sizing:border-box;margin:0}
+body{width:1200px;height:630px;overflow:hidden;background:#344A9B;font-family:Manrope;color:#FFFDF5;position:relative}
+.brand{position:absolute;left:72px;top:60px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:30px;letter-spacing:-.02em}
+h1{position:absolute;left:72px;top:132px;width:600px;font-weight:800;font-size:80px;line-height:1.02;letter-spacing:-.035em}
+.sub{position:absolute;left:72px;top:420px;width:540px;font-size:24px;line-height:1.4;color:#DDE3F4}
+.perf{position:absolute;left:0;right:0;bottom:62px;border-top:3px dotted rgba(175,199,232,.55)}
+.url{position:absolute;left:72px;bottom:20px;font-family:JBM;font-size:20px;letter-spacing:.08em;color:#AFC7E8}
+.stack{position:absolute;left:690px;top:70px;width:440px;height:470px}
+.s{position:absolute;inset:0;box-shadow:0 1px 0 rgba(31,43,92,.08),0 18px 36px -12px rgba(25,34,70,.45)}
+.sky{background:#AFC7E8;transform:translate(34px,26px) rotate(4deg)}
+.pink{background:#E9A8B8;transform:translate(22px,16px) rotate(2.4deg)}
+.can{background:#F0E4BF;transform:translate(11px,8px) rotate(1.2deg)}
+.paper{background:#FFFDF5;color:#25304A;padding:40px 34px}
+.lab{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#25304A;border-bottom:2px solid #344A9B;padding-bottom:8px;margin-bottom:16px}
+.comb{display:flex;margin-bottom:30px}
+.comb span{width:44px;height:56px;border:2px solid #344A9B;margin-left:-2px;font-family:JBM;font-size:30px;display:flex;align-items:center;justify-content:center;color:#25304A}
+.checks{display:flex;gap:22px;font-size:17px;margin-bottom:30px}
+.checks i{display:inline-block;width:18px;height:18px;border:2px solid #25304A;vertical-align:-3px;margin-right:8px;font-style:normal;text-align:center;line-height:13px;font-weight:800}
+.res{display:flex;border:2px solid #344A9B}
+.res div{flex:1;padding:12px 16px;font-size:14px;color:#5A6380}
+.res div+div{border-left:2px solid #344A9B}
+.res b{display:block;font-family:JBM;font-size:30px;color:#25304A;margin-top:4px;letter-spacing:.1em}
+.fine{margin-top:16px;font-size:13px;color:#5A6380}
+</style></head><body>
+<div class="brand">
+  <svg viewBox="0 0 28 28" width="40" height="40"><rect x="7" y="3" width="17" height="21" fill="#AFC7E8" transform="rotate(8 15 14)"/><rect x="5.5" y="4" width="17" height="21" fill="#F0E4BF" transform="rotate(3 14 14)"/><rect x="4" y="5" width="17" height="21" fill="#FFFDF5"/><path d="M7.5 11h10M7.5 15h10M7.5 19h6" stroke="#344A9B" stroke-width="1.6"/></svg>
+  MyThaiTaxes
+</div>
+<h1>Thai tax,<br>filled in<br>for you.</h1>
+<p class="sub">Free Thai personal income tax estimates, with every rule traced to its Revenue Department source.</p>
+<div class="stack">
+  <div class="s sky"></div><div class="s pink"></div><div class="s can"></div>
+  <div class="s paper">
+    <div class="lab">1 · How you are paid</div>
+    <div class="checks"><span><i></i>Yearly</span><span><i>×</i>Monthly</span><span><i></i>Weekly</span></div>
+    <div class="lab">2 · Monthly salary, in baht</div>
+    <div class="comb"><span>5</span><span>0</span><span>0</span><span>0</span><span>0</span><span></span><span></span></div>
+    <div class="lab">3 · Estimated Thai income tax</div>
+    <div class="res"><div>Per year<b>———</b></div><div>Per month<b>———</b></div></div>
+    <p class="fine">Rates: Revenue Department rate table · an estimate, not tax advice.</p>
+  </div>
+</div>
+<div class="perf"></div>
+<div class="url">MYTHAITAXES.COM</div>
+</body></html>
