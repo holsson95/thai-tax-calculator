@@ -135,6 +135,16 @@ const ArticleDetailPage: React.FC = () => {
             </details>
           )}
 
+          {article.calculatorCta && (
+            <div className="mb-8" data-testid="article-calculator-cta-top">
+              <CalculateTaxCTA
+                heading={article.calculatorCta.heading}
+                description={article.calculatorCta.description}
+                primary={{ label: article.calculatorCta.label, to: article.calculatorCta.to }}
+              />
+            </div>
+          )}
+
           <article className="on-paper bg-paper-white px-5 py-8 shadow-sheet-sm sm:px-10 sm:py-10">
             <div className="article-body" dangerouslySetInnerHTML={{ __html: firstHalf }} />
             {secondHalf && (
@@ -186,11 +196,20 @@ const ArticleDetailPage: React.FC = () => {
 
           {/* Calculator CTA */}
           <div className="mt-12">
-            <CalculateTaxCTA
-              heading="Ready to calculate your tax?"
-              description="Put this knowledge to use with our free calculator."
-              primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
-            />
+            {article.calculatorCta ? (
+              <CalculateTaxCTA
+                heading={article.calculatorCta.heading}
+                description={article.calculatorCta.description}
+                primary={{ label: article.calculatorCta.label, to: article.calculatorCta.to }}
+                secondary={{ label: 'Or estimate your full-year tax', to: '/annual-tax/' }}
+              />
+            ) : (
+              <CalculateTaxCTA
+                heading="Ready to calculate your tax?"
+                description="Put this knowledge to use with our free calculator."
+                primary={{ label: 'Start Calculator', to: '/annual-tax/' }}
+              />
+            )}
           </div>
 
           {/* Related Articles */}

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { calculateThaiTax } from '../../utils/tax';
 import { getArticleBySlug, getRelatedArticles, articles } from '../articles';
 import { getTaxExampleById } from '../taxExamples';
 
@@ -66,5 +67,32 @@ describe('getRelatedArticles', () => {
         expect(getArticleBySlug(r.slug)).toBeDefined();
       }
     }
+  });
+});
+
+describe('foreign-income articles (remittance rule and calculator links)', () => {
+  const slugs = [
+    'dtv-visa-thailand-tax-guide',
+    'ltr-visa-tax-benefits',
+    'foreign-income-thailand-tax',
+    'transferring-money-to-thailand-tax-rules',
+  ];
+
+  it.each(slugs)('%s points readers to the foreign income calculator', (slug) => {
+    const article = getArticleBySlug(slug)!;
+    expect(article.calculatorCta?.to).toBe('/foreign-income-tax-calculator/');
+    expect(article.content).toContain('](/foreign-income-tax-calculator/)');
+  });
+
+  it.each(slugs)('%s does not claim pre-2024 income is caught (Por. 162/2566)', (slug) => {
+    const article = getArticleBySlug(slug)!;
+    expect(article.content).not.toMatch(/regardless of when/i);
+  });
+
+  it('the LTR worked example uses the tax engine, not a hand-typed figure', () => {
+    const article = getArticleBySlug('ltr-visa-tax-benefits')!;
+    const tax = calculateThaiTax(3_000_000);
+    expect(article.content).toContain(`฿${Math.round(tax).toLocaleString('en-US')}`);
+    expect(article.content).toContain('Highly-Skilled Professionals do not get the foreign-income exemption');
   });
 });

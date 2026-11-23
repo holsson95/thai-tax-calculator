@@ -17,7 +17,33 @@ export interface Article {
    * example that happens to share a topic. Omit when no example fits.
    */
   relatedExamples?: string[];
+  /**
+   * The calculator this article's readers most need. When set, the article
+   * page shows it above the article and in the end-of-article box, instead
+   * of the generic link to the annual calculator.
+   */
+  calculatorCta?: { heading: string; description: string; label: string; to: string };
 }
+
+/**
+ * Worked example for the "ltr-visa-tax-benefits" article: tax an ordinary
+ * resident would pay on ฿3,000,000 of taxable remitted income, computed by
+ * the same engine the calculators use, so the article cannot drift from it.
+ */
+const ltrExample = (() => {
+  const taxable = 3_000_000;
+  const tax = calculateThaiTax(taxable);
+  return { taxable, tax, effectiveRatePercent: (tax / taxable) * 100 };
+})();
+
+/** Shared box for articles about bringing foreign income into Thailand. */
+const REMITTANCE_CALCULATOR_CTA: Article['calculatorCta'] = {
+  heading: 'Bringing money into Thailand? Check what is taxable',
+  description:
+    'The foreign income calculator goes through each transfer: whether you were resident in the year it was earned, whether it was earned before 2024, and whether it is savings or income. It then estimates the Thai tax, with a bracket breakdown.',
+  label: 'Open the foreign income calculator',
+  to: '/foreign-income-tax-calculator/',
+};
 
 /**
  * Worked-example numbers for the "thai-tax-brackets-explained" article.
@@ -512,7 +538,8 @@ This topic spans several pages on this site, each covering a different part of i
 
 - **Trying to work out whether you're a Thai tax resident?** See [Am I a Thai Tax Resident? The 180-Day Rule, Explained With Examples](/articles/understanding-thai-tax-residency).
 - **Trying to understand the 2024+ remittance rule in detail — what counts as a remittance, capital vs. income, practical timing examples?** See [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules).
-- **Trying to estimate your actual tax?** Use the [Annual Tax Calculator](/annual-tax/).
+- **Bringing money into Thailand and want to know what is taxable?** Use the [foreign income calculator](/foreign-income-tax-calculator/). It checks each transfer for the earned date, residency in the year earned, and savings vs. income.
+- **Want to estimate your whole year's tax?** Use the [Annual Tax Calculator](/annual-tax/).
 
 This page is the conceptual starting point: what foreign income is, what types exist, and at a high level when it becomes a Thai tax question.
 
@@ -587,23 +614,28 @@ Where a Double Tax Agreement between Thailand and the source country applies, fo
 - **"I don't know whether I'm a Thai tax resident."** → [Am I a Thai Tax Resident?](/articles/understanding-thai-tax-residency)
 - **"I know it's foreign income, but I'm confused about bringing it into Thailand."** → [Transferring Money to Thailand: 2024 Tax Rules](/articles/transferring-money-to-thailand-tax-rules)
 - **"I paid tax overseas and want to know about credits."** → [Thai Double Tax Treaties: Protecting Expats](/articles/double-tax-agreements-thailand)
-- **"I want to estimate my actual Thai tax."** → [Annual Tax Calculator](/annual-tax/)
+- **"I want to know whether my transfers are taxable."** → [Foreign income calculator](/foreign-income-tax-calculator/)
+- **"I want to estimate my full-year Thai tax."** → [Annual Tax Calculator](/annual-tax/)
 
 ## Worked Example: LTR vs. an Ordinary Visa
 
 Two Thai tax residents each remit foreign pension income. One holds a qualifying LTR Wealthy Pensioner visa and is exempt on that remitted income. The other holds an ordinary long-stay visa (for example, a retirement visa) with no such exemption, and the general residency-and-remittance rules apply. The exemption follows from the specific LTR visa category — not from being a long-term resident or retiree in general, and not from holding any particular non-LTR visa.
 
-## Using the Calculator
+## Using the Calculators
+
+For money you bring into Thailand, start with the [foreign income calculator](/foreign-income-tax-calculator/). You list each transfer and it asks the questions this page describes (when the money was earned, whether you were resident that year, and whether it is savings or income), then estimates the Thai tax with a bracket breakdown.
 
 Once you know which of your income is foreign-sourced and have a sense of whether the rules above apply to it, the [Annual Tax Calculator](/annual-tax/) can estimate your Thai tax position. It accepts foreign-income entries with the country, date earned, date remitted, and foreign tax paid, and applies the 2024+ earned-date rule, DTA foreign tax credit logic, and the LTR exemption where applicable, automatically. The calculator computes tax on what you tell it is income — it doesn't determine for you whether a particular transfer is capital or income, and it doesn't resolve treaty pension classification beyond the country/pension-type combinations it already recognizes. Those judgment calls are yours to make first.
     `,
     publishedAt: '2024-03-15',
-    updatedAt: '2026-09-08',
+    updatedAt: '2026-11-24',
     readTime: 7,
+    calculatorCta: REMITTANCE_CALCULATOR_CTA,
     category: 'International',
     sources: [
       { label: 'Thai Revenue Department — Revenue Code Section 41 (Tax Residency)', url: 'https://www.rd.go.th/english/37749.html' },
       { label: 'Mahanakorn Partners Group — Overview of Orders Por. 161/2566 and Por. 162/2566', url: 'https://mahanakornpartners.com/comprehensive-overview-of-order-no-por-161-2566-and-no-por-162-2566-on-personal-income-tax-for-foreign-sourced-income/' },
+      { label: 'Thai Revenue Department — Q&A on foreign income under Section 41 paragraph 2 (Thai)', url: 'https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf' },
       { label: 'Royal Decree No. 743 B.E. 2565 — LTR Visa Tax Provisions', url: 'https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf' },
       { label: 'US–Thailand Double Taxation Convention (treaty text)', url: 'https://www.irs.gov/pub/irs-trty/thailand.pdf' },
     ],
@@ -2274,117 +2306,112 @@ If you decide to leave Thailand permanently, or if you leave for an extended per
   },
   {
     slug: 'ltr-visa-tax-benefits',
-    title: 'LTR Visa Tax Benefits for Expats in Thailand',
-    excerpt: 'How Thailand\'s Long-Term Resident visa offers significant tax benefits — including foreign income exemptions and a reduced flat tax rate for qualifying expats.',
+    title: 'LTR Visa Tax Benefits: Foreign Income Exemption and 17% Rate',
+    excerpt: 'What Royal Decree No. 743 actually gives Long-Term Resident visa holders: which three categories are exempt on foreign income brought into Thailand, who gets the 17% flat rate, the conditions, and a worked comparison with an ordinary visa.',
     content: `
-## What is the LTR Visa?
+The Long-Term Resident (LTR) visa is the only Thai visa with tax rules written into law for it. Those rules are in **Royal Decree No. 743 B.E. 2565 (2022)**, issued under the Revenue Code. This page explains what the decree gives each LTR category, the conditions attached, and what the exemption is worth compared with an ordinary visa under the 2024 foreign-income rule.
 
-The Long-Term Resident (LTR) visa is Thailand's premium residency program designed to attract wealthy individuals, skilled professionals, and remote workers. Launched by the Board of Investment (BOI), the LTR visa offers substantial tax benefits that can significantly reduce your tax burden compared to standard visa holders.
+## The Two Tax Benefits in One Table
 
-## The Four LTR Visa Categories
+| LTR category | Foreign income brought into Thailand | Thai employment income |
+|---|---|---|
+| Wealthy Global Citizen | Exempt (Royal Decree 743, Section 5) | Normal progressive rates |
+| Wealthy Pensioner | Exempt (Royal Decree 743, Section 5) | Normal progressive rates |
+| Work-from-Thailand Professional | Exempt (Royal Decree 743, Section 5) | Normal progressive rates |
+| Highly-Skilled Professional | **Not exempt**: the normal remittance rules apply | 17% flat rate, if the conditions below are met (Sections 3-4) |
 
-### 1. Wealthy Global Citizens
-- **Requirements:** USD 1 million+ in assets (including USD 500,000 in Thai assets)
-- **Tax Benefit:** Complete exemption from Thai tax on foreign income
+Two common mistakes:
 
-### 2. Wealthy Pensioners
-- **Requirements:** Age 50+, annual pension/passive income of USD 80,000+ (or USD 40,000+ with USD 250,000 in Thai assets)
-- **Tax Benefit:** Complete exemption from Thai tax on foreign income
+- **Highly-Skilled Professionals do not get the foreign-income exemption.** Their benefit is the 17% rate on Thai salary.
+- **The exemption is for income brought into Thailand.** The decree covers income derived abroad (from employment, a business carried on abroad, or property abroad) that is brought into Thailand. Foreign income you never bring in was not taxable in Thailand anyway, for anyone.
 
-### 3. Work-from-Thailand Professionals
-- **Requirements:** Work for established overseas company, USD 80,000+ annual income for past 2 years
-- **Tax Benefit:** Complete exemption from Thai tax on foreign income
+## Benefit 1: The Foreign Income Exemption
 
-### 4. Highly Skilled Professionals
-- **Requirements:** Work in BOI-targeted industries, 5+ years experience or PhD
-- **Tax Benefit:** 17% flat tax rate on Thai employment income (vs. progressive rates up to 35%)
+### Who gets it
+Holders of the Wealthy Global Citizen, Wealthy Pensioner and Work-from-Thailand Professional LTR visas.
 
-## How LTR Tax Benefits Compare
+### Conditions
+Based on Royal Decree 743 as recorded in this site's [source registry](/sources/):
 
-| Visa Type | Foreign Income | Thai Income | Effective Benefit |
-|-----------|---------------|-------------|-------------------|
-| Regular Visa | Taxable if remitted (up to 35%) | Progressive (up to 35%) | Standard treatment |
-| Thailand Privilege | Taxable if remitted (up to 35%) | Progressive (up to 35%) | No tax benefit |
-| LTR (3 categories) | **Tax Exempt** | Progressive (up to 35%) | Major savings on foreign income |
-| LTR Highly Skilled | Taxable if remitted | **17% flat rate** | Lower tax on high Thai earnings |
+- You must keep meeting the LTR qualifications BOI sets. If you stop qualifying, the benefit is suspended for that year.
+- You must still **file a Thai tax return that declares the exempt income**. Exempt does not mean invisible.
+- The exemption covers foreign income from employment, a business carried on abroad, or property situated abroad.
 
-## Understanding the 2024 Foreign Income Rule Change
+### What this site has not been able to confirm
+The decree's wording refers to income from the previous tax year that is brought into Thailand. It was written in 2022, before the 2024 remittance rule (Order Por. 161/2566) began taxing foreign income brought in *any* later year. The official sources this site has checked do not say how the exemption applies to income from earlier years brought in later. If you plan to bring in several years of income at once, ask an adviser first.
 
-Prior to 2024, foreign income was only taxable if remitted to Thailand in the same year it was earned. Starting January 1, 2024, all foreign income remitted to Thailand is taxable regardless of when earned.
+## Benefit 2: The 17% Flat Rate for Highly-Skilled Professionals
 
-**This makes the LTR visa exemption even more valuable.**
+Under Sections 3-4 of the decree, a Highly-Skilled Professional LTR holder can have Thai employment income taxed at a flat **17%** (by withholding), instead of the progressive rates that reach 35%.
 
-For regular visa holders, any money brought into Thailand from overseas is now potentially taxable. LTR visa holders (except Highly Skilled) are completely exempt from this rule.
+Conditions recorded from the decree:
 
-## Example Tax Savings
+- It applies only to the **Highly-Skilled Professional** LTR category. The separate SMART visa programme is not covered.
+- The employer must be a company or juristic partnership in a **targeted industry** under the national competitiveness, BOI investment-promotion or Eastern Economic Corridor laws.
+- You cannot claim a refund or credit of the tax withheld at 17%.
+- The decree sets no minimum salary for the rate itself. Eligibility depends on the employer and industry. BOI's visa criteria still include an income requirement (see below).
 
-**Scenario:** A remote worker earning USD 100,000 annually from a US company, living in Thailand
+Because 17% is a flat rate on the whole salary, it helps most at higher salaries. At lower salaries the progressive rates, with their 0% and 5% bands, can come out lower, and you cannot claim any of the 17% back. Check with your employer or an adviser how the rate is applied in your case.
 
-**Without LTR Visa:**
-- If remitting full income: approximately 1.5-2.5 million THB in Thai tax
-- Must carefully plan remittances to minimize tax exposure
+## Worked Example: What the Exemption Is Worth
 
-**With LTR Work-from-Thailand Visa:**
-- Thai tax on foreign income: 0 THB
-- Complete freedom to remit funds without tax consequences
+Two Thai tax residents work remotely for the same overseas company. In 2026 each brings salary earned in 2026 into Thailand. After deductions and allowances, that leaves **฿${ltrExample.taxable.toLocaleString('en-US')}** of taxable income each. Neither has any Thai income.
 
-## Eligibility Requirements Overview
+| | Ordinary visa (for example a DTV or retirement visa) | LTR Work-from-Thailand Professional |
+|---|---|---|
+| Is the remitted salary assessable? | Yes: earned in 2024 or later, in a resident year (Por. 161/2566) | Exempt (Royal Decree 743), if the LTR conditions are met |
+| Thai tax on it | **฿${Math.round(ltrExample.tax).toLocaleString('en-US')}** | **฿0** |
+| Effective rate on taxable income | ${ltrExample.effectiveRatePercent.toFixed(1)}% | 0% |
+| Still has to file a return? | Yes | Yes, declaring the exempt income |
 
-### Documentation Typically Required:
-1. Proof of income/assets (bank statements, tax returns)
-2. Health insurance coverage
-3. Criminal background check
-4. Passport validity
+The ordinary-visa figure comes from this site's tax engine (the same one the calculators use), applying the 2026 progressive brackets to ฿${ltrExample.taxable.toLocaleString('en-US')}. It leaves out foreign tax credits: if the salary was also taxed abroad and that country has a tax treaty with Thailand, the Thai tax may be lower.
 
-### Application Process:
-1. Apply through BOI website (ltr.boi.go.th)
-2. Pay application fee (50,000 THB)
-3. Processing time: typically 20 working days
-4. Visa valid for 10 years (renewable)
+**Try your own numbers:** the [foreign income calculator](/foreign-income-tax-calculator/) asks about your visa, flags LTR status, and shows what the tax would be if the exemption did not apply.
 
-## Important Compliance Notes
+## LTR Visa Requirements (Summary)
 
-To maintain LTR tax benefits:
-- Must hold valid LTR visa throughout the tax year
-- Must comply with BOI reporting requirements
-- Benefits apply only while meeting category qualifications
-- Must file Thai tax returns (even if tax-exempt income)
+From the official BOI LTR site, checked 24 November 2026. BOI can change these, so confirm on [ltr.boi.go.th](https://ltr.boi.go.th/) before you apply.
 
-## LTR vs. Tax Treaties (DTAs)
+| Category | Main requirements (BOI) |
+|---|---|
+| Wealthy Global Citizen | At least USD 1 million in assets, including at least USD 500,000 invested in Thai government bonds, Thai companies or Thai property, made before you apply |
+| Wealthy Pensioner | Age 50+; passive income (pension, rent, dividends, interest, realised gains) of at least USD 80,000 a year. Between USD 40,000 and 80,000 a year, an extra USD 250,000 investment in Thailand. Salary does not count |
+| Work-from-Thailand Professional | Average personal income of at least USD 80,000 a year over the past two years (USD 40,000-80,000 with a master's degree or higher in some cases); employer is a listed company, or a private company with 3+ years of operation and USD 50 million combined revenue in the last 3 years, or a subsidiary of either |
+| Highly-Skilled Professional | Work for a business, university, research centre or government agency in a targeted industry; the same USD 80,000 (or USD 40,000 + master's) income test, with exceptions for Thai government agency employees |
 
-Some expats wonder whether tax treaties provide similar benefits to the LTR visa. Here's the key difference:
+All categories also need health insurance of at least USD 50,000, Thai social security, or USD 100,000 held in a bank account for at least 12 months. BOI says every condition must be kept up for the life of the visa.
 
-- **Tax Treaties:** Prevent double taxation by allowing credits, but don't eliminate Thai tax
-- **LTR Visa:** Actually exempts foreign income from Thai tax entirely (for qualifying categories)
+**Fee and length:** BOI lists a processing fee of 50,000 THB per person when paid in Thailand. The visa is issued for 10 years, but the first permission to stay is up to 5 years, extended for another 5 if you still qualify.
 
-## Who Should Consider LTR?
+## LTR vs. Tax Treaties
 
-The LTR visa is particularly valuable for:
-- Digital nomads and remote workers with substantial income
-- Retirees with significant overseas pensions or investments
-- Wealthy individuals planning to move assets to Thailand
-- Skilled professionals offered positions in BOI-promoted industries
+- **A tax treaty (DTA)** usually lets you credit foreign tax against Thai tax on the same income. The income stays assessable in Thailand.
+- **The LTR exemption** removes Thai tax on qualifying foreign income brought in, whether or not it was taxed abroad.
+
+For how treaty credits work, see [Thai Double Tax Treaties](/articles/double-tax-agreements-thailand).
+
+## What About Other Visas?
+
+Royal Decree 743 is written for LTR holders only. Thailand Privilege (Elite), retirement, marriage and DTV visas carry no foreign-income exemption in the sources this site has checked. Their holders follow the normal [residency](/articles/understanding-thai-tax-residency) and [remittance](/articles/transferring-money-to-thailand-tax-rules) rules. See [DTV Visa and Thai Tax](/articles/dtv-visa-thailand-tax-guide) for a side-by-side comparison.
 
 ## Key Takeaways
 
-1. **Three LTR categories offer complete foreign income tax exemption** - a unique benefit not available with any other Thai visa
-2. **LTR Highly Skilled offers 17% flat rate** on Thai employment income - significant savings for high earners
-3. **Post-2024 rules make LTR more valuable** - standard visa holders now face tax on all remitted foreign income
-4. **Thailand Privilege/Elite visas don't offer tax benefits** - only LTR provides preferential tax treatment
-5. **Proper compliance is essential** - maintain eligibility to keep your tax benefits
-
-## Resources
-
-- BOI LTR Visa Portal: ltr.boi.go.th
-- Thai Revenue Department: rd.go.th
-- Use our tax calculator to compare scenarios with and without LTR benefits
+1. **Three LTR categories are exempt on foreign income brought into Thailand**: Wealthy Global Citizen, Wealthy Pensioner and Work-from-Thailand Professional.
+2. **Highly-Skilled Professionals get a 17% flat rate on Thai salary instead**, not the foreign-income exemption.
+3. **You must keep qualifying and still file a return** declaring the exempt income.
+4. **The 2024 rule makes the exemption worth more**, because ordinary residents are now taxed on foreign income earned since 2024 whenever they bring it in.
+5. **How the exemption treats several years of income brought in at once is not settled** in the sources checked here. Get advice before large transfers.
     `,
     publishedAt: '2026-02-17',
-    readTime: 10,
+    updatedAt: '2026-11-24',
+    readTime: 9,
     category: 'International',
+    calculatorCta: REMITTANCE_CALCULATOR_CTA,
     sources: [
-      { label: 'BOI — Long-Term Resident (LTR) Visa Portal', url: 'https://ltr.boi.go.th/' },
-      { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Royal Decree No. 743 B.E. 2565 — LTR Visa Tax Provisions (English, hosted by BOI)', url: 'https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf' },
+      { label: 'BOI — Long-Term Resident (LTR) Visa: types and qualifications', url: 'https://ltr.boi.go.th/' },
+      { label: 'BOI — LTR visa issuance information (fee, permission to stay)', url: 'https://ltr.boi.go.th/page/visa-issuance-info.html' },
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
     ]
   },
   {
@@ -2661,7 +2688,12 @@ For many years, Thailand operated on a convenient remittance principle: foreign 
 
 **That loophole closed on 1 January 2024.**
 
-Under Revenue Department Circular P.161/2566, Thai tax residents are now taxed on all foreign income remitted to Thailand, regardless of when that income was originally earned. Income earned in 2020 and transferred to Thailand in 2025 is now assessable income for 2025.
+Under Revenue Department Order Por. 161/2566, foreign income that a Thai tax resident earned on or after 1 January 2024 is assessable when it is brought into Thailand, in that year or any later year. Two limits keep this narrower than it is often described:
+
+- **Income earned before 1 January 2024 is not caught.** Order Por. 162/2566 keeps the old rule for it, so salary earned in 2020 and transferred in 2025 is not assessable under the new rule.
+- **Residency is tested in the year the income was earned.** The Revenue Department's Q&A on the rule says income from a year you were not a Thai tax resident is not caught, even if you are resident when you bring it in.
+
+To check your own transfers one by one, use the [foreign income calculator](/foreign-income-tax-calculator/).
 
 This change affects every Thai tax resident who receives money from abroad.
 
@@ -2684,7 +2716,7 @@ A remittance is any movement of money from a foreign source into Thailand for yo
 Not everything transferred to Thailand is income. The following are generally not assessable:
 
 - **Capital accumulated before you became a Thai tax resident** — savings you held before your Thai residency began are capital, not income
-- **Pre-2024 savings** — income earned and saved before 1 January 2024 may not be assessable under the new rule (this remains a grey area; keep documentation)
+- **Income earned before 1 January 2024**: under Order Por. 162/2566 the new rule does not apply to it. Keep documents showing when it was earned
 - **Gifts from non-residents** — money given to you by a person who is not a Thai tax resident is not assessable income in your hands
 - **Loans** — borrowed money is not income
 - **Inheritance** — money inherited is not assessable personal income
@@ -2760,8 +2792,12 @@ There is no formal registration process for declaring capital transfers. The doc
     `,
     publishedAt: '2026-03-05',
     readTime: 7,
+    updatedAt: '2026-11-24',
+    calculatorCta: REMITTANCE_CALCULATOR_CTA,
     category: 'International',
     sources: [
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
+      { label: 'Thai Revenue Department — Q&A on foreign income under Section 41 paragraph 2 (Thai)', url: 'https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf' },
       { label: 'Revenue Department Circular P.161/2566', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
     ],
@@ -3083,13 +3119,13 @@ If you hold a Soft Power DTV and are primarily participating in cultural activit
 2. **Your residency status** — Have you crossed 180 days in the calendar year?
 
 ### If you earn no income while in Thailand
-If you are funded by savings, a partner's income, or other passive sources and have no active income, your Thai tax obligation is minimal or nil. You would not typically need to file a Thai tax return unless you have taxable Thai-sourced income (e.g. interest from a Thai bank account above a small threshold).
+If you live on savings you built up before you became a Thai tax resident, or on a partner's money, and earn nothing yourself, your Thai tax obligation is usually minimal or nil: under the Revenue Department's Q&A on foreign income, savings (principal) are not assessable income. Passive income is different. Foreign dividends, interest or rent that you earn while resident and bring into Thailand are income, not savings. You would not typically need to file a Thai tax return unless you have taxable Thai-sourced income (e.g. interest from a Thai bank account above a small threshold).
 
 ### If you earn income and become tax resident
 Once you cross 180 days and become a Thai tax resident, you are liable for tax on:
 
 - **Thai-sourced income** (any income generated from work or services performed in Thailand)
-- **Foreign income remitted to Thailand** (from January 2024, all foreign income you bring into Thailand is taxable regardless of when it was earned)
+- **Foreign income brought into Thailand**, if it was earned on or after 1 January 2024 in a year you were a Thai tax resident (see "The 2024 Foreign Income Rule Change" below)
 
 ### A grey area: working while on Soft Power DTV
 The Soft Power DTV does not include a work permit. Performing work services for Thai or foreign clients while on this visa is technically not authorised. However, **tax obligations exist independently of work permit status** — if you earn income and remit it to Thailand, it is assessable income under Thai law regardless of your visa category.
@@ -3112,11 +3148,17 @@ The Digital Nomad DTV has a specific profile in mind: a person working remotely 
 
 ### The 2024 Foreign Income Rule Change
 
-Prior to 2024, the rule was that foreign income was only taxable if remitted to Thailand in the *same year* it was earned. This created a planning opportunity: you could keep savings offshore and bring them in the following year tax-free.
+Before 2024, foreign income was only taxable if a Thai tax resident brought it into Thailand in the *same year* it was earned. Money earned one year and transferred the next escaped Thai tax.
 
-**From 1 January 2024, this exemption was removed.** All foreign income remitted to Thailand is now assessable income for Thai tax residents, regardless of when it was earned.
+Revenue Department Order **Por. 161/2566** changed this from 1 January 2024. Three details matter for DTV holders, and many guides get them wrong:
 
-This change significantly affects long-stay Digital Nomad DTV holders who become Thai tax residents.
+1. **Income earned before 1 January 2024 keeps the old rule.** A follow-up order, **Por. 162/2566**, says income that arose before 2024 is not caught, even if you bring it in now. Keep records that show when the money was earned.
+2. **Residency is tested in the year the income was earned.** The Revenue Department's Q&A on the rule says what matters is whether you were resident in the year the income arose, not the year you transfer it. Income from a year you spent under 180 days in Thailand is not caught, even if you are resident when you bring it in.
+3. **Only income is taxed, not savings.** The same Q&A says principal (savings) is not assessable income. If a transfer mixes savings and income, you work out the income part yourself, because the rules give no ordering formula.
+
+So for a Digital Nomad DTV holder, the question is not "did I bring money in?" but "did I bring in income that I earned in 2024 or later, in a year I was a Thai tax resident?"
+
+**Work it out per transfer:** the [foreign income calculator](/foreign-income-tax-calculator/) asks these three questions for each transfer you list, then estimates the Thai tax.
 
 ## What Counts as "Remittance"?
 
@@ -3127,10 +3169,22 @@ For tax residents, understanding what constitutes a taxable remittance matters:
 | Bank transfer from foreign account to Thai bank account | Yes |
 | ATM withdrawal in Thailand using a foreign debit card | Yes |
 | Receiving salary into a Thai bank account | Yes |
-| Foreign credit card purchases made in Thailand | Generally yes (Revenue Department guidance treats this as remittance) |
+| Foreign credit card purchases made in Thailand | Unclear: not settled in the official sources this site has checked. Ask an adviser if you spend large amounts this way |
 | Paying for Thai accommodation directly from overseas | Generally no — payment did not enter Thailand |
 
-The safer assumption is that **money you use or access in Thailand from foreign sources counts as remittance**.
+The safer assumption is that **money you use or access in Thailand from foreign sources counts as remittance**. Whether that remittance is *taxable* then depends on the three tests above: when the money was earned, whether you were resident that year, and whether it is income or savings.
+
+### Example: a DTV holder's first resident year
+
+Alex arrives on a Digital Nomad DTV in mid-2025 and spends 120 days in Thailand that year. In 2026 Alex stays 200 days and transfers money from a foreign account three times:
+
+| Transfer in 2026 | Where the money came from | Caught by the 2024 rule? |
+|---|---|---|
+| Transfer 1 | Salary earned in 2023 | No: earned before 1 January 2024 (Por. 162/2566) |
+| Transfer 2 | Salary earned in 2025 | No: Alex was not resident in 2025 (under 180 days) |
+| Transfer 3 | Salary earned in 2026 | Yes: earned in 2024 or later, in a year Alex is resident |
+
+Only the third transfer is assessable income for 2026, and Alex would add it to any Thai-sourced income on the 2026 return. A foreign tax credit may reduce the Thai tax if the income was taxed in a country that has a tax treaty with Thailand. [Enter transfers like these in the calculator](/foreign-income-tax-calculator/) to see the estimate.
 
 ## Do DTV Holders Have to File a Tax Return?
 
@@ -3170,19 +3224,21 @@ For most DTV holders with modest foreign income and careful day counting, enforc
 
 ## Does the DTV Offer Any Tax Exemptions?
 
-**No.** The DTV provides no preferential tax treatment. It is not equivalent to the [LTR visa](/articles/ltr-visa-tax-benefits), which explicitly exempts qualifying holders from Thai tax on foreign income.
+**No.** No tax rule this site has found gives DTV holders special treatment. The [LTR visa](/articles/ltr-visa-tax-benefits) is different: Royal Decree No. 743 exempts foreign income brought into Thailand for three LTR categories, subject to conditions.
 
-If you want a visa that comes with a built-in tax benefit for foreign income, the LTR Work-from-Thailand category is worth investigating — though it has significantly higher income and asset requirements.
+If you want a visa with a built-in tax benefit for foreign income, the LTR Work-from-Thailand Professional category is worth a look. Its entry requirements are much higher.
 
 ## Comparison: DTV vs. LTR Tax Treatment
 
-| Feature | DTV (Both Types) | LTR Work-from-Thailand |
+| Feature | DTV (Both Types) | LTR Work-from-Thailand Professional |
 |---|---|---|
-| Foreign income tax exemption | No | Yes (full exemption) |
-| Needs work permit for remote work | Not included | Included |
-| Tax residency trigger | 180 days | 180 days (but moot — foreign income exempt) |
-| Eligibility | Broad | USD 80,000+ income, 2-year history |
-| Cost | ~10,000 THB | ~50,000 THB application fee |
+| Foreign income brought into Thailand | Taxable under the 2024 rule if you are resident | Exempt under Royal Decree No. 743, if you keep meeting the LTR conditions and file a return declaring the income |
+| Tax residency test | 180 days in a calendar year | 180 days in a calendar year (the exemption applies on top of it) |
+| Income requirement | See the DTV rules | Average personal income of USD 80,000 a year over the past two years (USD 40,000 with a master's degree or higher in some cases), per BOI |
+| Employer requirement | Overseas employer or clients (Digital Nomad DTV) | A listed company, or a private company with at least 3 years of operation and USD 50 million combined revenue over 3 years, or a subsidiary of either, per BOI |
+| Visa fee | See the DTV rules | 50,000 THB per person when paid in Thailand (BOI) |
+
+LTR figures are taken from the BOI LTR site, checked 24 November 2026. BOI can change them, so confirm on [ltr.boi.go.th](https://ltr.boi.go.th/) before applying.
 
 ## Practical Guidance for DTV Holders
 
@@ -3213,13 +3269,18 @@ If you earn significant foreign income, have income from multiple countries, or 
 The DTV is an excellent long-stay option for many people — but it is not a tax shelter. Manage your day count and remittances carefully, and you can often minimise or eliminate Thai tax obligations legally. Cross 180 days without planning, and your tax position changes materially.
     `,
     publishedAt: '2026-04-15',
-    readTime: 12,
+    updatedAt: '2026-11-24',
+    readTime: 13,
+    calculatorCta: REMITTANCE_CALCULATOR_CTA,
     category: 'International',
     sources: [
       { label: 'Thai Revenue Department — Personal Income Tax', url: 'https://www.rd.go.th/english/6045.html' },
       { label: 'Thai Revenue Department — Tax Residency Rules', url: 'https://www.rd.go.th/english/index-eng.html' },
       { label: 'Ministry of Foreign Affairs — Destination Thailand Visa', url: 'https://www.mfa.go.th/en/page/destination-thailand-visa' },
-      { label: 'Thai Revenue Department — 2024 Foreign Income Rule (Departmental Instruction Paw 161/2566)', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
+      { label: 'Thai Revenue Department — Q&A on foreign income under Section 41 paragraph 2 (Thai)', url: 'https://www.rd.go.th/fileadmin/user_upload/porphor/PIT_Sec41_Paragraph2_QnA.pdf' },
+      { label: 'Royal Decree No. 743 B.E. 2565 — LTR Visa Tax Provisions', url: 'https://ltr.boi.go.th/documents/Royal%20Decree%20issued%20under%20the%20Revenue%20Code%20No.743%20(EN).pdf' },
+      { label: 'BOI — Long-Term Resident (LTR) Visa', url: 'https://ltr.boi.go.th/' },
     ]
   },
   {
