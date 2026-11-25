@@ -52,6 +52,12 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
     setFormData({ ...formData, children: newChildren });
   };
 
+  const handleChildAdoptedChange = (index: number, isAdopted: boolean) => {
+    const newChildren = [...formData.children];
+    newChildren[index] = { ...newChildren[index], isAdopted };
+    setFormData({ ...formData, children: newChildren });
+  };
+
   const handleParentsChange = (delta: number) => {
     const newValue = Math.max(0, Math.min(MONTHLY_TAX_CONSTANTS.MAX_PARENTS, formData.numberOfParents + delta));
     setFormData({ ...formData, numberOfParents: newValue });
@@ -80,6 +86,7 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
             <ul className="space-y-1 text-ink-soft">
               <li>• Under 20 years old, OR under 25 and studying, OR legally incompetent</li>
               <li>• Earning less than ฿30,000 per year</li>
+              <li>• Adopted children count only while you claim 3 children or fewer in total, and don't get the extra ฿30,000 for a 2nd+ child born 2018 or later</li>
             </ul>
           </div>
 
@@ -139,6 +146,7 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                 const showStudentOption = isStudentAgeRange(child.birthYear);
                 const allowance = childAllowances[index]?.total ?? 0;
                 const hasBonus = (childAllowances[index]?.bonus ?? 0) > 0;
+                const notCounted = childAllowances[index]?.counted === false;
 
                 return (
                   <div key={index} className="bg-paper-white border border-paper-rule p-3 mb-3">
@@ -148,6 +156,9 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                         ฿{allowance.toLocaleString()}
                         {hasBonus && (
                           <span className="text-xs text-ink-soft ml-1">(+฿30k bonus)</span>
+                        )}
+                        {notCounted && (
+                          <span className="text-xs text-ink-soft ml-1">(not counted: adopted-child limit)</span>
                         )}
                       </span>
                     </div>
@@ -163,6 +174,14 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
                       />
                       <span className="text-sm text-ink-mute">Age: {age}</span>
                     </div>
+                    <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={child.isAdopted || false}
+                        onChange={(e) => handleChildAdoptedChange(index, e.target.checked)}
+                      />
+                      <span className="text-sm text-ink-soft">Adopted</span>
+                    </label>
                     {showStudentOption && (
                       <label className="flex items-center gap-2 mt-2 cursor-pointer">
                         <input

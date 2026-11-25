@@ -81,6 +81,90 @@
       "verified": true,
       "verification_notes": "The app's current list matches both independent secondary sources exactly.",
       "used_in": "src/config/taxConfig.ts:61-66 (PND94_QUALIFYING_INCOME_TYPES)"
+    },
+    {
+      "id": "pnd94-half-year-allowances",
+      "rule": "PND94: allowances are claimed at half the annual amount",
+      "value": 0.5,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "Personal 30,000; spouse with no income 30,000; 15,000 per child; 15,000 per parent. Deductions that depend on payments (insurance, funds, social security, donations) are the amounts actually paid in Jan–Jun; the app does not collect those, so the estimate leaves them out (higher, more cautious figure). The 65+ income exemption (up to 190,000) is applied in full, to the 40(5)-(8) income with the lowest flat-rate deduction first, since the taxpayer may choose the category.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, B. items 1-4 and the 'Assessable Income' note on the 190,000 exemption. OPEN: the guide's text for the 2018+ child bonus reads 'an additional 30,000 baht per child', which is the full annual bonus rather than half. The app uses half (15,000) for consistency with every other half-year amount; this gives a slightly higher provisional tax if the guide's figure is right. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/obligationChecks.ts (calculatePND94Estimate)"
+    },
+    {
+      "id": "pnd94-gross-income-tax-rate",
+      "rule": "PND94: minimum tax on gross 40(5)-(8) income",
+      "value": 0.005,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "When Jan–Jun 40(5)-(8) assessable income reaches the threshold, tax payable is the greater of the net-income tax and 0.5% of that gross income (before expenses and allowances). Half-year tax is computed on half-year net income at the ordinary full-year progressive rates.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, C. items 8-9: 'Assessable gross income x 0.005 = tax liability'; 'your tax payable is the greater of C. item 8. or C. item 9.'; C. item 8 uses the ordinary rate table. The PND90 2024 guide additionally says the gross-income tax is ignored when it is under 5,000 baht; the PND94 guide text read does not say this, so the app does not apply the 5,000 floor to PND94 (more cautious). The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/obligationChecks.ts (calculatePND94Estimate)"
+    },
+    {
+      "id": "pnd94-gross-income-tax-threshold",
+      "rule": "PND94: income level at which the 0.5% minimum tax applies",
+      "value": 120000,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "Jan–Jun 40(5)-(8) assessable income of 120,000 baht or more. The guide uses both 'more than 120,000' and '120,000 baht or above'; the app uses 'or above' (more cautious).",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, C. item 9. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/obligationChecks.ts (calculatePND94Estimate)"
+    },
+    {
+      "id": "gross-income-tax-rate",
+      "rule": "Annual minimum ('gross-income') tax rate on non-employment income",
+      "value": 0.005,
+      "tax_year": "2024 (RD guide)",
+      "conditions": "If assessable income OTHER THAN Section 40(1) employment income is 120,000 THB or more in the tax year, tax payable is the greater of (a) the ordinary net-income tax and (b) 0.5% of that gross non-employment income before expenses and allowances — but (b) is ignored when it is under 5,000 THB. The base counts 40(2) (fees, meeting allowances, commissions), 40(3), 40(4) income included in the return (interest, dividends from Thai and foreign companies, mutual-fund profit shares), 40(5)-(8). App modelling: freelancer calculator — every Thai income entry except salary_40_1 (including 'other' and dividend entries); company-owner calculator — director fees (40(2)) plus PIT-included dividends; the 65+ exemption (up to 190,000) is taken off the base first. NOT in the base: remitted foreign income, because the app does not know its Section 40 category (this can understate the minimum for large foreign non-employment income).",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return 2024 (PND90), No. 11 items 8-10",
+        "url": "https://rd.go.th/fileadmin/download/english_form/2024/GUIDE_90_67_Complete.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Verbatim: 'If you have assessable income other than employment income (Section 40(1)) more than 120,000 baht in the tax year ... Assessable Gross Income x 0.005 = Tax Liability'; 'your tax payable is the greater of No. 11 item 8. or No. 11 item 9.'; 'If the result is less than 5,000 baht, your tax payable is the amount in No. 11 item 8.' Read from the RD-hosted PDF; text extracted locally on 2026-11-25 because the web fetcher could not read it.",
+      "used_in": "src/utils/taxCalculations.ts (calculateMinimumTax)"
+    },
+    {
+      "id": "gross-income-tax-threshold",
+      "rule": "Annual minimum tax applies when non-employment income is at least this amount",
+      "value": 120000,
+      "tax_year": "2024 (RD guide)",
+      "conditions": "The guide says both 'more than 120,000' and '120,000 baht or above' / 'at least 120,000'; the app uses 'at least'. In practice the 5,000 THB floor (gross-income-tax-minimum-amount) means the rule only bites from 1,000,000 THB of non-employment income.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return 2024 (PND90), No. 11 items 8-10",
+        "url": "https://rd.go.th/fileadmin/download/english_form/2024/GUIDE_90_67_Complete.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Read from the RD-hosted PDF; text extracted locally on 2026-11-25 because the web fetcher could not read it.",
+      "used_in": "src/utils/taxCalculations.ts (calculateMinimumTax)"
+    },
+    {
+      "id": "gross-income-tax-minimum-amount",
+      "rule": "Annual minimum tax is ignored when 0.5% of the base is below this amount",
+      "value": 5000,
+      "tax_year": "2024 (RD guide)",
+      "conditions": "'If the result is less than 5,000 baht, your tax payable is the amount in No. 11 item 8.'",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return 2024 (PND90), No. 11 items 8-10",
+        "url": "https://rd.go.th/fileadmin/download/english_form/2024/GUIDE_90_67_Complete.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Read from the RD-hosted PDF; text extracted locally on 2026-11-25 because the web fetcher could not read it.",
+      "used_in": "src/utils/taxCalculations.ts (calculateMinimumTax)"
     }
   ]
 }

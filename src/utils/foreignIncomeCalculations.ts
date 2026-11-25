@@ -190,6 +190,40 @@ export function isForeignIncomeTaxable(
     };
   }
 
+  // Residency is tested in the year the income was EARNED (RD Q&A Q1/Q5;
+  // tax-data/2026/foreign-income.json#residency-tested-in-year-earned). For this
+  // year, isThaiResident (days entered) already decided it above. For an earlier
+  // year we use the per-entry answer; a missing answer counts as 'unsure'.
+  // Added 2026-11-25: before that, this year's residency was used for every entry.
+  const earnedYear = earnedDate.getUTCFullYear();
+  if (earnedYear !== RULES_TAX_YEAR) {
+    const answer = entry.residentInYearEarned ?? 'unsure';
+    if (answer === 'no') {
+      return {
+        entry,
+        isTaxable: false,
+        reason: `Earned in ${earnedYear}, a year you were in Thailand fewer than ${TAX_THRESHOLDS.THAI_RESIDENCY_DAYS} days - not taxable when brought in`,
+        taxableAmount: 0,
+        foreignTaxCredit: 0,
+        hasDTA: dtaResult.hasDTA,
+        dtaCreditAllowed: dtaResult.creditAllowed,
+        dtaCreditDisallowed: 0,
+      };
+    }
+    if (answer === 'unsure') {
+      return {
+        entry,
+        isTaxable: true,
+        reason: `Counted as taxable to be cautious: not sure whether you were in Thailand ${TAX_THRESHOLDS.THAI_RESIDENCY_DAYS}+ days in ${earnedYear}, the year it was earned`,
+        taxableAmount: entry.amountThb,
+        foreignTaxCredit: dtaResult.credit,
+        hasDTA: dtaResult.hasDTA,
+        dtaCreditAllowed: dtaResult.creditAllowed,
+        dtaCreditDisallowed: dtaResult.creditDisallowed,
+      };
+    }
+  }
+
   // All conditions met - income is taxable
   return {
     entry,

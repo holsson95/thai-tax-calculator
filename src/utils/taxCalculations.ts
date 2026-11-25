@@ -35,33 +35,51 @@ export interface ChildAllowanceLine {
   base: number;
   bonus: number;
   total: number;
+  /** False for an adopted child left out by the 3-children limit. */
+  counted: boolean;
 }
 
 /**
  * Child allowance for each child, returned in the order the children were
- * entered (so UI rows line up), but decided by CHRONOLOGICAL BIRTH ORDER:
- * - Base: 30,000 THB per child
- * - Bonus: another 30,000 THB for the 2nd and later child (by birth order)
- *   born in or after 2018
- * Source: tax-data/2026/allowances.json#child-allowance-bonus ("by chronological
- * birth order"). Before 2026-11-25 the app used entry order, so the same family
- * could get 60,000 or 90,000 depending on which child was typed first.
- * Children with the same birth year keep their entry order (birth order within a
- * year is not collected; with the 2018 rule it cannot change the total).
+ * entered (so UI rows line up), but decided by CHRONOLOGICAL BIRTH ORDER.
+ *
+ * - Base: 30,000 THB per child.
+ * - Bonus: another 30,000 THB for the 2nd and later LEGITIMATE child (by birth
+ *   order) born in or after 2018. Adopted children never get the bonus.
+ * - Adopted children: legitimate children are counted first; adopted children
+ *   are then counted only while the total stays at or below 3
+ *   (TAX_RULES.maxChildrenIncludingAdopted). With 3+ legitimate children, no
+ *   adopted child is counted.
+ *
+ * Sources: tax-data/2026/allowances.json#child-allowance-bonus,
+ * #child-allowance-adopted-limit (RD PND94 guide, B. item 3).
+ * App interpretation (recorded there): the bonus rank counts legitimate
+ * children only. History: entry order was used until 2026-11-25; adopted
+ * children were not distinguished until 2026-11-25.
  */
 export function getChildAllowanceBreakdown(children: TaxFormData['children']): ChildAllowanceLine[] {
-  const birthRank = children
-    .map((child, index) => ({ index, birthYear: child.birthYear }))
+  const byBirth = children
+    .map((child, index) => ({ index, birthYear: child.birthYear, adopted: !!child.isAdopted }))
     .sort((a, b) => a.birthYear - b.birthYear || a.index - b.index);
-  const rankOf = new Map(birthRank.map((c, rank) => [c.index, rank]));
+  const legitimate = byBirth.filter(c => !c.adopted);
+  const adopted = byBirth.filter(c => c.adopted);
+
+  const legitimateRank = new Map(legitimate.map((c, rank) => [c.index, rank]));
+  const adoptedSlots = Math.max(0, TAX_RULES.maxChildrenIncludingAdopted.value - legitimate.length);
+  const countedAdopted = new Set(adopted.slice(0, adoptedSlots).map(c => c.index));
 
   return children.map((child, index) => {
+    if (child.isAdopted) {
+      const counted = countedAdopted.has(index);
+      const base = counted ? TAX_CONSTANTS.CHILD_ALLOWANCE_BASE : 0;
+      return { base, bonus: 0, total: base, counted };
+    }
     const base = TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-    const isSecondOrLater = (rankOf.get(index) ?? 0) >= 1;
+    const isSecondOrLater = (legitimateRank.get(index) ?? 0) >= 1;
     const bonus = isSecondOrLater && child.birthYear >= TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR
       ? TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS
       : 0;
-    return { base, bonus, total: base + bonus };
+    return { base, bonus, total: base + bonus, counted: true };
   });
 }
 
@@ -126,6 +144,16 @@ export type DeductionBreakdown = Pick<
   'socialSecurity' | 'lifeInsurance' | 'healthInsurance' | 'pensionFund' | 'providentFund' | 'rmf' | 'ssf' | 'donations'
 >;
 
+/**
+ * Incomes that some deduction limits are a percentage of.
+ * - assessableIncome: total assessable income (RMF 30%, SSF 30%)
+ * - wages: Section 40(1) employment pay (provident fund 15%)
+ */
+export interface IncomeBasis {
+  assessableIncome: number;
+  wages: number;
+}
+
 /** A ticked amount, floored at zero (blank/NaN/negative inputs give nothing). */
 const claimed = (ticked: boolean, amount: number): number =>
   ticked && Number.isFinite(amount) && amount > 0 ? amount : 0;
@@ -134,7 +162,11 @@ const claimed = (ticked: boolean, amount: number): number =>
  * Social security, insurance, retirement-fund and donation deductions, with every cap applied.
  * Shared by the salaried, company-owner, freelancer and monthly calculators so they cannot drift.
  *
- * 1. Each item is capped individually (TAX_CONSTANTS).
+ * 1. Each item is capped individually (TAX_CONSTANTS) and, since 2026-11-25, by its
+ *    share-of-income limit: provident fund 15% of wages, RMF 30% and SSF 30% of
+ *    assessable income (tax-data/2026/deductions.json: provident-fund-wage-percent,
+ *    rmf-income-percent, ssf-income-percent). The 'pension fund' field is the
+ *    Government Pension Fund (max-pension-fund, 500,000, no share-of-income limit).
  * 2. Pension + provident fund + RMF + SSF together are capped at 500,000
  *    (tax-data/2026/deductions.json#combined-retirement-cap; enforced from 2026-11-25).
  *    When the combined cap binds, the funds are filled in form order (pension,
@@ -146,14 +178,25 @@ const claimed = (ticked: boolean, amount: number): number =>
  *    ignored the deductions in steps 1–2).
  *
  * @param incomeAfterAllowances income after the expense deduction and allowances
+ * @param basis incomes that the share-of-income limits apply to
  */
 export function calculateDeductionBreakdown(
   formData: DeductionInputs,
-  incomeAfterAllowances: number
+  incomeAfterAllowances: number,
+  basis: IncomeBasis
 ): DeductionBreakdown {
+  const assessable = Number.isFinite(basis.assessableIncome) ? Math.max(0, basis.assessableIncome) : 0;
+  const wages = Number.isFinite(basis.wages) ? Math.max(0, basis.wages) : 0;
+
   const socialSecurity = Math.min(claimed(formData.includeSocialSecurity, formData.socialSecurityContribution), TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
   const lifeInsurance = Math.min(claimed(formData.hasLifeInsurance, formData.lifeInsurance), TAX_CONSTANTS.MAX_LIFE_INSURANCE);
-  const healthInsurance = Math.min(claimed(formData.hasHealthInsurance, formData.healthInsurance), TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
+  // Life and health insurance together are capped at 100,000 (tax-data/2026/deductions.json:
+  // life-health-combined-cap; enforced since 2026-11-25). Health fills whatever room life leaves.
+  const healthInsurance = Math.min(
+    claimed(formData.hasHealthInsurance, formData.healthInsurance),
+    TAX_CONSTANTS.MAX_HEALTH_INSURANCE,
+    Math.max(0, TAX_RULES.maxLifeAndHealthInsuranceCombined.value - lifeInsurance)
+  );
 
   let retirementRoom = TAX_RULES.combinedRetirementCap.value;
   const takeRetirement = (amount: number, individualCap: number): number => {
@@ -161,10 +204,20 @@ export function calculateDeductionBreakdown(
     retirementRoom -= allowed;
     return allowed;
   };
+  // Government Pension Fund: its own 500,000 cap, no share-of-income limit.
   const pensionFund = takeRetirement(claimed(formData.hasPensionFund, formData.pensionFund), TAX_CONSTANTS.MAX_PENSION_FUND);
-  const providentFund = takeRetirement(claimed(formData.hasProvidentFund, formData.providentFund), TAX_CONSTANTS.MAX_PROVIDENT_FUND);
-  const rmf = takeRetirement(claimed(formData.hasRMF, formData.rmf), TAX_CONSTANTS.MAX_RMF);
-  const ssf = takeRetirement(claimed(formData.hasSSF, formData.ssf), TAX_CONSTANTS.MAX_SSF);
+  const providentFund = takeRetirement(
+    claimed(formData.hasProvidentFund, formData.providentFund),
+    Math.min(TAX_CONSTANTS.MAX_PROVIDENT_FUND, wages * TAX_RULES.providentFundWagePercent.value)
+  );
+  const rmf = takeRetirement(
+    claimed(formData.hasRMF, formData.rmf),
+    Math.min(TAX_CONSTANTS.MAX_RMF, assessable * TAX_RULES.rmfIncomePercent.value)
+  );
+  const ssf = takeRetirement(
+    claimed(formData.hasSSF, formData.ssf),
+    Math.min(TAX_CONSTANTS.MAX_SSF, assessable * TAX_RULES.ssfIncomePercent.value)
+  );
 
   const incomeBeforeDonations = Math.max(
     0,
@@ -186,8 +239,14 @@ export function sumDeductions(d: DeductionBreakdown): number {
 /**
  * Full breakdown (expense deduction, allowances and deductions) with capped values.
  * @param incomeAfterAllowances income after the expense deduction and allowances
+ * @param basis incomes for the share-of-income limits; defaults to the salary
+ *   (annualIncome) as both assessable income and wages
  */
-export function calculateDeductions(formData: TaxFormData, incomeAfterAllowances: number): TaxBreakdown {
+export function calculateDeductions(
+  formData: TaxFormData,
+  incomeAfterAllowances: number,
+  basis: IncomeBasis = { assessableIncome: formData.annualIncome, wages: formData.annualIncome }
+): TaxBreakdown {
   return {
     // Standard expense deduction (50% of income, max 100,000)
     standardDeduction: calculateStandardDeduction(formData.annualIncome),
@@ -198,7 +257,7 @@ export function calculateDeductions(formData: TaxFormData, incomeAfterAllowances
     childAllowance: calculateChildAllowance(formData.children),
     parentAllowance: Math.min(formData.numberOfParents, TAX_CONSTANTS.MAX_PARENTS) * TAX_CONSTANTS.PARENT_ALLOWANCE,
 
-    ...calculateDeductionBreakdown(formData, incomeAfterAllowances),
+    ...calculateDeductionBreakdown(formData, incomeAfterAllowances, basis),
   };
 }
 
@@ -258,6 +317,33 @@ export function calculateAnnualTax(formData: TaxFormData): TaxCalculationResult 
   };
 }
 
+export interface MinimumTaxResult {
+  /** Non-employment income the 0.5% is charged on (after the 65+ exemption). */
+  base: number;
+  /** 0.5% of the base when the rule applies, otherwise 0. */
+  minimumTax: number;
+}
+
+/**
+ * Annual minimum ("gross-income") tax, RD Guide to PND90 2024, No. 11 items 8-10
+ * (tax-data/2026/income-tax-brackets.json: gross-income-tax-*):
+ * when non-employment assessable income is 120,000 or more, tax payable is the
+ * greater of the ordinary tax and 0.5% of that income before expenses and
+ * allowances, unless the 0.5% figure is under 5,000.
+ *
+ * @param nonEmploymentIncome gross assessable income other than Section 40(1)
+ * @param isAge65OrOlder the 65+ income exemption (up to 190,000) is taken off the
+ *   base first; the taxpayer may choose which income it applies to, and this
+ *   choice gives the lowest minimum tax
+ */
+export function calculateMinimumTax(nonEmploymentIncome: number, isAge65OrOlder: boolean): MinimumTaxResult {
+  const gross = Number.isFinite(nonEmploymentIncome) ? Math.max(0, nonEmploymentIncome) : 0;
+  const base = Math.max(0, gross - (isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0));
+  if (base < TAX_RULES.grossIncomeTaxThreshold.value) return { base, minimumTax: 0 };
+  const tax = base * TAX_RULES.grossIncomeTaxRate.value;
+  return { base, minimumTax: tax >= TAX_RULES.grossIncomeTaxMinimumAmount.value ? tax : 0 };
+}
+
 /**
  * Calculate complete annual tax for company owners
  * Employment income (salary + director fees + benefits) gets the 50% standard deduction capped at 100,000.
@@ -291,7 +377,11 @@ export function calculateCompanyOwnerTax(formData: CompanyOwnerFormData): TaxCal
     ...(formData as unknown as TaxFormData),
     annualIncome: employmentIncome,
   };
-  const breakdown = calculateDeductions(fakeFormData, incomeAfterAllowances);
+  const breakdown = calculateDeductions(fakeFormData, incomeAfterAllowances, {
+    assessableIncome: grossIncome,
+    // Provident fund is a share of wages: the salary the company pays (not director fees or dividends).
+    wages: formData.salaryFromCompany || 0,
+  });
 
   // Sum additional deductions (all except standardDeduction which is already accounted for)
   const additionalDeductions =
@@ -309,8 +399,12 @@ export function calculateCompanyOwnerTax(formData: CompanyOwnerFormData): TaxCal
   // Taxable income
   const taxableIncome = Math.max(0, incomeAfterAllowances - additionalDeductions);
 
-  // Tax using progressive brackets
-  const taxOwed = calculateThaiTax(taxableIncome);
+  // Tax using progressive brackets, but at least the annual minimum tax on the
+  // non-employment part: director fees (Section 40(2) — "meeting allowance, fee")
+  // and PIT-included dividends (40(4)).
+  const progressiveTax = calculateThaiTax(taxableIncome);
+  const { minimumTax } = calculateMinimumTax((formData.directorFees || 0) + taxableDividends, formData.isAge65OrOlder);
+  const taxOwed = Math.max(progressiveTax, minimumTax);
 
   // Total withholding: salary withholding + any separately entered withholding + dividend credits
   const taxWithheld =
@@ -332,6 +426,8 @@ export function calculateCompanyOwnerTax(formData: CompanyOwnerFormData): TaxCal
     refundOrOwed,
     effectiveRate,
     breakdown,
+    minimumTax,
+    minimumTaxApplied: minimumTax > progressiveTax,
   };
 }
 
@@ -382,9 +478,10 @@ export function calculateFreelancerAllowances(formData: FreelancerFormData): num
  */
 export function calculateFreelancerDeductions(
   formData: FreelancerFormData,
-  incomeAfterAllowances: number
+  incomeAfterAllowances: number,
+  basis: IncomeBasis
 ): number {
-  return sumDeductions(calculateDeductionBreakdown(formData, incomeAfterAllowances));
+  return sumDeductions(calculateDeductionBreakdown(formData, incomeAfterAllowances, basis));
 }
 
 /**
@@ -448,7 +545,10 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   const incomeAfterDeductions = Math.max(0, grossIncomeForProgressiveTax - expenseDeduction - totalAllowances);
 
   // Step 8: Calculate additional deductions (insurance, funds, donations)
-  const deductionBreakdown = calculateDeductionBreakdown(formData, incomeAfterDeductions);
+  const deductionBreakdown = calculateDeductionBreakdown(formData, incomeAfterDeductions, {
+    assessableIncome: grossIncome,
+    wages: salaryIncome,
+  });
   const totalDeductions = sumDeductions(deductionBreakdown);
 
   // Step 9: Calculate final taxable income (for progressive brackets)
@@ -458,14 +558,20 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   let grossTaxBeforeCredits: number;
   let ltrFlatRateTax = 0;
 
+  // Annual minimum tax on non-employment income (every Thai entry except 40(1)
+  // salary). Remitted foreign income is left out of the base: the app does not
+  // know its Section 40 category (tax-data: gross-income-tax-rate).
+  const { minimumTax } = calculateMinimumTax(nonSalaryThaiIncome, formData.isAge65OrOlder);
+  const ordinaryProgressiveTax = calculateThaiTax(taxableIncome);
+  const progressiveTax = Math.max(ordinaryProgressiveTax, minimumTax);
+
   if (isLTRHighlySkilled && salaryIncome > 0) {
     // LTR Highly Skilled: 17% flat rate on salary income + progressive on rest
     ltrFlatRateTax = salaryIncome * LTR_HIGHLY_SKILLED_FLAT_RATE;
-    const progressiveTax = calculateThaiTax(taxableIncome);
     grossTaxBeforeCredits = ltrFlatRateTax + progressiveTax;
   } else {
     // Standard progressive tax calculation
-    grossTaxBeforeCredits = calculateThaiTax(taxableIncome);
+    grossTaxBeforeCredits = progressiveTax;
   }
 
   // Step 11: Apply credits (withholding and foreign tax credits)
@@ -512,5 +618,7 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
     ltrBenefitApplied: isLTRHighlySkilled || isLTRForeignExempt,
     ltrFlatRateTax: isLTRHighlySkilled ? ltrFlatRateTax : undefined,
     ltrForeignIncomeExempt: isLTRForeignExempt,
+    minimumTax,
+    minimumTaxApplied: minimumTax > ordinaryProgressiveTax,
   };
 }

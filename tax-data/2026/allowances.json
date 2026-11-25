@@ -86,7 +86,7 @@
       },
       "verified": true,
       "verification_notes": "Verified via two independent reputable secondary sources, both naming Amendment Act No. 46 (B.E. 2561) and the 12 Nov 2018 effective date. The 2018 birth-year cutoff used in the app's code matches. Flagging the adopted-child exclusion as a real modeling gap, not just a sourcing gap — the calculator would currently overstate this allowance for a family whose 2nd+ child is adopted.",
-      "used_in": "src/utils/taxCalculations.ts (getChildAllowanceBreakdown / calculateChildAllowance) — since 2026-11-25 the bonus follows chronological birth order (sorted by birth year), not the order children were entered. Adopted-child exclusion still NOT modeled."
+      "used_in": "src/utils/taxCalculations.ts (getChildAllowanceBreakdown / calculateChildAllowance) — follows chronological birth order (since 2026-11-25) and excludes adopted children (since 2026-11-25, see child-allowance-adopted-limit)."
     },
     {
       "id": "parent-allowance",
@@ -119,6 +119,20 @@
       "verified": false,
       "verification_notes": "This is a derived figure, not a directly sourced one. Recommend rewording any user-facing copy that implies '4' is a named statutory limit.",
       "used_in": "src/types/taxForm.ts:242,85 (MAX_PARENTS)"
+    },
+    {
+      "id": "child-allowance-adopted-limit",
+      "rule": "Adopted children count only while the total children claimed is at most 3",
+      "value": 3,
+      "tax_year": "2023 (RD guide); rule in force since the 2017 allowance amendment",
+      "conditions": "Legitimate children are counted first, without limit. Adopted children are then counted only while the total number of children claimed does not exceed 3; if there are 3 or more legitimate children, no adopted child is claimed. The 2018+ second-child bonus applies to legitimate children only.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, B. item 3: 'your adopted child, but not exceeding 3 adopted children ... you shall first deduct allowance for the children under (1), followed by the children under (2). Except where you have 3 or more living children under (1), you shall not deduct allowances for children under (2) ... the total number of children shall not exceed 3.' Bonus wording: 'For each additional legitimate child born in 2018 onwards'. APP INTERPRETATION: the bonus rank (2nd and later) is counted among legitimate children only. The guide says birth order counts all living children, including ones not claimed; the app only knows the children entered. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/taxCalculations.ts (getChildAllowanceBreakdown)"
     }
   ]
 }

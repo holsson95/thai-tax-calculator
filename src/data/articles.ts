@@ -122,7 +122,7 @@ This is the main tool. It walks you through a step-by-step form to calculate you
 
 - Your employment type and total annual income
 - Marital status and spouse income
-- Dependents (children, parents, elderly relatives)
+- Dependents (children, including adopted children, and parents)
 - Deductions you're entitled to claim — including life and health insurance premiums, social security contributions, provident fund or RMF/SSF contributions, and charitable donations
 - Tax already withheld from your salary or invoices throughout the year
 - For freelancers and non-residents: foreign income, tax residency, and any applicable double tax agreements
@@ -149,16 +149,21 @@ Both calculators apply Thailand's standard personal income tax allowances:
 |---|---|
 | Personal allowance | 60,000 THB |
 | Spouse allowance (no income) | 60,000 THB |
-| Child allowance | 30,000 THB per child |
-| Child born from 2018 onward | Additional 30,000 THB |
-| Parent allowance | 30,000 THB per parent |
+| Age 65+ income exemption | 190,000 THB |
+| Child allowance | 30,000 THB per child (adopted children count only while you claim 3 children or fewer in total) |
+| 2nd and later legitimate child born 2018 or later | Additional 30,000 THB |
+| Parent allowance | 30,000 THB per parent, up to 4 |
+| Social security contributions | Up to 10,500 THB (2026) |
 | Life insurance premiums | Up to 100,000 THB |
 | Health insurance premiums | Up to 25,000 THB |
-| Social Security Fund (SSF) | Up to 30% of income, max 200,000 THB |
+| Provident fund | Up to 15% of wages, max 500,000 THB |
+| Government Pension Fund | Up to 500,000 THB |
 | Retirement Mutual Fund (RMF) | Up to 30% of income, max 500,000 THB |
-| Charitable donations | Up to 10% of net income |
+| Super Savings Fund (SSF) | Up to 30% of income, max 200,000 THB |
+| All four retirement funds together | Max 500,000 THB |
+| Charitable donations | Up to 10% of income after all other deductions |
 
-For salaried employees, a standard employment income deduction of 50% (up to 100,000 THB) is applied automatically.
+For salaried employees, a standard employment income deduction of 50% (up to 100,000 THB) is applied automatically. Freelancers get the flat-rate deduction for each income type (or their actual expenses, if higher), and the calculator also applies the Revenue Department's minimum tax of 0.5% on non-salary income when that comes to 5,000 THB or more. It also tells freelancers whether they need to file the PND 94 half-year return or register for VAT.
 
 ---
 
@@ -177,7 +182,7 @@ The filing packet is organized into clearly labeled sections:
 3. **Allowances and deductions** — Every allowance and deduction applied to your calculation, with amounts, so you can verify entries and reference them during filing.
 4. **Tax calculation** — A step-by-step view of how your tax was calculated, including the progression through Thailand's tax brackets and total withholding already paid.
 5. **Supporting documents checklist** — A personalized checklist of the documents you'll likely need to gather before filing — such as employer withholding certificates (50 tawi), insurance receipts, and fund statements. The checklist adjusts based on your specific situation.
-6. **Preparer notes** *(freelancers and sole proprietors only)* — Notes on common considerations for self-employed filers, including expense deduction method choices and quarterly estimated tax obligations.
+6. **Preparer notes** *(freelancers and sole proprietors only)* — Notes on common considerations for self-employed filers, including expense deduction method choices and the PND 94 half-year return.
 
 ### How to Use the PDF for Record Keeping
 
@@ -318,26 +323,33 @@ Thailand offers several personal allowances that reduce your taxable income:
 ### Standard Allowances:
 - **Personal Allowance:** 60,000 THB
 - **Spouse Allowance:** 60,000 THB (if spouse has no income)
-- **Child Allowance:** 30,000 THB per child (legitimate children only)
+- **Child Allowance:** 30,000 THB per child, plus another 30,000 THB for the 2nd and later legitimate child (by birth order) born in 2018 or later. Adopted children count too, but only while you claim 3 children or fewer in total, and they don't get the extra 30,000 THB
+- **Parent Allowance:** 30,000 THB per parent aged 60+ with income under 30,000 THB a year (your own and your spouse's, so up to 4)
+- **Age 65+:** the first 190,000 THB of your income is exempt
 
 ## Common Deductions
 
 ### Social Security
-Contributions to Thai social security are deductible up to the maximum contribution amount.
+Contributions to Thai social security are deductible up to the maximum contribution amount: 10,500 THB for 2026 (9,000 THB in 2024–2025).
 
 ### Life Insurance
 Life insurance premiums are deductible up to 100,000 THB annually.
 
 ### Health Insurance
-Health insurance premiums are deductible up to 25,000 THB annually, increased from previous years.
+Health insurance premiums are deductible up to 25,000 THB annually. Life and health insurance together can't exceed 100,000 THB.
 
 ### Retirement Funds
 - **SSF (Super Savings Fund):** Up to 30% of income, max 200,000 THB
 - **RMF (Retirement Mutual Fund):** Up to 30% of income, max 500,000 THB
-- **Provident Fund:** Up to 15% of salary
+- **Provident Fund:** Up to 15% of wages, max 500,000 THB
+- **Government Pension Fund:** Up to 500,000 THB
+- **Combined limit:** all four together can't exceed 500,000 THB
+
+### Charitable Donations
+Donations to approved charities are deductible up to 10% of your income after all the other deductions and allowances.
 
 ### Housing Loan Interest
-Interest on housing loans is deductible up to 100,000 THB annually.
+Interest on housing loans is deductible up to 100,000 THB annually. (Our calculator doesn't include this deduction yet, so if you have one, your tax will be lower than its estimate.)
 
 ## Tips for Maximizing Deductions
 
@@ -703,7 +715,7 @@ Starting January 2026, the social security contribution ceiling increased signif
 
 Social security contributions are:
 - Deductible from your taxable income
-- Limited to actual contributions (max 10,500 THB annually from 2025)
+- Limited to actual contributions (max 10,500 THB a year from 2026; 9,000 THB in 2024 and 2025)
 
 ## For Expats
 
@@ -739,14 +751,13 @@ Thai tax law classifies income into categories under Section 40 of the Revenue C
 - Fees for services with specific deliverables
 
 ### Section 40(6) - Liberal Professions
-- Doctors, lawyers, accountants, engineers
-- Architects, artists, and performers
-- Flat-rate deduction: 30% (up to 60% for certain professions)
+- Lawyers, accountants, engineers, architects, fine artists, and the medical professions
+- Flat-rate deduction: 30% (60% for the medical professions)
+- Performers and athletes are not 40(6); their fees are business income under 40(8)
 
 ### Section 40(7) - Contractors
-- Construction and installation work
-- Project-based technical services
-- Flat-rate deduction: 40%
+- Construction and installation work where you supply the essential materials
+- Flat-rate deduction: 60%
 
 ### Section 40(8) - Business Income
 - Trading, selling goods
@@ -772,6 +783,7 @@ You have two options for expense deductions:
 ### PND90 (Annual Return)
 - Due by March 31 (or April 8 online)
 - Required if income exceeds 60,000 THB (single) or 120,000 THB (married)
+- Minimum tax: if your non-salary income is 1,000,000 THB or more, you pay at least 0.5% of it, even if your deductions bring the normal tax lower
 
 ### PND94 (Mid-Year Return)
 - Due by September 30
@@ -811,11 +823,14 @@ The government allows a fixed percentage deduction based on your income type, no
 
 | Income Type | Section | Flat Rate |
 |------------|---------|-----------|
-| Liberal Professions (medical, legal) | 40(6) | 60% |
-| Liberal Professions (other) | 40(6) | 30% |
-| Contractors | 40(7) | 40% |
+| Liberal Professions (medical) | 40(6) | 60% |
+| Liberal Professions (legal, accounting, engineering, architecture, fine arts) | 40(6) | 30% |
+| Contractors (supplying materials) | 40(7) | 60% |
 | Business/Trading | 40(8) | 60% |
-| Rental Income | 40(5) | 30% |
+| Rental: houses, buildings, vehicles | 40(5) | 30% |
+| Rental: agricultural land | 40(5) | 20% |
+| Rental: other land | 40(5) | 15% |
+| Rental: other property | 40(5) | 10% |
 
 ### Pros:
 - Simple, no documentation needed
@@ -867,14 +882,14 @@ Deduct your real business expenses with proper documentation.
 
 ## Example Comparison
 
-**Scenario:** Consultant earning 1,000,000 THB with 450,000 THB actual expenses
+**Scenario:** A single accountant (Section 40(6), 30% flat rate) earning 1,000,000 THB, with 450,000 THB of documented expenses and no deductions other than the 60,000 THB personal allowance.
 
-| Method | Deduction | Taxable Income |
-|--------|-----------|----------------|
-| Flat-Rate (40%) | 400,000 THB | 600,000 THB |
-| Actual Expenses | 450,000 THB | 550,000 THB |
+| Method | Deduction | Taxable Income | Tax |
+|--------|-----------|----------------|-----|
+| Flat-Rate (30%) | 300,000 THB | 640,000 THB | 48,500 THB |
+| Actual Expenses | 450,000 THB | 490,000 THB | 26,500 THB |
 
-**Winner:** Actual expenses saves approximately 7,500 THB in tax.
+**Winner:** Actual expenses save 22,000 THB in tax, but only if every baht is backed by receipts. (Either way the tax is above the 5,000 THB minimum tax of 0.5% of income, so the minimum doesn't apply.)
 
 ## Our Calculator's Auto-Compare Feature
 
@@ -903,36 +918,52 @@ You must file PND94 if:
 - You received income under Sections 40(5), 40(6), 40(7), or 40(8)
 - Your income from January to June exceeds:
   - **60,000 THB** if single
-  - **120,000 THB** if married filing jointly
+  - **120,000 THB** if married and your spouse has no income
 
 ## Filing Deadline
 
 **September 30** of the same tax year.
 
-For income received January-June 2024, file by September 30, 2024.
+For income received January-June 2026, file by September 30, 2026.
 
 Online filing via RD Smart Tax may extend this by 8 days.
 
 ## How PND94 Works
 
-### Step 1: Calculate Mid-Year Income
-Total all qualifying income received from January 1 to June 30.
+PND94 taxes the income you actually received from January to June. It does not project the rest of the year. Following the Revenue Department's PND94 guide:
 
-### Step 2: Estimate Annual Income
-Project your full-year income (you can estimate the July-December portion).
+### Step 1: Add Up January–June Income
+Total the 40(5)–40(8) income you received from January 1 to June 30. If you're 65 or over, the first 190,000 THB is exempt.
 
-### Step 3: Calculate Tax on Annual Estimate
-Apply standard deductions and tax brackets to estimated annual income.
+### Step 2: Deduct Expenses
+Use the flat rate for each income type (for example 30% for liberal professions, 60% for business income) or your actual expenses.
 
-### Step 4: Pay Half the Estimated Tax
-PND94 requires payment of 50% of your estimated annual tax liability.
+### Step 3: Deduct Half Your Allowances
+Allowances are halved for the half-year: 30,000 THB personal, 30,000 THB for a spouse with no income, 15,000 THB per child and 15,000 THB per parent. Insurance, fund and social security payments count at the amount you actually paid from January to June.
 
-## Example Calculation
+### Step 4: Apply the Normal Tax Rates
+The ordinary progressive rates (0% up to 150,000 THB, then 5%, 10% and so on) apply to what's left.
 
-**Mid-year income:** 400,000 THB
-**Estimated annual income:** 800,000 THB
-**Estimated annual tax:** 52,500 THB
-**PND94 payment due:** 26,250 THB
+### Step 5: Check the Minimum Tax
+If your January–June 40(5)–40(8) income is 120,000 THB or more, the tax is at least 0.5% of that income.
+
+## Example Calculations
+
+**A single accountant (40(6)) with 400,000 THB of fees from January to June:**
+
+| Step | Amount |
+|---|---|
+| January–June income | 400,000 THB |
+| Less 30% flat-rate expenses | −120,000 THB |
+| Less half personal allowance | −30,000 THB |
+| Net income | 250,000 THB |
+| Tax at normal rates | 5,000 THB |
+| Minimum tax (0.5% × 400,000) | 2,000 THB |
+| **PND94 tax due** | **5,000 THB** |
+
+**The same 400,000 THB as business income (40(8), 60% flat rate):** net income is 400,000 − 240,000 − 30,000 = 130,000 THB, which is inside the 0% band. The tax at normal rates is zero, so the 0.5% minimum applies: **2,000 THB**.
+
+The PND94 estimate in our calculator follows these steps. It leaves out insurance and fund payments made in January–June, because it doesn't ask for them, so your real figure can be a little lower.
 
 ## What Happens at Year-End?
 
@@ -944,16 +975,16 @@ When you file PND90 (annual return):
 ## Common Mistakes to Avoid
 
 1. **Missing the deadline:** Penalties apply for late filing
-2. **Underestimating income:** May result in penalty for underpayment
+2. **Leaving out income:** PND94 covers all 40(5)–40(8) income actually received in January–June
 3. **Forgetting to file:** PND94 is separate from your annual return
-4. **Not claiming deductions:** You can estimate deductions for mid-year filing
+4. **Not claiming deductions:** Insurance, fund and social security payments made in January–June reduce the half-year tax
 
 ## Tips for Freelancers
 
 - Set calendar reminders for September 30
 - Keep running totals of income throughout the year
 - Save money monthly for tax payments
-- Consider quarterly estimated taxes if income is irregular
+- Remember the PND94 payment is credited against your annual PND90 tax, so it's a prepayment, not an extra tax
     `,
     publishedAt: '2024-05-15',
     readTime: 6,
@@ -1024,10 +1055,10 @@ When filing your annual return:
 If withholding tax exceeds your actual tax liability, you're entitled to a refund.
 
 ### Example:
-- Annual income: 500,000 THB
+A single accountant (Section 40(6)) earns 500,000 THB in fees, all from Thai companies that withhold 3%.
 - Tax withheld: 15,000 THB
-- Actual tax owed: 12,500 THB
-- **Refund due: 2,500 THB**
+- Actual tax owed: 7,000 THB (500,000 − 150,000 flat-rate expenses − 60,000 personal allowance = 290,000 taxable)
+- **Refund due: 8,000 THB**
 
 ## Best Practices
 
@@ -1065,7 +1096,7 @@ Foreign clients typically don't withhold Thai tax. You must:
     content: `
 ## VAT Basics
 
-Value Added Tax (VAT) in Thailand is 7% and applies to the sale of goods and services. Most freelancers start exempt but must register once they exceed certain thresholds.
+Value Added Tax (VAT) in Thailand is 7% (a reduced rate, currently extended to 30 September 2027; the rate in the Revenue Code is 10%) and applies to the sale of goods and services. Most freelancers start exempt but must register once they exceed the threshold.
 
 ## The 1.8 Million THB Threshold
 
@@ -1074,7 +1105,13 @@ You **must register for VAT** if your annual turnover exceeds **1,800,000 THB**.
 ### What Counts as Turnover?
 - Gross income from services
 - Sales of goods
+- Rent from vehicles, equipment and other movable property
 - Before any expense deductions
+
+### What Doesn't Count
+- Salary from an employer
+- Dividends
+- Rent from houses, condos, other buildings and land: rental of immovable property is VAT-exempt under Section 81 of the Revenue Code
 
 ### Timeline:
 Register within 30 days of exceeding the threshold.
@@ -1393,7 +1430,7 @@ If the Revenue Department requests documentation:
     content: `
 ## What is a Double Tax Agreement (DTA)?
 
-A Double Tax Agreement (DTA) — also called a tax treaty — is a bilateral agreement between two countries designed to prevent the same income from being taxed twice. Thailand has signed DTAs with 61 countries as of 2025, one of the largest treaty networks in Southeast Asia.
+A Double Tax Agreement (DTA) — also called a tax treaty — is a bilateral agreement between two countries designed to prevent the same income from being taxed twice. Thailand has DTAs in force with 61 countries (plus an air-transport-only agreement with Saudi Arabia, which doesn't cover personal income), one of the largest treaty networks in Southeast Asia.
 
 For expats, DTAs are the primary legal tool to reduce or eliminate the risk of paying tax on the same income in both Thailand and your home country.
 
@@ -1422,16 +1459,19 @@ Most of Thailand's DTAs use the **credit method**, meaning:
 
 ### Example Calculation
 
-You earn $50,000 (approx. 1.75 million THB) from a US employer.
+You earn $50,000 (approx. 1.75 million THB) from a US employer in 2026, are a Thai tax resident, and bring all of it into Thailand the same year. This example uses our calculator's cautious approach to foreign income: only the 60,000 THB personal allowance is deducted, with no expense deduction.
 
 | Item | Amount |
 |------|--------|
+| Foreign income brought in | 1,750,000 THB |
+| Less personal allowance | −60,000 THB |
+| Taxable income | 1,690,000 THB |
+| Thai tax on this income | 287,500 THB |
 | US federal income tax paid | 170,000 THB |
-| Thai tax on this income (calculated) | 240,000 THB |
-| Foreign tax credit | 170,000 THB (capped at US tax paid) |
-| **Additional Thai tax owed** | **70,000 THB** |
+| Foreign tax credit | 170,000 THB (the lower of US tax paid and Thai tax on the income) |
+| **Additional Thai tax owed** | **117,500 THB** |
 
-Without the DTA, you would owe the full 240,000 THB on top of US taxes.
+Without the DTA, you would owe the full 287,500 THB on top of US taxes.
 
 ## Thailand's 61 DTA Countries
 
@@ -1567,7 +1607,7 @@ If you are a Thai tax resident with assessable income above these thresholds, yo
 
 One of the most important — and most overlooked — tax benefits in Thailand is the **income exemption for taxpayers aged 65 and over**.
 
-Under Section 42(17) of the Revenue Code, if you are **65 years of age or older at the end of the tax year**, the first **190,000 THB of your assessable income is completely exempt** from personal income tax.
+Under the Revenue Code's income exemptions, if you are **65 years of age or older at the end of the tax year**, the first **190,000 THB of your assessable income is completely exempt** from personal income tax.
 
 This is in addition to the standard personal allowance and tax brackets.
 
@@ -1731,7 +1771,7 @@ For complex situations — particularly those involving multiple countries, gove
     sources: [
       { label: 'Thai Revenue Department — Order Por. 161/2566, incl. Por. 162/2566 amendment (Thai)', url: 'https://www.rd.go.th/fileadmin/user%5Fupload/kormor/newlaw/dn161A.pdf' },
       { label: 'Thai Revenue Department — Personal Income Tax & Allowances', url: 'https://www.rd.go.th/english/index-eng.html' },
-      { label: 'Thai Revenue Department — Revenue Code Section 42(17) (65+ Exemption)', url: 'https://www.rd.go.th/english/index-eng.html' },
+      { label: 'Thai Revenue Department — Guide to the PND94 return (65+ income exemption of 190,000 THB)', url: 'https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf' },
       { label: 'BOI — LTR Wealthy Pensioner Visa', url: 'https://ltr.boi.go.th/' },
     ],
     relatedExamples: ['foreign-pension-dta-exemption'],
@@ -2018,9 +2058,9 @@ A UK retiree has £20,000 (approx. 900,000 THB) of dividend income from ISA inve
 | 65+ exemption | −190,000 THB |
 | Personal allowance | −60,000 THB |
 | Remaining taxable | 650,000 THB |
-| Tax on 650,000 THB | ~67,500 THB |
+| Tax on 650,000 THB | 50,000 THB |
 
-No UK tax was paid, so no foreign credit is available. Total Thai tax: ~67,500 THB (about 10.4% effective rate).
+No UK tax was paid, so no foreign credit is available. Total Thai tax: 50,000 THB (about 5.6% of the 900,000 THB brought in). The brackets: 0% on the first 150,000, 7,500 THB on the next 150,000, 20,000 THB on the next 200,000 and 22,500 THB on the last 150,000.
 
 By contrast, if the retiree only remits 250,000 THB, taxable income after allowances is zero — no Thai tax at all.
 
@@ -2493,7 +2533,7 @@ Before tax rates are applied, several deductions reduce your assessable income:
 - **Life insurance premiums:** up to 100,000 THB
 - **Health insurance premiums:** up to 25,000 THB
 - **Social security contributions:** full amount deductible
-- **Provident fund / RMF / SSF contributions:** up to 30% of income (caps apply)
+- **Provident fund:** up to 15% of wages; **RMF / SSF:** up to 30% of income; all retirement funds together max 500,000 THB
 
 For a full list of deductions, see our guide to maximising Thai tax deductions.
 
@@ -2976,6 +3016,8 @@ You have two options for deducting expenses from your gross rental income:
 
 Deduct 30% of gross rental income automatically, with no receipts or documentation required. Net assessable income = 70% of gross rent.
 
+The 30% rate is for houses, condos, other buildings and vehicles. Renting out land gets a lower flat rate: 20% for agricultural land and 15% for other land. Other property (such as equipment) gets 10%. The calculator asks what you're renting out and applies the matching rate.
+
 This is the standard approach for most individual landlords. It is simple, requires no paperwork, and is accepted by the Revenue Department without question.
 
 **Option B: Actual Expense Deduction**
@@ -3004,7 +3046,7 @@ If a company paid you rent and withheld 5%, claim this as a credit against your 
 | Less 30% flat-rate deduction | −108,000 |
 | Net assessable rental income | 252,000 |
 | Less personal allowance | −60,000 |
-| Total assessable income | 192,000 |
+| Taxable income | 192,000 |
 | First 150,000 THB at 0% | 0 |
 | Remaining 42,000 THB at 5% | 2,100 |
 | Total tax due | 2,100 THB |

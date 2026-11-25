@@ -12,6 +12,7 @@ import {
   FLAT_RATE_DEDUCTIONS,
   DEDUCTION_CAPS,
   EXPENSE_CATEGORY_LABELS,
+  getEntryFlatRate,
 } from '../config/taxConfig';
 import { INCOME_TYPE_INFO } from '../data/incomeTypes';
 import { getMarginalRate } from './tax';
@@ -22,7 +23,8 @@ import { getMarginalRate } from './tax';
  */
 export function calculateFlatRateDeduction(entry: ThaiIncomeEntry): number {
   const info = INCOME_TYPE_INFO[entry.incomeType];
-  const rate = FLAT_RATE_DEDUCTIONS[entry.incomeType];
+  // Rental depends on the property kind (buildings/vehicles 30%, land 20%/15%, other 10%).
+  const rate = getEntryFlatRate(entry);
 
   if (rate === 0) {
     return 0;
@@ -77,7 +79,8 @@ export function calculateTotalFlatRateDeductions(
     breakdown.push({
       incomeType,
       grossAmount: data.gross,
-      rate: FLAT_RATE_DEDUCTIONS[incomeType],
+      // Effective rate: rental entries of different property kinds can have different rates.
+      rate: incomeType === 'rental_40_5' && data.gross > 0 ? data.deduction / data.gross : FLAT_RATE_DEDUCTIONS[incomeType],
       deduction: data.deduction,
     });
     total += data.deduction;

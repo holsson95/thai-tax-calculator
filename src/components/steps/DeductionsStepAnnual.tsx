@@ -1,5 +1,18 @@
 import { useState } from 'react';
-import { StepProps, TAX_CONSTANTS } from '../../types/taxForm';
+import { StepProps, TaxFormData, TAX_CONSTANTS } from '../../types/taxForm';
+import { CompanyOwnerFormData } from '../../types/companyOwnerForm';
+import { calculateCompanyOwnerTax } from '../../utils/taxCalculations';
+
+/**
+ * Gross income for the donation hint. Company owners have no annualIncome field
+ * (salary, fees and dividends instead), which used to make the hint read "max ฿NaN".
+ */
+function grossIncomeOf(formData: TaxFormData): number {
+  if (formData.employmentType === 'company_owner') {
+    return calculateCompanyOwnerTax(formData as unknown as CompanyOwnerFormData).grossIncome;
+  }
+  return Number.isFinite(formData.annualIncome) ? formData.annualIncome : 0;
+}
 
 interface DeductionItemProps {
   id: string;
@@ -151,10 +164,11 @@ const DeductionsStepAnnual: React.FC<StepProps> = ({ formData, setFormData, show
     {
       id: 'donations',
       label: 'Charitable Donations',
-      maxAmount: Math.floor(formData.annualIncome * TAX_CONSTANTS.MAX_DONATION_PERCENT),
+      // Upper bound only: the real cap is 10% of income after all other deductions, applied by the engine.
+      maxAmount: Math.floor(grossIncomeOf(formData) * TAX_CONSTANTS.MAX_DONATION_PERCENT),
       hasKey: 'hasDonations' as const,
       amountKey: 'donations' as const,
-      description: 'Donations to approved charities (limited to 10% of income)',
+      description: 'Donations to approved charities (limited to 10% of income after your other deductions)',
     },
   ];
 

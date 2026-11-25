@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   calculateHalfYearIncome,
-  calculateProvisionalTax,
+  calculatePND94Estimate,
   checkPND94Obligation,
   calculateAnnualTurnover,
   checkVATRegistration,
@@ -122,46 +122,88 @@ describe('calculateHalfYearIncome', () => {
   });
 });
 
-describe('calculateProvisionalTax', () => {
-  it('returns 0 for income below tax-free threshold', () => {
-    // Half year income of 30,000 = projected annual 60,000
-    // After personal allowance of 60,000, taxable income is 0
-    // But we also have 50% expense deduction (up to 100k)
-    // So for very low income, tax is 0
-    expect(calculateProvisionalTax(30000)).toBe(0);
+describe('calculatePND94Estimate (RD PND94 guide method)', () => {
+  // Half-year income − flat-rate expenses − HALF the annual allowances, taxed at the
+  // ordinary rates; at least 0.5% of the income once it reaches 120,000.
+  // tax-data/2026/residency.json: pnd94-half-year-allowances, pnd94-gross-income-tax-*.
+  const estimate = (overrides: Partial<FreelancerFormData>) =>
+    calculatePND94Estimate(createFreelancerFormData({ maritalStatus: 'single', ...overrides }));
+
+  it('below 120,000 the 0.5% minimum does not apply and low income pays nothing', () => {
+    // 100,000 − 30,000 (30%) − 30,000 half personal = 40,000 → 0
+    const e = estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 100000 })] });
+    expect(e.allowances).toBe(30000);
+    expect(e.netIncome).toBe(40000);
+    expect(e.grossIncomeTax).toBe(0);
+    expect(e.provisionalTax).toBe(0);
   });
 
-  it('calculates provisional tax for single filer', () => {
-    // Half year income: 200,000
-    // Projected annual: 400,000
-    // Expense deduction (50% capped): 100,000
-    // Personal allowance: 60,000
-    // Taxable income: 400,000 - 100,000 - 60,000 = 240,000
-    // Tax: 150,000 @ 0% = 0 + 90,000 @ 5% = 4,500
-    // PND94 = half = 2,250
-    const tax = calculateProvisionalTax(200000);
-    expect(tax).toBe(2250);
+  it('the 0.5% minimum applies from 120,000 and wins when the net-income tax is lower', () => {
+    // 200,000 − 60,000 − 30,000 = 110,000 → 0 net tax; 0.5% × 200,000 = 1,000
+    const e = estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 200000 })] });
+    expect(e.netIncomeTax).toBe(0);
+    expect(e.grossIncomeTax).toBe(1000);
+    expect(e.provisionalTax).toBe(1000);
+    expect(estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 120000 })] }).grossIncomeTax).toBe(600);
+    expect(estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 119999 })] }).grossIncomeTax).toBe(0);
   });
 
-  it('calculates lower tax with spouse allowance', () => {
-    // Same income but with spouse allowance
-    // Taxable income: 400,000 - 100,000 - 60,000 - 60,000 = 180,000
-    // Tax: 150,000 @ 0% = 0 + 30,000 @ 5% = 1,500
-    // PND94 = half = 750
-    const tax = calculateProvisionalTax(200000, 60000, 60000);
-    expect(tax).toBe(750);
+  it('uses the ordinary full-year rates on half-year net income', () => {
+    // 500,000 − 150,000 − 30,000 = 320,000 → 7,500 + 20,000 × 10% = 9,500 (> 2,500 minimum)
+    const e = estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 500000 })] });
+    expect(e.netIncome).toBe(320000);
+    expect(e.provisionalTax).toBe(9500);
   });
 
-  it('handles higher income brackets', () => {
-    // Half year income: 500,000
-    // Projected annual: 1,000,000
-    // Expense deduction: 100,000 (capped)
-    // Personal allowance: 60,000
-    // Taxable income: 840,000
-    // Tax: 0 + 7,500 + 20,000 + 37,500 + 18,000 = 83,000
-    // PND94 = half = 41,500
-    const tax = calculateProvisionalTax(500000);
-    expect(tax).toBe(41500);
+  it('halves spouse, child and parent allowances too', () => {
+    // annual 60k + 60k + (30k + 60k children) + 30k parent = 240k → half 120k
+    // 600,000 40(8) − 360,000 (60%) − 120,000 = 120,000 → 0; minimum 3,000
+    const e = estimate({
+      maritalStatus: 'married',
+      spouseHasNoIncome: true,
+      children: [{ birthYear: 2015 }, { birthYear: 2019 }],
+      numberOfParents: 1,
+      thaiIncomeEntries: [createIncomeEntry({ grossAmount: 600000, incomeType: 'business_sales_40_8' })],
+    });
+    expect(e.allowances).toBe(120000);
+    expect(e.netIncome).toBe(120000);
+    expect(e.provisionalTax).toBe(3000);
+  });
+
+  it('applies the 65+ exemption to the lowest-rate income first', () => {
+    // 100k building rent (30%) fully exempt, then 90k of the 300k 40(8) (60%).
+    // Left: 210,000 of 40(8) → expenses 126,000; − 30,000 = 54,000 → 0; minimum 1,050
+    const e = estimate({
+      isAge65OrOlder: true,
+      thaiIncomeEntries: [
+        createIncomeEntry({ grossAmount: 100000, incomeType: 'rental_40_5' }),
+        createIncomeEntry({ grossAmount: 300000, incomeType: 'business_sales_40_8' }),
+      ],
+    });
+    expect(e.seniorExemption).toBe(190000);
+    expect(e.assessableIncome).toBe(210000);
+    expect(e.expenseDeduction).toBeCloseTo(126000, 6);
+    expect(e.provisionalTax).toBe(1050);
+  });
+
+  it('rental expense rate follows the property kind', () => {
+    // land: 400,000 − 60,000 (15%) − 30,000 = 310,000 → 8,500; building: − 120,000 (30%) → 250,000 → 5,000
+    const land = estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 400000, incomeType: 'rental_40_5', rentalPropertyKind: 'other_land' })] });
+    const building = estimate({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 400000, incomeType: 'rental_40_5' })] });
+    expect(land.provisionalTax).toBe(8500);
+    expect(building.provisionalTax).toBe(5000);
+  });
+
+  it('ignores July–December income, salary and dividends', () => {
+    const e = estimate({
+      thaiIncomeEntries: [
+        createIncomeEntry({ grossAmount: 900000, monthReceived: 7 }),
+        createIncomeEntry({ grossAmount: 900000, incomeType: 'salary_40_1', monthReceived: 2 }),
+        createIncomeEntry({ grossAmount: 900000, incomeType: 'dividend', monthReceived: 2 }),
+      ],
+    });
+    expect(e.halfYearIncome).toBe(0);
+    expect(e.provisionalTax).toBe(0);
   });
 });
 
@@ -281,9 +323,20 @@ describe('calculateAnnualTurnover', () => {
       createIncomeEntry({ grossAmount: 500000, monthReceived: 3 }),
       createIncomeEntry({ grossAmount: 600000, incomeType: 'salary_40_1', monthReceived: 6 }),
       createIncomeEntry({ grossAmount: 900000, incomeType: 'dividend', monthReceived: 4 }),
-      createIncomeEntry({ grossAmount: 100000, incomeType: 'rental_40_5', monthReceived: 2 }),
     ];
-    expect(calculateAnnualTurnover(entries)).toBe(600000);
+    expect(calculateAnnualTurnover(entries)).toBe(500000);
+  });
+
+  it('excludes rent from buildings and land (VAT-exempt) but counts vehicle and other-property rent', () => {
+    // Revenue Code s.81(1)(r): rental of immovable property is VAT-exempt
+    const entries: ThaiIncomeEntry[] = [
+      createIncomeEntry({ grossAmount: 1000000, incomeType: 'rental_40_5' }), // building (default)
+      createIncomeEntry({ grossAmount: 1000000, incomeType: 'rental_40_5', rentalPropertyKind: 'agricultural_land' }),
+      createIncomeEntry({ grossAmount: 1000000, incomeType: 'rental_40_5', rentalPropertyKind: 'other_land' }),
+      createIncomeEntry({ grossAmount: 300000, incomeType: 'rental_40_5', rentalPropertyKind: 'vehicle' }),
+      createIncomeEntry({ grossAmount: 200000, incomeType: 'rental_40_5', rentalPropertyKind: 'other_property' }),
+    ];
+    expect(calculateAnnualTurnover(entries)).toBe(500000);
   });
 });
 
@@ -303,18 +356,14 @@ describe('checkVATRegistration', () => {
     expect(result.mustRegisterWithinDays).toBe(0);
   });
 
-  it('returns required when at or above threshold', () => {
-    const formData = createFreelancerFormData({
-      thaiIncomeEntries: [
-        createIncomeEntry({ grossAmount: 1800000 }),
-      ],
-    });
-
-    const result = checkVATRegistration(formData);
-
-    expect(result.required).toBe(true);
-    expect(result.turnover).toBe(1800000);
-    expect(result.mustRegisterWithinDays).toBe(30);
+  it('is not required at exactly the threshold, and required one baht above it', () => {
+    // Revenue Code s.81/1: a tax base "not exceeding" the small-business amount is exempt
+    const at = checkVATRegistration(createFreelancerFormData({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 1800000 })] }));
+    expect(at.required).toBe(false);
+    expect(at.turnover).toBe(1800000);
+    const above = checkVATRegistration(createFreelancerFormData({ thaiIncomeEntries: [createIncomeEntry({ grossAmount: 1800001 })] }));
+    expect(above.required).toBe(true);
+    expect(above.mustRegisterWithinDays).toBe(30);
   });
 
   it('returns required for turnover above threshold', () => {

@@ -88,6 +88,44 @@ const MethodologyPage: React.FC = () => {
         </section>
 
         <section>
+          <h2>Freelance and business income</h2>
+          <p>
+            The freelancer calculator handles income outside employment. Each income type gets the
+            Revenue Department&apos;s flat-rate expense deduction, or your actual documented expenses if you
+            choose them (or if they are higher, when you let the calculator compare):
+          </p>
+          <div className="table-scroll"><table>
+            <thead><tr><th>Income type</th><th className="!text-right">Flat rate</th></tr></thead>
+            <tbody>
+              <tr><td>Rental 40(5): houses, buildings, vehicles</td><td className="text-right">30%</td></tr>
+              <tr><td>Rental 40(5): agricultural land / other land / other property</td><td className="text-right">20% / 15% / 10%</td></tr>
+              <tr><td>Liberal professions 40(6)</td><td className="text-right">30% (medical 60%)</td></tr>
+              <tr><td>Contractors supplying materials 40(7)</td><td className="text-right">60%</td></tr>
+              <tr><td>Business and other 40(8)</td><td className="text-right">60%</td></tr>
+            </tbody>
+          </table></div>
+          <p>
+            <strong>Minimum tax.</strong> When income other than salary is 120,000 THB or more, tax is the
+            greater of the normal tax and 0.5% of that income before expenses and allowances, unless the
+            0.5% figure is under 5,000 THB (so in practice from 1,000,000 THB). Foreign income brought into
+            Thailand is left out of this base because the calculator doesn&apos;t know its income category.
+            Foreign income earned in an earlier year is only counted if you were in Thailand 180+ days in
+            the year it was earned; the calculator asks, and counts &quot;not sure&quot; as taxable.
+          </p>
+          <p>
+            <strong>PND 94 half-year return.</strong> Required when January–June income from 40(5)–40(8)
+            exceeds 60,000 THB (120,000 THB if married to a spouse with no income). The estimate takes that
+            income, less flat-rate expenses and half the annual allowances, at the normal rates, with the
+            same 0.5% minimum from 120,000 THB of half-year income.
+          </p>
+          <p>
+            <strong>VAT.</strong> Registration is flagged when business turnover exceeds 1,800,000 THB.
+            Salary, dividends and rent from buildings or land (VAT-exempt under Revenue Code Section 81) are
+            not counted.
+          </p>
+        </section>
+
+        <section>
           <h2>Personal allowances</h2>
           <p>Allowances are subtracted from income (in addition to the expense deduction), based on family situation:</p>
           <OfficialSource
@@ -113,7 +151,8 @@ const MethodologyPage: React.FC = () => {
               <tr><td>Spouse allowance</td><td className="text-right">60,000 THB</td><td>Married, spouse has no income</td></tr>
               <tr><td>Senior exemption (65+)</td><td className="text-right">190,000 THB</td><td>Taxpayer is 65 or older</td></tr>
               <tr><td>Child allowance (base)</td><td className="text-right">30,000 THB/child</td><td>Per qualifying child</td></tr>
-              <tr><td>Child allowance (bonus)</td><td className="text-right">+30,000 THB</td><td>2nd+ child born 2018 or later</td></tr>
+              <tr><td>Child allowance (bonus)</td><td className="text-right">+30,000 THB</td><td>2nd and later legitimate child, by birth order, born 2018 or later</td></tr>
+              <tr><td>Adopted children</td><td className="text-right">30,000 THB/child</td><td>Counted only while the total claimed is 3 or fewer; no 2018+ bonus</td></tr>
               <tr><td>Parent allowance</td><td className="text-right">30,000 THB/parent</td><td>Up to 4 parents (self-certified, see Limitations)</td></tr>
             </tbody>
           </table></div>
@@ -156,21 +195,21 @@ const MethodologyPage: React.FC = () => {
             </thead>
             <tbody>
               <tr><td>Life insurance</td><td className="text-right">100,000 THB</td></tr>
-              <tr><td>Health insurance</td><td className="text-right">25,000 THB (combined with life insurance, 100,000 THB total)</td></tr>
-              <tr><td>Pension fund (RMF-style/annuity)</td><td className="text-right">500,000 THB</td></tr>
-              <tr><td>Provident fund</td><td className="text-right">500,000 THB (15% of wage)</td></tr>
-              <tr><td>RMF</td><td className="text-right">500,000 THB</td></tr>
-              <tr><td>SSF</td><td className="text-right">200,000 THB</td></tr>
+              <tr><td>Health insurance</td><td className="text-right">25,000 THB (life and health together max 100,000 THB)</td></tr>
+              <tr><td>Government Pension Fund</td><td className="text-right">500,000 THB</td></tr>
+              <tr><td>Provident fund</td><td className="text-right">15% of wages, max 500,000 THB</td></tr>
+              <tr><td>RMF</td><td className="text-right">30% of income, max 500,000 THB</td></tr>
+              <tr><td>SSF</td><td className="text-right">30% of income, max 200,000 THB</td></tr>
               <tr><td>Donations</td><td className="text-right">10% of income after allowances/other deductions</td></tr>
             </tbody>
           </table></div>
           <p className="note">
-            All retirement-fund deductions (pension, provident, RMF, SSF combined) are also subject to a
-            single combined ceiling of 500,000 THB under Thai law. The calculator applies each individual
-            cap above but does not yet enforce this combined ceiling — a known gap, not a hidden feature.
-            The pension fund's individual 500,000 THB cap is also flagged as possibly overstated (a
-            200,000 THB / 15%-of-income sub-cap may apply instead); it has not been independently
-            re-verified.
+            All retirement-fund deductions (Government Pension Fund, provident fund, RMF and SSF) share a
+            single combined ceiling of 500,000 THB, and the calculator enforces it. Each fund also has its
+            own limit: provident fund contributions count up to 15% of wages, and RMF and SSF purchases up
+            to 30% of assessable income. The "pension fund" field is the Government Pension Fund (up to
+            500,000 THB, per the Revenue Department's PND90 guide). Pension (annuity) insurance, which has
+            a separate 15% / 200,000 THB limit, is not offered as a field yet.
           </p>
         </section>
 
@@ -325,10 +364,10 @@ const MethodologyPage: React.FC = () => {
             </p>
             <p>Specific known simplifications in the current calculation, disclosed rather than hidden:</p>
             <ul>
-              <li>The combined 500,000 THB retirement-fund ceiling (pension + provident + RMF + SSF) is not enforced — only each fund's individual cap is applied.</li>
-              <li>The rental-income (40(5)) flat deduction models only the 30% houses/vehicles case, not the lower rates that apply to land.</li>
               <li>Business/sales withholding (40(8)) is modeled as a flat 3%, though real rates vary by activity (as low as 1%, as high as 5%).</li>
-              <li>The senior exemption's exact statutory citation and the pension fund's individual cap are flagged above as unverified against a primary source.</li>
+              <li>The senior exemption's exact statutory citation is flagged above as unverified against a primary source.</li>
+              <li>The PND94 half-year estimate leaves out insurance, fund and donation payments made in January–June, because the calculator does not ask for them, so it can be higher than the real figure.</li>
+              <li>Whether Super Savings Fund (SSF) purchases still qualify for a deduction after 2024 is unconfirmed; the calculator still allows it.</li>
             </ul>
             <p>
               Tax rules change. Always verify current figures with the{' '}

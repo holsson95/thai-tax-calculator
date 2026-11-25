@@ -19,6 +19,7 @@ import { describe, it, expect } from 'vitest';
 import {
   calculateAnnualTax,
   calculateCompanyOwnerTax,
+  calculateMinimumTax,
   calculateFreelancerTax,
   calculateChildAllowance,
   calculateStandardDeduction,
@@ -595,9 +596,9 @@ describe('PND94 and VAT thresholds', () => {
     expect(checkPND94Obligation(freelancer({ maritalStatus: 'single', spouseHasNoIncome: true, thaiIncomeEntries: entries })).required).toBe(true);
   });
 
-  it('VAT: 1,799,999 of business turnover is under the threshold; 1,800,000 reaches it', () => {
+  it('VAT: 1,799,999 of business turnover is under the threshold; 1,800,001 is over it', () => {
     expect(checkVATRegistration(freelancer({ thaiIncomeEntries: [thai(1_799_999, 'business_sales_40_8')] })).required).toBe(false);
-    expect(checkVATRegistration(freelancer({ thaiIncomeEntries: [thai(1_800_000, 'business_sales_40_8')] })).required).toBe(true);
+    expect(checkVATRegistration(freelancer({ thaiIncomeEntries: [thai(1_800_001, 'business_sales_40_8')] })).required).toBe(true);
   });
 });
 
@@ -832,11 +833,256 @@ describe('Behaviour around the 2026-11-25 fixes', () => {
     expect(errors).toContain('Date remitted is not a valid date');
   });
 
-  it('VAT: dividends are not turnover either, but rental and contractor income are', () => {
+  it('VAT: dividends are not turnover either, but vehicle rental and contractor income are', () => {
     const r = checkVATRegistration(freelancer({
-      thaiIncomeEntries: [thai(5_000_000, 'dividend'), thai(1_000_000, 'rental_40_5'), thai(800_000, 'contractor_40_7')],
+      thaiIncomeEntries: [thai(5_000_000, 'dividend'), { ...thai(1_000_000, 'rental_40_5'), rentalPropertyKind: 'vehicle' }, thai(800_001, 'contractor_40_7')],
     }));
-    expect(r.turnover).toBe(1_800_000);
+    expect(r.turnover).toBe(1_800_001);
     expect(r.required).toBe(true);
+  });
+});
+
+// ─── 8. Open items closed 2026-11-25 (second pass) ───────────────────────────
+
+describe('Share-of-income limits on retirement funds', () => {
+  // tax-data/2026/deductions.json: provident-fund-wage-percent (15% of wages, RD primary),
+  // rmf-income-percent and ssf-income-percent (30%, RD PND94 guide).
+  it('provident fund is limited to 15% of wages', () => {
+    const r = calculateAnnualTax(salaried({ annualIncome: 600_000, hasProvidentFund: true, providentFund: 200_000 }));
+    expect(r.breakdown.providentFund).toBe(90_000);
+  });
+
+  it('RMF and SSF are limited to 30% of assessable income', () => {
+    const r = calculateAnnualTax(salaried({ annualIncome: 400_000, hasRMF: true, rmf: 300_000 }));
+    expect(r.breakdown.rmf).toBe(120_000);
+    const s2 = calculateAnnualTax(salaried({ annualIncome: 400_000, hasSSF: true, ssf: 200_000 }));
+    expect(s2.breakdown.ssf).toBe(120_000);
+  });
+
+  it('the Government Pension Fund field has its own 500,000 cap and no share-of-income limit', () => {
+    // RD PND90 2024 guide: "Total contribution to Government Pension Fund, up to 500,000 baht."
+    const r = calculateAnnualTax(salaried({ annualIncome: 600_000, hasPensionFund: true, pensionFund: 300_000 }));
+    expect(r.breakdown.pensionFund).toBe(300_000);
+  });
+
+  it('a freelancer with no salary cannot claim provident fund, but RMF uses their total income', () => {
+    const r = calculateFreelancerTax(freelancer({
+      thaiIncomeEntries: [thai(1_000_000, 'liberal_profession_40_6')],
+      hasProvidentFund: true, providentFund: 100_000,
+      hasRMF: true, rmf: 400_000,
+    }));
+    expect(r.deductionBreakdown.providentFund).toBe(0);
+    expect(r.deductionBreakdown.rmf).toBe(300_000);
+  });
+
+  it('company owners: provident fund follows the salary only, RMF the whole income including dividends', () => {
+    const r = calculateCompanyOwnerTax(companyOwner({
+      salaryFromCompany: 400_000,
+      directorFees: 600_000,
+      dividendEntries: [dividend(1_000_000, 100_000)],
+      hasProvidentFund: true, providentFund: 500_000,
+      hasRMF: true, rmf: 500_000,
+    }));
+    expect(r.breakdown.providentFund).toBe(60_000); // 15% × 400,000 salary
+    expect(r.breakdown.rmf).toBe(440_000); // 30% × 2,000,000 = 600,000, but combined cap leaves 440,000
+  });
+});
+
+describe('Adopted children (RD PND94 guide, B. item 3)', () => {
+  const lines = (children: { birthYear: number; isAdopted?: boolean }[]) => getChildAllowanceBreakdown(children);
+
+  it('with 3 or more legitimate children, no adopted child is counted', () => {
+    const r = lines([{ birthYear: 2010 }, { birthYear: 2012 }, { birthYear: 2014 }, { birthYear: 2016, isAdopted: true }]);
+    expect(r[3]).toEqual({ base: 0, bonus: 0, total: 0, counted: false });
+  });
+
+  it('adopted children fill up to 3 children in total', () => {
+    const r = lines([{ birthYear: 2010 }, { birthYear: 2011, isAdopted: true }, { birthYear: 2012, isAdopted: true }, { birthYear: 2013, isAdopted: true }]);
+    expect(r.map((l) => l.counted)).toEqual([true, true, true, false]);
+    expect(calculateChildAllowance([{ birthYear: 2010 }, { birthYear: 2011, isAdopted: true }, { birthYear: 2012, isAdopted: true }, { birthYear: 2013, isAdopted: true }])).toBe(90_000);
+  });
+
+  it('adopted children never get the 2018+ bonus', () => {
+    const r = lines([{ birthYear: 2015 }, { birthYear: 2020, isAdopted: true }]);
+    expect(r[1].bonus).toBe(0);
+  });
+
+  it('the bonus rank counts legitimate children only (app interpretation, recorded in tax-data)', () => {
+    // adopted 2014, legitimate 2019 and 2021 → the 2019 child is the 1st legitimate child: no bonus; 2021 gets it
+    const r = lines([{ birthYear: 2014, isAdopted: true }, { birthYear: 2019 }, { birthYear: 2021 }]);
+    expect(r.map((l) => l.bonus)).toEqual([0, 0, 30_000]);
+  });
+
+  it('legitimate children have no count limit', () => {
+    const five = Array.from({ length: 5 }, (_, i) => ({ birthYear: 2008 + i }));
+    expect(calculateChildAllowance(five)).toBe(5 * 30_000);
+  });
+});
+
+describe('Rental flat rates by property kind (RD rental expense table)', () => {
+  it.each([
+    ['building', 0.3],
+    ['vehicle', 0.3],
+    ['agricultural_land', 0.2],
+    ['other_land', 0.15],
+    ['other_property', 0.1],
+  ] as const)('%s → %d', (kind, rate) => {
+    const r = calculateFreelancerTax(freelancer({ thaiIncomeEntries: [{ ...thai(1_000_000, 'rental_40_5'), rentalPropertyKind: kind }] }));
+    expect(r.expenseDeduction).toBeCloseTo(1_000_000 * rate, 6);
+  });
+
+  it('an entry without a property kind keeps the previous 30% (building)', () => {
+    const r = calculateFreelancerTax(freelancer({ thaiIncomeEntries: [thai(1_000_000, 'rental_40_5')] }));
+    expect(r.expenseDeduction).toBeCloseTo(300_000, 6);
+  });
+});
+
+describe('Annual minimum tax (RD PND90 guide 2024, No. 11 items 8-10)', () => {
+  it('annual minimum tax: 0.5% of non-employment income above 120,000 when that is at least 5,000', () => {
+    // RD Guide to PND90 2024, No. 11: "If you have assessable income other than employment income
+    // (Section 40(1)) more than 120,000 baht in the tax year ... Assessable Gross Income x 0.005";
+    // "If the result is less than 5,000 baht, your tax payable is the amount in No. 11 item 8."
+    // 1,200,000 40(8) − 720,000 − 330,000 allowances − 300,000 RMF → 0 net tax; 0.5% = 6,000.
+    const r = calculateFreelancerTax(freelancer({
+      maritalStatus: 'married', spouseHasNoIncome: true,
+      children: [{ birthYear: 2010 }, { birthYear: 2012 }, { birthYear: 2014 }],
+      numberOfParents: 4,
+      hasRMF: true, rmf: 300_000,
+      thaiIncomeEntries: [thai(1_200_000, 'business_sales_40_8')],
+    }));
+    expect(r.grossTaxBeforeCredits).toBe(6_000);
+  });
+});
+
+describe('Annual minimum tax — boundaries and scope', () => {
+  it('applies only when 0.5% of the base is at least 5,000 (base 1,000,000+)', () => {
+    expect(calculateMinimumTax(999_999, false).minimumTax).toBe(0);
+    expect(calculateMinimumTax(1_000_000, false).minimumTax).toBe(5_000);
+    expect(calculateMinimumTax(119_999, false).minimumTax).toBe(0);
+  });
+
+  it('the 65+ exemption comes off the base first', () => {
+    expect(calculateMinimumTax(1_100_000, true)).toEqual({ base: 910_000, minimumTax: 0 });
+    expect(calculateMinimumTax(1_290_000, true)).toEqual({ base: 1_100_000, minimumTax: 5_500 });
+  });
+
+  it('salary is never in the base', () => {
+    const r = calculateFreelancerTax(freelancer({ thaiIncomeEntries: [thai(5_000_000, 'salary_40_1')] }));
+    expect(r.minimumTax).toBe(0);
+    expect(r.minimumTaxApplied).toBe(false);
+  });
+
+  it('does not change the tax when the ordinary tax is already higher', () => {
+    // 2,000,000 40(6): ordinary tax is far above the 10,000 minimum
+    const r = calculateFreelancerTax(freelancer({ thaiIncomeEntries: [thai(2_000_000, 'liberal_profession_40_6')] }));
+    expect(r.minimumTax).toBe(10_000);
+    expect(r.minimumTaxApplied).toBe(false);
+    expect(r.grossTaxBeforeCredits).toBeGreaterThan(10_000);
+  });
+
+  it('LTR Highly Skilled: the minimum is compared with the progressive part only, the 17% salary tax is added on top', () => {
+    const r = calculateFreelancerTax(freelancer({
+      visaType: 'ltr_highly_skilled',
+      maritalStatus: 'married', spouseHasNoIncome: true,
+      children: [{ birthYear: 2010 }, { birthYear: 2012 }, { birthYear: 2014 }],
+      numberOfParents: 4,
+      hasRMF: true, rmf: 300_000,
+      thaiIncomeEntries: [thai(1_000_000, 'salary_40_1'), thai(1_200_000, 'business_sales_40_8')],
+    }));
+    expect(r.grossTaxBeforeCredits).toBeCloseTo(170_000 + 6_000, 6);
+  });
+
+  it('company owners: director fees and PIT-included dividends form the base, salary does not', () => {
+    // salary 300,000; director fees 400,000; dividends 800,000 included → base 1,200,000 → minimum 6,000
+    const r = calculateCompanyOwnerTax(companyOwner({
+      salaryFromCompany: 300_000,
+      directorFees: 400_000,
+      dividendEntries: [dividend(800_000, 80_000), dividend(5_000_000, 500_000, false)],
+      maritalStatus: 'married', spouseHasNoIncome: true,
+      children: [{ birthYear: 2010 }, { birthYear: 2012 }, { birthYear: 2014 }],
+      numberOfParents: 4,
+      hasRMF: true, rmf: 450_000,
+      hasLifeInsurance: true, lifeInsurance: 100_000,
+    }));
+    expect(r.minimumTax).toBe(6_000);
+    expect(r.taxOwed).toBeGreaterThanOrEqual(6_000);
+  });
+});
+
+describe('VAT boundary and life+health cap (fixed 2026-11-25, third pass)', () => {
+  it('VAT: exactly 1,800,000 of turnover does not require registration', () => {
+    // Revenue Code s.81/1 (rd.go.th/english/37732.html): a business whose tax base is "not exceeding"
+    // the small-business amount is exempt. The engine used >= (required at exactly 1.8M) until 2026-11-25.
+    expect(checkVATRegistration(freelancer({ thaiIncomeEntries: [thai(1_800_000, 'business_sales_40_8')] })).required).toBe(false);
+  });
+
+  it('life and health insurance together are capped at 100,000', () => {
+    // tax-data/2026/deductions.json#max-health-insurance; PwC (Aug 2026): health premium "together with
+    // the above life insurance premiums paid cannot exceed THB 100,000 in total"; RD PND94 guide 2023.
+    const r = calculateAnnualTax(salaried({
+      annualIncome: 2_000_000,
+      hasLifeInsurance: true, lifeInsurance: 100_000,
+      hasHealthInsurance: true, healthInsurance: 25_000,
+    }));
+    expect(r.breakdown.lifeInsurance + r.breakdown.healthInsurance).toBe(100_000);
+  });
+});
+
+describe('Life + health insurance combined cap — more cases', () => {
+  it('health fills the room life insurance leaves', () => {
+    const r = calculateAnnualTax(salaried({ annualIncome: 2_000_000, hasLifeInsurance: true, lifeInsurance: 90_000, hasHealthInsurance: true, healthInsurance: 25_000 }));
+    expect(r.breakdown.lifeInsurance).toBe(90_000);
+    expect(r.breakdown.healthInsurance).toBe(10_000);
+  });
+
+  it('health alone still has its own 25,000 cap', () => {
+    const r = calculateAnnualTax(salaried({ annualIncome: 2_000_000, hasHealthInsurance: true, healthInsurance: 80_000 }));
+    expect(r.breakdown.healthInsurance).toBe(25_000);
+  });
+});
+
+describe('Foreign income: residency in the year earned (freelancer calculator)', () => {
+  const at = (residentInYearEarned: 'yes' | 'no' | 'unsure' | undefined, dateEarned = '2025-06-01') =>
+    isForeignIncomeTaxable({ ...foreign(500_000, dateEarned, '2026-03-01'), residentInYearEarned }, true);
+
+  it('earlier-year income from a non-resident year is not taxable', () => {
+    expect(at('no').isTaxable).toBe(false);
+    expect(at('no').reason).toMatch(/fewer than 180 days/);
+  });
+
+  it('earlier-year income from a resident year is taxable', () => {
+    expect(at('yes').isTaxable).toBe(true);
+  });
+
+  it('"not sure" and a missing answer are counted as taxable, with a reason saying so', () => {
+    expect(at('unsure').isTaxable).toBe(true);
+    expect(at(undefined).isTaxable).toBe(true);
+    expect(at(undefined).reason).toMatch(/to be cautious/);
+  });
+
+  it('for income earned this year the answer is ignored: this year\'s days decide', () => {
+    expect(at('no', '2026-01-15').isTaxable).toBe(true);
+    expect(isForeignIncomeTaxable({ ...foreign(500_000, '2026-01-15', '2026-03-01'), residentInYearEarned: 'yes' }, false).isTaxable).toBe(false);
+  });
+
+  it('flows through to the freelancer tax result', () => {
+    const r = calculateFreelancerTax(freelancer({
+      foreignIncomeEntries: [
+        { ...foreign(400_000, '2025-02-01', '2026-02-01'), residentInYearEarned: 'no' },
+        { ...foreign(300_000, '2025-02-01', '2026-02-01'), residentInYearEarned: 'yes' },
+      ],
+    }));
+    expect(r.taxableForeignIncome).toBe(300_000);
+  });
+});
+
+describe('DTA country list (RD live table, checked 2026-11-25)', () => {
+  it('has exactly the 61 countries with a full income-tax DTA; Saudi Arabia (air transport only) is not one', async () => {
+    const { hasDTAWithThailand, searchCountries } = await import('../../data/dtaCountries');
+    expect(searchCountries('').filter((c) => c.hasDTA)).toHaveLength(61);
+    expect(hasDTAWithThailand('Saudi Arabia')).toBe(false);
+    for (const name of ['United Kingdom', 'South Korea', 'China', 'United States', 'United Arab Emirates', 'Taiwan', 'Tajikistan']) {
+      expect(hasDTAWithThailand(name), name).toBe(true);
+    }
   });
 });

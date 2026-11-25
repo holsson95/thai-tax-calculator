@@ -176,13 +176,15 @@ describe('calculateDeductions', () => {
     ['RMF', { hasRMF: true, rmf: 600000 }, 'rmf', TAX_CONSTANTS.MAX_RMF],
     ['SSF', { hasSSF: true, ssf: 300000 }, 'ssf', TAX_CONSTANTS.MAX_SSF],
   ] as const)('caps the %s fund at its own maximum when claimed alone', (_label, fields, key, cap) => {
-    const breakdown = calculateDeductions(createBaseFormData(fields), 2000000);
+    // High income so the share-of-income limits (15% / 30%) do not bind here.
+    const breakdown = calculateDeductions(createBaseFormData({ annualIncome: 10000000, ...fields }), 2000000);
     expect(breakdown[key]).toBe(cap);
   });
 
   it('caps pension + provident + RMF + SSF together at 500,000, filling in form order', () => {
     // tax-data/2026/deductions.json#combined-retirement-cap
     const formData = createBaseFormData({
+      annualIncome: 10000000,
       hasPensionFund: true,
       pensionFund: 200000,
       hasProvidentFund: true,
@@ -300,13 +302,14 @@ describe('calculateAnnualTax', () => {
     // Standard deduction: 100,000
     // Allowances: 60,000 + 60,000 + 30,000 + 120,000 = 270,000
     // Income after standard + allowances: 2,000,000 - 100,000 - 270,000 = 1,630,000
-    // Other deductions: 100,000 life + 25,000 health + 500,000 retirement funds
+    // Other deductions: 100,000 life + 0 health (life and health together max 100,000)
+    //   + 500,000 retirement funds
     //   (pension/provident/RMF/SSF claimed 1,700,000 but capped at 500,000 combined) = 625,000
-    // Taxable: 1,630,000 - 625,000 = 1,005,000
-    // Tax: 115,000 (up to 1M) + 5,000 x 25% = 116,250
+    // Taxable: 1,630,000 - 600,000 = 1,030,000
+    // Tax: 115,000 (up to 1M) + 30,000 x 25% = 122,500
     expect(result.totalAllowances).toBe(270000);
-    expect(result.taxableIncome).toBe(1005000);
-    expect(result.taxOwed).toBeCloseTo(116250, 6);
+    expect(result.taxableIncome).toBe(1030000);
+    expect(result.taxOwed).toBeCloseTo(122500, 6);
   });
 
   it('calculates refund when tax withheld exceeds tax owed', () => {

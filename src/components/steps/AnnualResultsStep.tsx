@@ -115,6 +115,18 @@ const AnnualResultsStep: React.FC<AnnualResultsStepProps> = ({ formData, onStart
       </div>
       <SourceTicket year={RULES_TAX_YEAR} className="mt-6 sm:mt-2" />
 
+      {/* Annual minimum tax (RD PND90 guide, No. 11 item 9) */}
+      {result.minimumTaxApplied && (
+        <div className="note mt-6" data-testid="minimum-tax-note">
+          <h3 className="note-title">Minimum tax applied</h3>
+          <p className="text-sm text-ink-soft">
+            Your income other than salary is large enough that the Revenue Department's minimum tax
+            applies: 0.5% of that income before expenses and allowances (formatThb(result.minimumTax ?? 0)), which is
+            more than the tax worked out from the brackets. The tax shown uses the minimum.
+          </p>
+        </div>
+      )}
+
       {/* Take-Home Income */}
       <div className="mt-8">
         <TakeHomeIncomeCard annualTakeHome={takeHomeIncome} />

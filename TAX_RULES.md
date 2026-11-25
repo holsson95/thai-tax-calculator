@@ -63,10 +63,12 @@ via `git stash`).
 
 **Net effect on real users**: only bug #1 (contractor 40(7)) was mis-taxing anyone before this fix. Bugs #2 and #3's underlying calculation tables were unreachable dead code — their live impact was limited to misleading descriptive text, now corrected.
 
-Two smaller, lower-stakes items also remain flagged (not re-verified, not
-fixed): the pension fund cap may be 200,000 (not 500,000) as an individual
-sub-cap ([`deductions.json#max-pension-fund`](tax-data/2026/deductions.json)),
-and the DTA country count comment was corrected from 61 to 62 ([`foreign-income.json#dta-country-list`](tax-data/2026/foreign-income.json)) — a documentation-only fix, not a calculation change.
+Two smaller, lower-stakes items were also flagged: the pension fund cap
+([`deductions.json#max-pension-fund`](tax-data/2026/deductions.json)) — RESOLVED
+2026-11-25: the app's field is the Government Pension Fund, whose 500,000 cap is
+confirmed by the RD PND90 2024 guide (the 200,000 / 15% figure belongs to pension
+*insurance*, a different item the app does not offer) —
+and the DTA country count ([`foreign-income.json#dta-country-list`](tax-data/2026/foreign-income.json)) — RESOLVED 2026-11-25: the app's 61 countries match the RD's list of full income-tax DTAs exactly; the RD table's 62nd entry, Saudi Arabia, is an air-transport-only agreement.
 
 **None of these were "corrected" by editing the calculator.** They're recorded
 here, with sources, for a deliberate follow-up decision.
@@ -100,8 +102,8 @@ does not always mean the exact document text was quoted from the fetch.
 | Personal allowance | 60,000 THB | 2026 | Every taxpayer | PwC / Sherrings (secondary), Amendment Act No. 44 | ❌ No |
 | Spouse allowance | 60,000 THB | 2026 | Married AND spouse has no income | PwC / Sherrings | ❌ No |
 | Senior (65+) — **is an exemption, not an "allowance"** | 190,000 THB | 2026 | Age 65+; exempts first 190,000 THB of income | Sherrings + RD exemption form | ❌ No — "Section 42(17)" citation could NOT be confirmed by any source; treat as unconfirmed, not fact |
-| Child allowance (base) | 30,000 THB/child | 2026 | Per qualifying child (adopted capped at 3) | Forvis Mazars + Sherrings | ✅ Yes |
-| Child allowance (bonus) | +30,000 THB | 2026 | 2nd+ child born 2018+, **excludes adopted children** (app doesn't model this exclusion) | Forvis Mazars + Sherrings, Amendment Act No. 46 B.E. 2561 (12 Nov 2018) | ✅ Yes |
+| Child allowance (base) | 30,000 THB/child | 2026 | Legitimate children unlimited; adopted children counted only while the total claimed is ≤ 3 (modeled since 2026-11-25, `allowances.json#child-allowance-adopted-limit`) | RD PND94 guide 2023 (primary) + Forvis Mazars + Sherrings | ✅ Yes |
+| Child allowance (bonus) | +30,000 THB | 2026 | 2nd+ legitimate child by birth order, born 2018+; excludes adopted children (both modeled since 2026-11-25) | Forvis Mazars + Sherrings, Amendment Act No. 46 B.E. 2561 (12 Nov 2018); RD PND94 guide 2023 | ✅ Yes |
 | Parent allowance | 30,000 THB/parent | 2026 | Parent must be 60+, income ≤30,000/yr, only one sibling can claim (app only stores a self-certification checkbox, not these numeric thresholds) | MSNA Group + PwC + Sherrings | ❌ No |
 | Max parents | 4 | 2026 | **Not a stated statutory cap** — derived from "at most 2 own + 2 spouse's parents" | (derived, not directly sourced) | ❌ No |
 
@@ -117,13 +119,13 @@ does not always mean the exact document text was quoted from the fetch.
 | Dividend | 0% | No deduction — taxed gross/gross-up with credit instead | RD Guide to PND90 (inferred) | ✅ Yes (by inference) |
 | **Liberal profession sub-rates** | **FIXED (dead-code data + live copy): entertainment/sports/author removed from the flat-60% list** | Directly-quoted RD text confirms: entertainers/athletes → 40(8) tiered 60%/40% above 300k, capped 600,000 THB; authors/royalties → 40(3), 50% capped 100k-200k THB — neither is representable as a flat percentage. New detail: a 2026 decree (No. 803) separately made *visual* fine artists (not performers) eligible for 60% under 40(6) from tax year 2025. | RD Guide (primary, quoted) + Sherrings + ExpatTaxThailand | ✅ Yes — fixed 2026-09-07; was dead code with zero live tax-calculation impact, but corrected misleading user-facing copy |
 | **Business category flat rates** | **FIXED (4 of 10 categories): service_business, transportation, construction, other_business now 60%** | retail/manufacturing/restaurant/agriculture (60%) and professional_service (30%, non-medical) were already correct | Sherrings + Acclime (secondary, agreeing with each other and the primary-sourced contractor finding) | ✅ Yes — fixed 2026-09-07; table itself was dead code, but the matching live `BUSINESS_CATEGORY_DESCRIPTIONS` text was also corrected |
-| Combined retirement cap | 500,000 THB | Pension+provident+RMF+SSF combined, excludes life/health insurance. **Not enforced anywhere in calculation code** — only individual caps applied | Forvis Mazars + RD Guide p.7 | ✅ Yes (source); ❌ enforcement gap remains |
+| Combined retirement cap | 500,000 THB | GPF + provident + RMF + SSF combined, excludes life/health insurance. Enforced since 2026-11-25 | Forvis Mazars + RD Guide p.7; RD PND94 guide 2023 | ✅ Yes |
 | Life insurance cap | 100,000 THB | 10+ year Thai policy | RD English page (primary) | ✅ Yes |
 | Health insurance cap | 25,000 THB | Combined life+health capped at 100,000 THB total | Sherrings + Forvis Mazars (secondary) | ❌ No |
-| **Pension fund cap** | **500,000 THB in app** | Individual sub-cap may actually be 200,000 THB (also 15%-of-income limit); 500,000 only applies to the *combined* ceiling | Forvis Mazars (secondary) | ⚠️ **Flagged as possibly wrong — see top of document** |
-| Provident fund cap | 500,000 THB | 15% of wage, max 500,000 | RD English page (primary) | ✅ Yes |
-| RMF cap | 500,000 THB | Also a 30%-of-income overlay not modeled in app | Forvis Mazars (secondary) | ✅ Yes |
-| SSF cap | 200,000 THB | Same 30%-of-income overlay caveat | Forvis Mazars (secondary) | ✅ Yes |
+| Government Pension Fund cap | 500,000 THB | The app's "pension fund" field is the GPF. Pension (annuity) insurance (15% of income, max 200,000) is a different item, not offered | RD PND90 2024 guide (primary) | ✅ Yes (resolved 2026-11-25) |
+| Provident fund cap | 500,000 THB | 15% of wage, max 500,000 (15% limit enforced since 2026-11-25) | RD English page (primary) | ✅ Yes |
+| RMF cap | 500,000 THB | Also limited to 30% of assessable income (enforced since 2026-11-25) | RD PND94 guide 2023 (primary) + PwC + Forvis Mazars | ✅ Yes |
+| SSF cap | 200,000 THB | Also limited to 30% of assessable income (enforced since 2026-11-25). **Open question**: RD 2023 guide limits SSF purchases to 2020–2024; sources disagree on any extension | RD PND94 guide 2023 (primary) + Forvis Mazars | ⚠️ Value yes; 2026 eligibility unconfirmed |
 | Donation cap | 10% | Some categories (education/hospitals/e-Donation) get 2x multiplier, not modeled (conservative gap, not an error) | RD English page + Guide No.11 (primary) | ✅ Yes |
 
 ## Social Security — [`tax-data/2026/social-security.json`](tax-data/2026/social-security.json)
@@ -165,7 +167,7 @@ does not always mean the exact document text was quoted from the fetch.
 |---|---|---|---|---|
 | Remittance rule start | 2024-01-01 | Order **Por. 161/2566**; clarified by **Por. 162/2566** (pre-2024 income stays under old rule) | Mahanakorn Partners + KPMG (secondary, convergent) | ✅ Yes |
 | Foreign tax credit formula | min(foreign tax, Thai tax on same income) | Requires a DTA | **US-Thailand treaty, Article 25(2)** (primary text, direct quote) | ✅ Yes |
-| **DTA country count** | **61 in app** | Should be **62** — verified directly against RD's own live data table | **rd.go.th/english/766.html** (primary, parsed live) | ✅ Yes — **update the code comment from 61 to 62** |
+| DTA country count | 61 | Countries with a full income-tax DTA in force; Saudi Arabia's agreement is air-transport only and is not counted. Checked name by name 2026-11-25 | rd.go.th/english/766.html (primary, live table) | ✅ Yes |
 | DTA pension exemptions | Country/pension-type specific | Government/social-security pensions often source-only; **ordinary private pensions can be the OPPOSITE (residence-only)** — don't overgeneralize "pensions are exempt" | US-Thailand treaty Art. 20-21 (primary text) | ✅ Yes (mechanism + 1 example country) |
 | LTR foreign-income exemption | 3 visa categories exempt | **Corrected wording**: exemption applies to remitted income specifically, not "regardless of remittance" as previously stated | **Royal Decree No. 743 B.E. 2565, Section 5** (primary, full text read via BOI) | ✅ Yes |
 | LTR Highly Skilled 17% flat rate | 17% on Thai salary income | Highly-Skilled Professional LTR only (not SMART visa); employer must be in a targeted/BOI/EEC industry | **Royal Decree No. 743 B.E. 2565, Sections 3-4** (primary, full text read via BOI) | ✅ Yes — resolves what was the single largest gap in the registry |
@@ -186,7 +188,7 @@ The root-level `taxRulesFreelance.JSON` file is **not imported anywhere in `src/
 
 - **Primary-source verified** (fetched an actual government document or read primary treaty text): residency threshold, PND90/91 & PND94 paper deadlines, VAT threshold/deadline, provident fund cap, life insurance cap, donation cap, most withholding rates, foreign tax credit formula, DTA country count, both LTR rules, rental 40(5)/liberal-profession 40(6)/business 40(8) base rates, and (via the follow-up pass) the contractor 40(7) rate and the entertainment/sports/author classification.
 - **Strong secondary-source verified** (multiple independent reputable firms, named legal basis, but no primary document fetched): PIT brackets, personal/spouse/child allowances, remittance rule (Por. 161/2566, 162/2566), SSO ceiling figures, RMF/SSF caps, combined retirement cap, and (via the follow-up pass) the sole-proprietor business category rates.
-- **Not verified** (single/generic source, or contested): senior exemption's "Section 42(17)" citation, max-parents "4" cap, PND94 threshold figures, health insurance cap, VAT rate's continuation past Sept 2027, pension fund individual cap (not re-checked in the follow-up pass).
+- **Not verified** (single/generic source, or contested): senior exemption's "Section 42(17)" citation, max-parents "4" cap, PND94 threshold figures, health insurance cap, VAT rate's continuation past Sept 2027, SSF eligibility for purchases after 2024 (sources disagree).
 - **CONFIRMED and FIXED, 2026-09-07** (see "Read this first" at top of document): contractor 40(7) rate (40%→60%, was a live bug), entertainment/sports/author sub-classification (dead-code data corrected + misleading live copy fixed; a full tiered/capped feature was not built), sole-proprietor business category table (4 of 10 categories, 40%→60%; table itself dead code, matching live description text fixed).
 
 **Status change from the initial pass**: three items that were "flagged as possibly incorrect, pending review" were independently re-verified (confirmed, not refuted), then fixed with explicit user approval and test coverage. `npx tsc --noEmit` and the full `vitest` suite both pass (aside from 40 pre-existing, unrelated `react-helmet-async` test-environment failures also present on the unmodified baseline).

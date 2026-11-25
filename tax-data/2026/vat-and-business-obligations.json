@@ -8,7 +8,7 @@
       "id": "vat-registration-threshold",
       "rule": "VAT registration threshold (annual turnover)",
       "value": 1800000,
-      "conditions": "Mandatory VAT registration once projected/actual annual taxable turnover reaches this amount. Revenue Code Section 81/1 exempts 'small business' below a threshold, but delegates the exact baht figure to a Royal Decree rather than stating it in the Code itself.",
+      "conditions": "Mandatory VAT registration once annual taxable turnover (value of tax base) EXCEEDS this amount. Revenue Code Section 81/1 exempts a business whose tax base is 'not exceeding' the small-business amount set by Royal Decree, so exactly 1,800,000 THB is still exempt. App: required when turnover > 1,800,000 (was >= until 2026-11-25).",
       "source": {
         "label": "Thai Revenue Department (EN) — Revenue Code Sections 80-82",
         "url": "https://www.rd.go.th/english/37732.html"
@@ -42,6 +42,20 @@
       "verified": false,
       "verification_notes": "IMPORTANT — TIME-LIMITED RULE, NOT PERMANENT LAW: the current decree covers 1 Oct 2026 – 30 Sept 2027 only (Cabinet approved the extension 27 July 2026; Royal Decree No. 807 published in the Royal Gazette 23 Aug 2026). This is confirmed via reputable secondary sources (regfollower.com, HLB Thailand, Nishimura & Asahi) but the primary Royal Gazette text was not directly fetched. The calculator should display this expiry date and flag that the rate reverts to 10% if not extended again — this has happened roughly annually for ~34 years but is never guaranteed.",
       "used_in": "src/config/taxConfig.ts:72 (VAT_CONFIG.STANDARD_RATE)"
+    },
+    {
+      "id": "vat-exempt-rental-immovable-property",
+      "rule": "Rental of immovable property is exempt from VAT",
+      "value": true,
+      "tax_year": "current Revenue Code",
+      "conditions": "Revenue Code Section 81(1)(r) exempts 'rental of immovable property' with no residential/commercial qualifier. Rental of movable property (vehicles, equipment) is not covered by this exemption. The app excludes 40(5) rental entries whose property kind is a building or land from VAT turnover, and still counts vehicle and other-property rental. Whether an arrangement is a lease or a service (e.g. serviced short stays) depends on the facts and is not modeled.",
+      "source": {
+        "label": "Thai Revenue Department (EN) — Revenue Code Sections 80-82",
+        "url": "https://www.rd.go.th/english/37732.html"
+      },
+      "verified": true,
+      "verification_notes": "Section 81(1)(r) read verbatim on rd.go.th on 2026-11-25. Section 81/1 measures the threshold by 'value of tax base'; the definition of tax base (Section 79) was not read.",
+      "used_in": "src/utils/obligationChecks.ts (calculateAnnualTurnover)"
     }
   ]
 }

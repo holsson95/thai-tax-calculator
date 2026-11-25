@@ -15,6 +15,9 @@ import QuickTaxCalculator, { QuickEstimate } from '../QuickTaxCalculator';
 import MonthlyResultsStep from '../steps/MonthlyResultsStep';
 import DependentsStepAnnual from '../steps/DependentsStepAnnual';
 import ReviewStep from '../steps/ReviewStep';
+import IncomeEntryCard from '../common/IncomeEntryCard';
+import ForeignIncomeStep from '../steps/ForeignIncomeStep';
+import { createDefaultFreelancerFormData } from '../../types/freelancerForm';
 import { createDefaultCompanyOwnerFormData, createDefaultCompanyInfo } from '../../types/companyOwnerForm';
 import { calculateAnnualTax } from '../../utils/taxCalculations';
 import { MonthlyFormData, MonthlyIncomeEntry, TaxFormData, TAX_CONSTANTS } from '../../types/taxForm';
@@ -239,5 +242,60 @@ describe('Screens that show allowance figures use the engine', () => {
     expect(screen.getByText('฿1,000,000')).toBeInTheDocument();
     // 1,000,000 − 100,000 − 60,000 = 840,000 → cap 84,000
     expect(screen.getAllByText('฿84,000').length).toBeGreaterThan(0);
+  });
+});
+
+describe('New inputs (2026-11-25 second pass)', () => {
+  it('ticking "Adopted" on a 4th child shows it is not counted', () => {
+    const setFormData = vi.fn();
+    const children = [{ birthYear: 2010 }, { birthYear: 2012 }, { birthYear: 2014 }, { birthYear: 2016, isAdopted: true }];
+    render(<DependentsStepAnnual
+      formData={salaried({ annualIncome: 500_000, children, childrenEligibilityConfirmed: true })}
+      setFormData={setFormData} nextStep={vi.fn()} />);
+    expect(screen.getByText('(not counted: adopted-child limit)')).toBeInTheDocument();
+    fireEvent.click(screen.getAllByLabelText('Adopted')[0]);
+    expect(setFormData.mock.calls[0][0].children[0].isAdopted).toBe(true);
+  });
+
+  it('a rental entry offers the property kind and shows that kind\'s rate and VAT status', () => {
+    const onUpdate = vi.fn();
+    const entry = { id: 'r1', grossAmount: 100_000, incomeType: 'rental_40_5' as const, rentalPropertyKind: 'other_land' as const,
+      withholdingAmount: 0, monthReceived: 1, payerName: 'Tenant', description: '' };
+    render(<IncomeEntryCard entry={entry} index={0} isExpanded onToggle={vi.fn()} onUpdate={onUpdate} onRemove={vi.fn()} />);
+    // Info box and deduction preview both use the land rate, not the 30% building rate
+    expect(screen.getByText(/Flat Rate Deduction:/).closest('p')!.textContent).toContain('15%');
+    expect(screen.getByText(/Flat Rate Deduction Preview:/).closest('p')!.textContent).toContain('(15% of');
+    expect(screen.getByText(/฿15,000/)).toBeInTheDocument();
+    expect(screen.getByText(/exempt from VAT/)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('What are you renting out?'), { target: { value: 'vehicle' } });
+    expect(onUpdate).toHaveBeenCalledWith('rentalPropertyKind', 'vehicle');
+  });
+});
+
+describe('Foreign income step: residency in the year earned', () => {
+  const entry = (dateEarned: string) => ({
+    id: 'f1', amount: 10_000, currency: 'USD', amountThb: 350_000, dateEarned, dateRemitted: '2026-03-01',
+    foreignTaxPaid: 0, description: 'Consulting', country: 'United States',
+  });
+  const renderStep = (dateEarned: string) => {
+    const setFormData = vi.fn();
+    render(<ForeignIncomeStep
+      formData={{ ...createDefaultFreelancerFormData(), isThaiResident: true, daysInThailand: 200, hasForeignIncome: true, foreignIncomeEntries: [entry(dateEarned)] }}
+      setFormData={setFormData} nextStep={vi.fn()} />);
+    // Entries start collapsed; open the first one via its header.
+    fireEvent.click(screen.getByText('#1').closest('.cursor-pointer')!);
+    return setFormData;
+  };
+
+  it('asks about 2025 residency for income earned in 2025, and saves the answer', () => {
+    const setFormData = renderStep('2025-06-01');
+    expect(screen.getByText('Were you in Thailand 180 days or more in 2025?')).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText('No'));
+    expect(setFormData.mock.calls[setFormData.mock.calls.length - 1][0].foreignIncomeEntries[0].residentInYearEarned).toBe('no');
+  });
+
+  it('does not ask for income earned this year', () => {
+    renderStep('2026-01-15');
+    expect(screen.queryByText(/Were you in Thailand 180 days or more/)).toBeNull();
   });
 });

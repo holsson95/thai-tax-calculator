@@ -1,4 +1,4 @@
-import { IncomeType, ExpenseCategory } from '../types/freelancerForm';
+import { IncomeType, ExpenseCategory, RentalPropertyKind, ThaiIncomeEntry } from '../types/freelancerForm';
 import { BusinessCategory } from '../types/soleProprietorForm';
 import { TAX_RULES as R, RULES_TAX_YEAR } from './taxRules';
 
@@ -18,6 +18,51 @@ export const FLAT_RATE_DEDUCTIONS: Record<IncomeType, number> = {
   dividend: R.flatRateDividend.value, // No expense deduction for dividends
   other: 0, // App choice, not a tax rule: no default deduction for unclassified income
 };
+
+/**
+ * Flat-rate deduction for Section 40(5) rental income by property kind.
+ * Source: RD PND94 guide 2023 / PND90 guide, rental expense table (tax-data/2026/deductions.json:
+ * flat-rate-rental-40-5, flat-rate-rental-land-agricultural, flat-rate-rental-land-other,
+ * flat-rate-rental-other-property).
+ */
+export const RENTAL_FLAT_RATES: Record<RentalPropertyKind, number> = {
+  building: R.flatRateRental40_5.value, // houses, buildings, structures fixed to land, floating houses
+  agricultural_land: R.flatRateRentalAgriculturalLand.value,
+  other_land: R.flatRateRentalOtherLand.value,
+  vehicle: R.flatRateRental40_5.value,
+  other_property: R.flatRateRentalOtherProperty.value,
+};
+
+export const RENTAL_PROPERTY_KIND_LABELS: Record<RentalPropertyKind, string> = {
+  building: 'House, condo or other building',
+  agricultural_land: 'Agricultural land',
+  other_land: 'Other land',
+  vehicle: 'Vehicle',
+  other_property: 'Other property (e.g. equipment)',
+};
+
+/**
+ * Rental of immovable property is VAT-exempt (Revenue Code s.81(1)(r);
+ * tax-data: vat-exempt-rental-immovable-property). Vehicles and other movable
+ * property are not covered.
+ */
+const IMMOVABLE_RENTAL_KINDS: ReadonlySet<RentalPropertyKind> = new Set(['building', 'agricultural_land', 'other_land']);
+
+/** Rental property kind for an entry, defaulting to 'building'. */
+export function getRentalPropertyKind(entry: Pick<ThaiIncomeEntry, 'rentalPropertyKind'>): RentalPropertyKind {
+  return entry.rentalPropertyKind ?? 'building';
+}
+
+/** Flat-rate expense deduction rate for one income entry (rental depends on property kind). */
+export function getEntryFlatRate(entry: Pick<ThaiIncomeEntry, 'incomeType' | 'rentalPropertyKind'>): number {
+  if (entry.incomeType === 'rental_40_5') return RENTAL_FLAT_RATES[getRentalPropertyKind(entry)];
+  return FLAT_RATE_DEDUCTIONS[entry.incomeType];
+}
+
+/** True for rental of a building or land, which is VAT-exempt. */
+export function isVatExemptRental(entry: Pick<ThaiIncomeEntry, 'incomeType' | 'rentalPropertyKind'>): boolean {
+  return entry.incomeType === 'rental_40_5' && IMMOVABLE_RENTAL_KINDS.has(getRentalPropertyKind(entry));
+}
 
 /**
  * Liberal profession sub-categories with their specific deduction rates

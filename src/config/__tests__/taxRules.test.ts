@@ -294,8 +294,11 @@ describe('other constants re-pointed at TAX_RULES keep their values', () => {
     for (const x of probes) expect(estimateTaxBracketRate(x), String(x)).toBe(oldLadder(x));
   });
 
-  it('PND94 provisional tax default personal allowance is unchanged (60,000)', async () => {
-    const { calculateProvisionalTax } = await import('../../utils/obligationChecks');
-    expect(calculateProvisionalTax(400000)).toBe(calculateProvisionalTax(400000, 60000, 0));
+  it('PND94 half-year personal allowance is half the annual 60,000', async () => {
+    const { calculatePND94Estimate } = await import('../../utils/obligationChecks');
+    const { createDefaultFreelancerFormData } = await import('../../types/freelancerForm');
+    const e = calculatePND94Estimate({ ...createDefaultFreelancerFormData(), maritalStatus: 'single' });
+    expect(e.allowances).toBe(TAX_RULES.personalAllowance.value * TAX_RULES.pnd94HalfYearAllowanceFraction.value);
+    expect(e.allowances).toBe(30000);
   });
 });

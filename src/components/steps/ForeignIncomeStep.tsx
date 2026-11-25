@@ -5,9 +5,11 @@ import {
   PensionType,
   generateEntryId,
 } from '../../types/freelancerForm';
-import { COMMON_CURRENCIES, EXTENDED_CURRENCIES, TAX_THRESHOLDS } from '../../config/taxConfig';
+import { COMMON_CURRENCIES, EXTENDED_CURRENCIES } from '../../config/taxConfig';
 import { searchCountries, hasDTAWithThailand, getPensionDTAExemption, type DTACountry } from '../../data/dtaCountries';
 import { getExchangeRate, type ExchangeRateResult } from '../../services/exchangeRateService';
+import { isForeignIncomeTaxable } from '../../utils/foreignIncomeCalculations';
+import { RULES_TAX_YEAR } from '../../config/taxRules';
 
 const PENSION_TYPE_OPTIONS: { value: PensionType; label: string; description: string }[] = [
   { value: 'government_service', label: 'Government / Military Service Pension', description: 'Pension paid for service to a government or armed forces (e.g. Australian Defence Force, UK civil service)' },
@@ -172,37 +174,11 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
     return hasDTAWithThailand(entry.country);
   };
 
-  // Check if entry is taxable under 2024+ rules (including pension DTA exemptions)
+  // Taxability preview: the same engine the results use (residency, LTR, DTA pension
+  // exemptions, earned date, remittance year, residency in the year earned).
   const isEntryTaxable = (entry: ForeignIncomeEntry): { taxable: boolean; reason: string; dtaPensionExempt?: boolean; dtaArticle?: string } => {
-    // DTA pension exemption — fully exempt regardless of dates/remittance
-    if (entry.isPension && entry.pensionType && entry.country) {
-      const pensionExemption = getPensionDTAExemption(entry.country, entry.pensionType as PensionType);
-      if (pensionExemption) {
-        return {
-          taxable: false,
-          reason: `DTA ${pensionExemption.dtaArticle} — exempt from Thai tax`,
-          dtaPensionExempt: true,
-          dtaArticle: pensionExemption.dtaArticle,
-        };
-      }
-    }
-
-    if (!entry.dateEarned) {
-      return { taxable: false, reason: 'Date earned not specified' };
-    }
-
-    const earnedDate = new Date(entry.dateEarned);
-    const taxYearStart = new Date(TAX_THRESHOLDS.FOREIGN_INCOME_TAX_YEAR_START);
-
-    if (earnedDate < taxYearStart) {
-      return { taxable: false, reason: 'Earned before 2024 - not taxable under new rules' };
-    }
-
-    if (!entry.dateRemitted) {
-      return { taxable: false, reason: 'Not remitted to Thailand - not taxable' };
-    }
-
-    return { taxable: true, reason: 'Earned in 2024+ and remitted to Thailand' };
+    const t = isForeignIncomeTaxable(entry, formData.isThaiResident, formData.visaType);
+    return { taxable: t.isTaxable, reason: t.reason, dtaPensionExempt: t.dtaPensionExempt, dtaArticle: t.dtaExemptionArticle };
   };
 
   // Validate all entries
@@ -588,6 +564,37 @@ const ForeignIncomeStep: React.FC<FreelancerStepProps> = ({
                       />
                     </div>
                   </div>
+
+                  {/* Residency is tested in the year the income was earned */}
+                  {(() => {
+                    const earnedYear = entry.dateEarned ? new Date(entry.dateEarned).getUTCFullYear() : NaN;
+                    if (!Number.isFinite(earnedYear) || earnedYear >= RULES_TAX_YEAR || earnedYear < 2024) return null;
+                    const answer = entry.residentInYearEarned ?? 'unsure';
+                    return (
+                      <fieldset>
+                        <legend className="block text-sm font-medium text-ink-soft mb-1">
+                          Were you in Thailand 180 days or more in {earnedYear}?
+                        </legend>
+                        <div className="flex flex-wrap gap-4 text-sm">
+                          {([['yes', 'Yes'], ['no', 'No'], ['unsure', 'Not sure']] as const).map(([value, label]) => (
+                            <label key={value} className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name={`resident-${entry.id}`}
+                                checked={answer === value}
+                                onChange={() => handleUpdateEntry(entry.id, 'residentInYearEarned', value)}
+                              />
+                              {label}
+                            </label>
+                          ))}
+                        </div>
+                        <p className="text-xs text-ink-mute mt-1">
+                          Income from a year you were in Thailand under 180 days isn&apos;t taxed when you bring it in.
+                          &quot;Not sure&quot; counts it as taxable, to be cautious.
+                        </p>
+                      </fieldset>
+                    );
+                  })()}
 
                   {/* Amount and Currency */}
                   <div className="grid grid-cols-2 gap-4">

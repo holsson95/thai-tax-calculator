@@ -44,7 +44,7 @@ export const faqData: FAQCategory[] = [
     items: [
       {
         question: 'Do retirees get a special tax exemption in Thailand?',
-        answer: 'Yes. If you are aged 65 or over at the end of the tax year, the first 190,000 THB of your assessable income is completely exempt from personal income tax under Section 42(17) of the Revenue Code. Combined with the standard personal allowance (60,000 THB) and the 0% first tax bracket (150,000 THB), a retiree aged 65+ can receive up to approximately 400,000 THB before paying any Thai income tax.',
+        answer: 'Yes. If you are aged 65 or over at the end of the tax year, the first 190,000 THB of your assessable income is completely exempt from personal income tax. Combined with the standard personal allowance (60,000 THB) and the 0% first tax bracket (150,000 THB), a retiree aged 65+ can receive up to approximately 400,000 THB before paying any Thai income tax.',
         relatedArticleSlug: 'pensioner-retiree-tax-guide-thailand',
       },
       {
@@ -150,19 +150,19 @@ export const faqData: FAQCategory[] = [
       },
       {
         question: 'Can I deduct insurance premiums?',
-        answer: 'Yes. Life insurance premiums are deductible up to 100,000 THB annually. Health insurance premiums are deductible up to 25,000 THB. Parent health insurance premiums have a separate limit of 15,000 THB.',
+        answer: 'Yes. Life insurance premiums are deductible up to 100,000 THB annually. Health insurance premiums are deductible up to 25,000 THB, and life and health insurance together cannot exceed 100,000 THB. Parent health insurance premiums have a separate limit of 15,000 THB.',
         relatedArticleSlug: 'maximizing-tax-deductions-thailand',
         sourceId: 'sherrings-deductions',
       },
       {
         question: 'What are SSF and RMF funds?',
-        answer: 'SSF (Super Savings Fund) and RMF (Retirement Mutual Fund) are tax-advantaged investment funds. SSF contributions are deductible up to 30% of income (max 200,000 THB). RMF contributions are deductible up to 30% of income (max 500,000 THB). Combined limits apply.',
+        answer: 'SSF (Super Savings Fund) and RMF (Retirement Mutual Fund) are tax-advantaged investment funds. SSF contributions are deductible up to 30% of income (max 200,000 THB). RMF contributions are deductible up to 30% of income (max 500,000 THB). SSF, RMF, provident fund and Government Pension Fund contributions together cannot exceed 500,000 THB.',
         relatedArticleSlug: 'maximizing-tax-deductions-thailand',
         sourceId: 'sherrings-deductions',
       },
       {
         question: 'How much can I deduct for children?',
-        answer: 'You can deduct 30,000 THB per legitimate child. An additional 2,000 THB per child is available if the child is studying in Thailand. There is no limit on the number of children you can claim.',
+        answer: 'You can deduct 30,000 THB per child, plus another 30,000 THB for the 2nd and later legitimate child (by birth order) born in 2018 or later. There is no limit on the number of your own (legitimate) children you can claim. Adopted children count too, but only while you claim 3 children or fewer in total, and they don\'t get the extra 30,000 THB.',
         relatedArticleSlug: 'maximizing-tax-deductions-thailand',
         sourceId: 'forvis-second-child',
       }

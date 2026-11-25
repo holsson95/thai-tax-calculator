@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { IncomeType, ThaiIncomeEntry } from '../../types/freelancerForm';
+import { IncomeType, RentalPropertyKind, ThaiIncomeEntry } from '../../types/freelancerForm';
+import { RENTAL_PROPERTY_KIND_LABELS, getEntryFlatRate, getRentalPropertyKind, isVatExemptRental } from '../../config/taxConfig';
 import { INCOME_TYPE_INFO, getIncomeTypeOptions } from '../../data/incomeTypes';
 
 interface IncomeEntryCardProps {
@@ -27,6 +28,9 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
 
   const incomeTypeInfo = INCOME_TYPE_INFO[entry.incomeType];
   const incomeTypeOptions = getIncomeTypeOptions();
+  // Rental rates depend on the property kind, so use the entry's own rate everywhere below.
+  const entryFlatRate = getEntryFlatRate(entry);
+  const isRental = entry.incomeType === 'rental_40_5';
 
   const fieldId = (field: string) => `income-entry-${entry.id}-${field}`;
   const headerLabel = `${incomeTypeInfo?.shortLabel || 'New Income Source'}${
@@ -167,13 +171,37 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
             )}
           </div>
 
+          {/* Rental property kind: decides the flat rate and whether the rent is VAT-exempt */}
+          {isRental && (
+            <div>
+              <label htmlFor={fieldId('rentalPropertyKind')} className="block text-sm font-medium text-ink-soft mb-1">
+                What are you renting out?
+              </label>
+              <select
+                id={fieldId('rentalPropertyKind')}
+                value={getRentalPropertyKind(entry)}
+                onChange={(e) => onUpdate('rentalPropertyKind', e.target.value as RentalPropertyKind)}
+                className="field-input"
+              >
+                {(Object.keys(RENTAL_PROPERTY_KIND_LABELS) as RentalPropertyKind[]).map(kind => (
+                  <option key={kind} value={kind}>{RENTAL_PROPERTY_KIND_LABELS[kind]}</option>
+                ))}
+              </select>
+              <p className="text-xs text-ink-mute mt-1">
+                {isVatExemptRental(entry)
+                  ? 'Rent from buildings and land is exempt from VAT, so it does not count toward the VAT registration threshold.'
+                  : 'Rent from vehicles and other movable property is not VAT-exempt, so it counts toward the VAT registration threshold.'}
+              </p>
+            </div>
+          )}
+
           {/* Income Type Info Box */}
           {incomeTypeInfo && (
             <div className="border border-ink/25 p-3">
               <div className="flex items-start gap-2">
                 <div className="text-sm">
                   <p className="text-desk">
-                    <strong>Flat Rate Deduction:</strong> {(incomeTypeInfo.flatRate * 100).toFixed(0)}%
+                    <strong>Flat Rate Deduction:</strong> {(entryFlatRate * 100).toFixed(0)}%
                     {incomeTypeInfo.flatRateCap && ` (capped at ฿${incomeTypeInfo.flatRateCap.toLocaleString()})`}
                   </p>
                   {incomeTypeInfo.notes && (
@@ -289,12 +317,12 @@ const IncomeEntryCard: React.FC<IncomeEntryCardProps> = ({
           </div>
 
           {/* Calculated Flat Rate Deduction Preview */}
-          {entry.grossAmount > 0 && incomeTypeInfo && incomeTypeInfo.flatRate > 0 && (
+          {entry.grossAmount > 0 && incomeTypeInfo && entryFlatRate > 0 && (
             <div className="p-3 border-2 border-desk">
               <p className="text-sm text-ink">
                 <strong>Flat Rate Deduction Preview:</strong>{' '}
-                ฿{(entry.grossAmount * incomeTypeInfo.flatRate).toLocaleString()}
-                {' '}({(incomeTypeInfo.flatRate * 100).toFixed(0)}% of ฿{entry.grossAmount.toLocaleString()})
+                ฿{(entry.grossAmount * entryFlatRate).toLocaleString()}
+                {' '}({(entryFlatRate * 100).toFixed(0)}% of ฿{entry.grossAmount.toLocaleString()})
               </p>
               {incomeTypeInfo.flatRateCap && (
                 <p className="text-xs text-ink mt-1">

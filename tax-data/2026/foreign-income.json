@@ -33,15 +33,15 @@
     {
       "id": "dta-country-list",
       "rule": "List of countries with a Double Tax Agreement (DTA) with Thailand",
-      "value": "62 countries with an in-force DTA (see src/data/dtaCountries.ts — DTA_COUNTRIES array)",
+      "value": "61 countries with an in-force income-tax DTA (see src/data/dtaCountries.ts — DTA_COUNTRIES array)",
       "conditions": "A country is treated as DTA-covered for foreign tax credit eligibility only if present with hasDTA: true.",
       "source": {
         "label": "Thai Revenue Department — Double Tax Agreements (full list, live data table)",
         "url": "https://www.rd.go.th/english/766.html"
       },
       "verified": true,
-      "verification_notes": "DISCREPANCY FOUND: the app's code comment claims '61 DTA partner countries as of 2025', but this research pass parsed RD's own live data table directly (page marked 'Last updated: 06.07.2026') and found 62 distinct countries with an in-force DTA (64 total DTA records — the Philippines and Singapore each have an older terminated treaty superseded by a current one, which likely explains the off-by-one). This is a primary-source-verified correction: update the code comment/count from 61 to 62. The underlying DTA_COUNTRIES array itself was not diffed line-by-line against the live RD list in this pass — recommend that as a follow-up before treating the full list as verified.",
-      "used_in": "src/data/dtaCountries.ts (DTA_COUNTRIES, hasDTAWithThailand) — comment at top of file states '61 DTA partner countries as of 2025', should be corrected to 62"
+      "verification_notes": "2026-11-25: RESOLVED. The project owner copied the RD live table (rd.go.th/english/766.html, 'Last updated: 19.10.2026', Status = In force) and it was diffed name by name against DTA_COUNTRIES: exactly 61 countries have a full 'DTA' document, and they match the app's 61 exactly (RD names 'Great Britain and Northern Ireland', 'Korea', 'China (the People's Republic of)', 'United States of America (USA)', 'United Arab Emirates (UAE)' map to the app's names). The 62nd country in the RD table is Saudi Arabia, whose only agreement is 'DTA (Air Transport)' — airline profits only, not personal income tax — so it is correctly hasDTA: false. The earlier '62' (2026-09-07) counted that air-transport agreement; it was not a missing country.",
+      "used_in": "src/data/dtaCountries.ts (DTA_COUNTRIES, hasDTAWithThailand)"
     },
     {
       "id": "dta-pension-exemptions",
@@ -117,7 +117,7 @@
       "verified": true,
       "last_verified": "2026-11-19",
       "verification_notes": "Read directly from the primary RD document on 2026-11-19 (Q&A dated Jan 2024, Thai).",
-      "used_in": "src/config/remittanceRules.ts (Phase 2)"
+      "used_in": "src/config/remittanceRules.ts (Phase 2) | Since 2026-11-25 also src/utils/foreignIncomeCalculations.ts isForeignIncomeTaxable (freelancer calculator): per-entry residentInYearEarned for income earned in an earlier year; missing = 'unsure' = counted as taxable."
     },
     {
       "id": "remitted-principal-not-assessable",

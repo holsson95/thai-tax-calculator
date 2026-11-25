@@ -42,7 +42,7 @@
       },
       "verified": true,
       "verification_notes": "Verified against a primary RD document (the official English-language filing guide). The 30% figure itself is correct for houses/buildings/vehicles, but the app has no categories for agricultural land (20%), non-agricultural land (15%), or other property (10%) — a real modeling gap, not just a sourcing gap. Recommend review before deciding whether to expand the rental income type with a property-type sub-selector.",
-      "used_in": "src/config/taxConfig.ts:13 (FLAT_RATE_DEDUCTIONS.rental_40_5)"
+      "used_in": "src/config/taxConfig.ts (FLAT_RATE_DEDUCTIONS.rental_40_5 and RENTAL_FLAT_RATES.building / .vehicle). Since 2026-11-25 rental entries carry a property kind, so the land (20%/15%) and other-property (10%) rates are modeled."
     },
     {
       "id": "flat-rate-liberal-profession-40-6",
@@ -175,20 +175,17 @@
       },
       "verified": false,
       "verification_notes": "Consistent across secondary sources but the RD primary page fetched during research did not itself list the health-insurance-specific cap or the combined-with-life-insurance interaction. Recommend a follow-up RD-specific fetch.",
-      "used_in": "src/types/taxForm.ts:244,88 (MAX_HEALTH_INSURANCE)"
+      "used_in": "TAX_CONSTANTS.MAX_HEALTH_INSURANCE; combined with life insurance under life-health-combined-cap in calculateDeductionBreakdown (since 2026-11-25)"
     },
     {
       "id": "max-pension-fund",
-      "rule": "Pension/annuity insurance fund deduction cap",
+      "rule": "Government Pension Fund (GPF) contribution cap",
       "value": 500000,
-      "conditions": "POTENTIAL MISMATCH FOUND: research suggests the INDIVIDUAL sub-cap for pension/annuity insurance specifically is 200,000 THB (also subject to a 15%-of-income limit), and it only reaches 500,000 THB when combined with RMF/SSF/provident fund contributions under the shared combined-retirement-cap. The app currently applies 500,000 THB as the pension fund's OWN individual cap, which may be double-counting the combined ceiling as an individual one.",
-      "source": {
-        "label": "Forvis Mazars (secondary)",
-        "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
-      },
+      "conditions": "The app's 'pension fund' field is labelled Government Pension Fund in both deduction steps. GPF contributions are deductible up to 500,000 THB and count toward the 500,000 THB combined-retirement-cap. This is NOT pension (annuity) insurance, which has its own 15%-of-income / 200,000 THB limit (see pension-insurance-income-percent) and is not offered as a field in the app.",
+      "source": {"label": "Thai Revenue Department — Guide to Personal Income Tax Return 2024 (PND90), No. 1 item 2", "url": "https://rd.go.th/fileadmin/download/english_form/2024/GUIDE_90_67_Complete.pdf"},
       "verified": true,
-      "verification_notes": "IMPORTANT: if this reading is correct, this is a real calculation issue — allowing up to 500,000 THB in pension-fund deduction ALONE, when combined with the individual RMF (500,000) and SSF (200,000) caps already in the code plus the (currently-unenforced) combined 500,000 cap, could let a user's app-calculated deductions substantially exceed what's legally allowed. This interacts directly with the combined-retirement-cap enforcement gap noted above. Needs review alongside that item before any code change.",
-      "used_in": "src/types/taxForm.ts:245,89 (MAX_PENSION_FUND) — POSSIBLY SHOULD BE 200,000 AS AN INDIVIDUAL CAP, NEEDS REVIEW"
+      "verification_notes": "2026-11-25: RESOLVED. The earlier 'potential mismatch' (200,000 individual cap) came from reading this field as pension INSURANCE. The app field is the Government Pension Fund, and the RD PND90 2024 guide states verbatim: 'Total contribution to Government Pension Fund, up to 500,000 baht.' (deducted from Section 40(1) income). Value 500,000 is correct for this field. The RD guide text was extracted locally from the RD-hosted PDF.",
+      "used_in": "src/config/taxRules.ts (maxPensionFund) → TAX_CONSTANTS.MAX_PENSION_FUND; field labelled 'Government Pension Fund' in DeductionsStepAnnual/DeductionsStepMonthly"
     },
     {
       "id": "max-provident-fund",
@@ -201,7 +198,7 @@
       },
       "verified": true,
       "verification_notes": "Directly confirmed on RD's own English page, which states 'not more than 15% of wage, but not exceeding 500,000 baht' — a genuine primary-source citation for this specific figure.",
-      "used_in": "src/types/taxForm.ts:246,90 (MAX_PROVIDENT_FUND)"
+      "used_in": "src/types/taxForm.ts (MAX_PROVIDENT_FUND); src/utils/taxCalculations.ts calculateDeductionBreakdown also applies provident-fund-wage-percent (15% of wages) since 2026-11-25"
     },
     {
       "id": "max-rmf",
@@ -214,7 +211,7 @@
       },
       "verified": true,
       "verification_notes": "Confirmed via a reputable secondary source. The additional 30%-of-income overlay limit is NOT modeled in the app's DEDUCTION_CAPS.MAX_RMF (which only applies the flat 500,000 THB cap) — a potential functional gap for high earners with modest RMF contributions relative to income, though it would only matter in edge cases where 30% of income is below 500,000 THB.",
-      "used_in": "src/types/taxForm.ts:247,91 (MAX_RMF)"
+      "used_in": "src/types/taxForm.ts (MAX_RMF); src/utils/taxCalculations.ts calculateDeductionBreakdown also applies rmf-income-percent (30%) since 2026-11-25"
     },
     {
       "id": "max-ssf",
@@ -226,8 +223,8 @@
         "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
-      "verification_notes": "Confirmed via a reputable secondary source. Same 30%-of-income overlay caveat as max-rmf — not modeled in the app's flat cap.",
-      "used_in": "src/types/taxForm.ts:248,92 (MAX_SSF)"
+      "verification_notes": "Confirmed via a reputable secondary source. Same 30%-of-income overlay caveat as max-rmf — not modeled in the app's flat cap. | 2026-11-25 OPEN QUESTION: the RD PND94 guide (2023) says SSF purchases qualify only if made 1 Jan 2020 – 31 Dec 2024. Sources disagree on whether the scheme was extended: a Thairath article says SSF lost its tax deduction in 2024, an abrdn fund table lists 2023–2026, and PwC (Aug 2026) still lists SSF in the 500,000 combined cap. The app still allows the SSF deduction for 2026 until a current RD source settles it.",
+      "used_in": "src/types/taxForm.ts (MAX_SSF); src/utils/taxCalculations.ts calculateDeductionBreakdown also applies ssf-income-percent (30%) since 2026-11-25"
     },
     {
       "id": "max-donation-percent",
@@ -241,6 +238,118 @@
       "verified": true,
       "verification_notes": "Confirmed directly by RD. The app's plain 10% description matches for the general (non-doubled) donation category. The 2x multiplier for education/hospital/e-Donation categories is NOT modeled in the app — a documented feature gap (understates the deduction for donors to those specific categories) rather than an error, since applying the plain 10% cap without the multiplier is conservative, not incorrect.",
       "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown) — since 2026-11-25 the 10% cap is applied to income after the expense deduction, allowances AND social security/insurance/retirement-fund deductions, per the condition above (previously it ignored those deductions; the monthly calculator used 10% of gross income)."
+    },
+    {
+      "id": "pension-insurance-income-percent",
+      "rule": "Pension (annuity) insurance premium deduction — limit as a share of assessable income",
+      "value": 0.15,
+      "tax_year": "2025, 2026",
+      "conditions": "Pension (annuity) insurance premiums: deductible up to 15% of total assessable income, maximum 200,000 THB, inside the 500,000 combined-retirement-cap. Distinct from the Government Pension Fund.",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions (last reviewed 24 Aug 2026)",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": true,
+      "verification_notes": "PwC (reviewed 24 Aug 2026), corroborated by a Forvis Mazars summary for 2025/2026. The RD PND94 guide states the limit is a share of assessable income but the percentage did not survive text extraction.",
+      "used_in": "NOT USED: the app has no pension (annuity) insurance field. Recorded for a future field; the existing 'pension fund' field is the Government Pension Fund (max-pension-fund)."
+    },
+    {
+      "id": "provident-fund-wage-percent",
+      "rule": "Provident fund deduction — limit as a share of wages",
+      "value": 0.15,
+      "tax_year": "2026",
+      "conditions": "Provident fund contributions deductible up to 15% of wages, maximum 500,000 THB (max-provident-fund), inside the combined-retirement-cap. 'Wages' are modelled as Section 40(1) employment pay: annual salary for the salaried/monthly calculators, salaryFromCompany for company owners, salary_40_1 entries for freelancers.",
+      "source": {
+        "label": "Thai Revenue Department (EN) — personal income tax allowances",
+        "url": "https://www.rd.go.th/english/6045.html"
+      },
+      "verified": true,
+      "verification_notes": "RD English page states 'not more than 15% of wage, but not exceeding 500,000 baht'. The PND90 2024 guide treats the part above 10,000 THB as an exemption from 40(1) income rather than an allowance; the total effect is the same for this estimate.",
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown)"
+    },
+    {
+      "id": "rmf-income-percent",
+      "rule": "RMF deduction — limit as a share of assessable income",
+      "value": 0.3,
+      "tax_year": "2023 (RD guide), 2026 (PwC)",
+      "conditions": "RMF purchases deductible up to 30% of assessable income, maximum 500,000 THB, inside the combined-retirement-cap.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, B. item 8: 'must not exceed 30% of your taxable income' (the English guide uses 'taxable income' for assessable income here); PwC (Aug 2026): 'not exceeding 30% of assessable income received that is subject to income tax'. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown)"
+    },
+    {
+      "id": "ssf-income-percent",
+      "rule": "SSF deduction — limit as a share of assessable income",
+      "value": 0.3,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "SSF purchases deductible up to 30% of assessable income, maximum 200,000 THB, inside the combined-retirement-cap. SEE max-ssf for an unresolved question about whether SSF purchases still qualify after 31 Dec 2024.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide 2023, B. item 10: 'must not exceed 30% of your taxable income in that tax year and not exceed 200,000 Baht'. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown)"
+    },
+    {
+      "id": "flat-rate-rental-land-agricultural",
+      "rule": "Flat-rate deduction — Rental of agricultural land (40(5))",
+      "value": 0.2,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "Applies to rental income from land used for agriculture. Selected via the rental property kind on a 40(5) income entry.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "RD PND94 guide lists: houses/buildings/floating houses 30%, agricultural land 20%, other land 15%, vehicles 30%, other property 10%. Matches the RD PND90 guide already cited in flat-rate-rental-40-5 and the RD English page 6045. The RD PDF could not be read by the web fetcher; its text was extracted locally on 2026-11-25 from the RD-hosted file (English guide, tax year 2023 edition — check for a newer edition each year).",
+      "used_in": "src/config/taxConfig.ts (RENTAL_FLAT_RATES) → src/utils/expenseCalculations.ts"
+    },
+    {
+      "id": "flat-rate-rental-land-other",
+      "rule": "Flat-rate deduction — Rental of land not used for agriculture (40(5))",
+      "value": 0.15,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "Applies to rental income from land not used for agriculture.",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Same table as flat-rate-rental-land-agricultural.",
+      "used_in": "src/config/taxConfig.ts (RENTAL_FLAT_RATES)"
+    },
+    {
+      "id": "flat-rate-rental-other-property",
+      "rule": "Flat-rate deduction — Rental of other property (40(5))",
+      "value": 0.1,
+      "tax_year": "2023 (RD guide)",
+      "conditions": "Applies to rental of property other than buildings, land and vehicles (e.g. equipment).",
+      "source": {
+        "label": "Thai Revenue Department — Guide to Personal Income Tax Return Half Year 2023 (PND94)",
+        "url": "https://www.rd.go.th/fileadmin/download/english_form/080966Ins94.pdf"
+      },
+      "verified": true,
+      "verification_notes": "Same table as flat-rate-rental-land-agricultural.",
+      "used_in": "src/config/taxConfig.ts (RENTAL_FLAT_RATES)"
+    },
+    {
+      "id": "life-health-combined-cap",
+      "rule": "Life and health insurance premiums together: deduction cap",
+      "value": 100000,
+      "tax_year": "2026",
+      "conditions": "Health insurance (own, max 25,000 THB — max-health-insurance) and life insurance (max 100,000 THB — max-life-insurance) together may not exceed 100,000 THB. Parent health insurance has a separate 15,000 THB limit and is not part of this cap (not modeled in the app). App: life insurance is taken first and health insurance fills the remaining room.",
+      "source": {
+        "label": "PwC Tax Summaries — Thailand Individual Deductions (last reviewed 24 Aug 2026)",
+        "url": "https://taxsummaries.pwc.com/thailand/individual/deductions"
+      },
+      "verified": true,
+      "verification_notes": "PwC (Aug 2026): 'the deduction for this premium together with the above life insurance premiums paid cannot exceed THB 100,000 in total.' The RD PND94 guide 2023 confirms the structure ('when you add up this deduction with life insurance premium paid ... the amount must not exceed [figure lost in text extraction] baht'). Enforced in calculation since 2026-11-25.",
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown)"
     }
   ]
 }

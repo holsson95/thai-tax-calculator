@@ -220,7 +220,7 @@ const ThailandTax2026Page: React.FC = () => {
                   <tr><td>Personal allowance</td><td className="text-right">60,000 THB</td><td>Every taxpayer</td></tr>
                   <tr><td>Spouse allowance</td><td className="text-right">60,000 THB</td><td>Married, spouse has no income</td></tr>
                   <tr><td>Senior exemption (65+)</td><td className="text-right">190,000 THB</td><td>Taxpayer is 65 or older</td></tr>
-                  <tr><td>Child allowance</td><td className="text-right">30,000 THB/child</td><td>Per qualifying child (+30,000 THB for 2nd+ child born 2018+)</td></tr>
+                  <tr><td>Child allowance</td><td className="text-right">30,000 THB/child</td><td>Per qualifying child (+30,000 THB for the 2nd and later legitimate child born 2018+; adopted children count only up to 3 children in total)</td></tr>
                   <tr><td>Parent allowance</td><td className="text-right">30,000 THB/parent</td><td>Up to 4 parents, self-certified</td></tr>
                 </tbody>
               </table>

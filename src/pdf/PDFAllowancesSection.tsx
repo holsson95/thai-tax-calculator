@@ -82,10 +82,10 @@ const PDFAllowancesSection: React.FC<PDFAllowancesSectionProps> = ({
     if (capped.socialSecurity) deductions.push({ label: 'Social Security Contributions', amount: capped.socialSecurity });
     if (capped.lifeInsurance) deductions.push({ label: 'Life Insurance Premium', amount: capped.lifeInsurance, cap: 'max THB100,000' });
     if (capped.healthInsurance) deductions.push({ label: 'Health Insurance Premium', amount: capped.healthInsurance, cap: 'max THB25,000' });
-    if (capped.pensionFund) deductions.push({ label: 'Pension Fund Contribution', amount: capped.pensionFund, cap: 'max THB500,000; retirement funds combined max THB500,000' });
-    if (capped.providentFund) deductions.push({ label: 'Provident Fund Contribution', amount: capped.providentFund, cap: 'max THB500,000; retirement funds combined max THB500,000' });
-    if (capped.rmf) deductions.push({ label: 'RMF (Retirement Mutual Fund)', amount: capped.rmf, cap: 'max THB500,000; retirement funds combined max THB500,000' });
-    if (capped.ssf) deductions.push({ label: 'SSF (Super Savings Fund)', amount: capped.ssf, cap: 'max THB200,000; retirement funds combined max THB500,000' });
+    if (capped.pensionFund) deductions.push({ label: 'Government Pension Fund Contribution', amount: capped.pensionFund, cap: 'max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.providentFund) deductions.push({ label: 'Provident Fund Contribution', amount: capped.providentFund, cap: '15% of wages, max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.rmf) deductions.push({ label: 'RMF (Retirement Mutual Fund)', amount: capped.rmf, cap: '30% of income, max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.ssf) deductions.push({ label: 'SSF (Super Savings Fund)', amount: capped.ssf, cap: '30% of income, max THB200,000; retirement funds combined max THB500,000' });
     if (capped.donations) deductions.push({ label: 'Charitable Donations', amount: capped.donations, cap: 'max 10% of income after other deductions' });
   }
   const totalDeductions = deductions.reduce((s, d) => s + d.amount, 0);
@@ -119,10 +119,12 @@ const PDFAllowancesSection: React.FC<PDFAllowancesSectionProps> = ({
               <Text style={[styles.tableHeaderCell, { width: 80, textAlign: 'right' }]}>Allowance</Text>
             </View>
             {formData.children.map((c, i) => {
-              const { base, bonus } = getChildAllowanceBreakdown(formData.children)[i];
+              const { base, bonus, counted } = getChildAllowanceBreakdown(formData.children)[i];
               const notes = [
                 c.isStudent ? 'Full-time student (20–25)' : '',
-                bonus > 0 ? '+THB30,000 birth bonus (2nd+ child by birth order, born 2018+)' : '',
+                c.isAdopted ? 'Adopted' : '',
+                !counted ? 'Not counted: adopted children count only up to 3 children in total' : '',
+                bonus > 0 ? '+THB30,000 birth bonus (2nd+ legitimate child by birth order, born 2018+)' : '',
               ].filter(Boolean).join('; ') || '—';
               return (
                 <View key={i} style={[styles.tableRow, i % 2 === 1 ? styles.tableRowAlt : {}]}>

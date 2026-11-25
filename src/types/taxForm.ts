@@ -3,6 +3,8 @@ import { TAX_RULES as R, BRACKET_RULES } from '../config/taxRules';
 export interface ChildData {
   birthYear: number;
   isStudent?: boolean; // Only asked if age 20-25
+  /** Adopted children count only up to 3 children in total and never get the 2018+ bonus (tax-data: child-allowance-adopted-limit). */
+  isAdopted?: boolean;
 }
 
 /**
@@ -171,6 +173,10 @@ export interface TaxCalculationResult {
   refundOrOwed: number;
   effectiveRate: number;
   breakdown: TaxBreakdown;
+  /** Annual minimum tax (0.5% of non-employment income); only set by the company-owner calculator. */
+  minimumTax?: number;
+  /** True when the minimum tax replaced the ordinary progressive tax. */
+  minimumTaxApplied?: boolean;
 }
 
 /**

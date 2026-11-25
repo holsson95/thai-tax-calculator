@@ -6,7 +6,7 @@ import {
   generateEntryId,
 } from '../../types/freelancerForm';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
-import { isIncomeTypePND94Qualifying } from '../../config/taxConfig';
+import { isIncomeTypePND94Qualifying, getEntryFlatRate } from '../../config/taxConfig';
 import IncomeEntryCard from '../common/IncomeEntryCard';
 
 const ThaiIncomeStep: React.FC<FreelancerStepProps> = ({
@@ -114,13 +114,14 @@ const ThaiIncomeStep: React.FC<FreelancerStepProps> = ({
   const incomeByType = formData.thaiIncomeEntries.reduce((acc, entry) => {
     const type = entry.incomeType;
     if (!acc[type]) {
-      acc[type] = { total: 0, withholding: 0, count: 0 };
+      acc[type] = { total: 0, withholding: 0, count: 0, flatDeduction: 0 };
     }
     acc[type].total += entry.grossAmount;
+    acc[type].flatDeduction += entry.grossAmount * getEntryFlatRate(entry);
     acc[type].withholding += entry.withholdingAmount;
     acc[type].count += 1;
     return acc;
-  }, {} as Record<IncomeType, { total: number; withholding: number; count: number }>);
+  }, {} as Record<IncomeType, { total: number; withholding: number; count: number; flatDeduction: number }>);
 
   // Validate entries when showValidationErrors becomes true
   useEffect(() => {
@@ -234,7 +235,7 @@ const ThaiIncomeStep: React.FC<FreelancerStepProps> = ({
                           ฿{data.total.toLocaleString()}
                         </span>
                         <span className="text-xs text-ink-mute ml-2">
-                          ({(typeInfo?.flatRate * 100 || 0).toFixed(0)}% deduction)
+                          ({(data.total > 0 ? (data.flatDeduction / data.total) * 100 : (typeInfo?.flatRate ?? 0) * 100).toFixed(0)}% deduction)
                         </span>
                       </div>
                     </div>

@@ -62,15 +62,32 @@ export interface ForeignIncomeEntry {
   country: string;
   isPension?: boolean;       // True if this is pension income
   pensionType?: PensionType; // Pension sub-type for DTA exemption determination
+  /**
+   * Only asked when the income was earned in an earlier year than the tax year
+   * being calculated: were you in Thailand 180+ days in that year? Missing is
+   * treated as 'unsure' (counted as taxable, to be cautious).
+   * tax-data/2026/foreign-income.json#residency-tested-in-year-earned
+   */
+  residentInYearEarned?: 'yes' | 'no' | 'unsure';
 }
 
 /**
  * Thai income entry with source tracking
  */
+/**
+ * What a Section 40(5) rental entry is renting out. Decides the flat-rate
+ * expense deduction (30% / 20% / 15% / 10%) and whether the income is VAT-exempt
+ * rental of immovable property. Missing means 'building' (the app's behaviour
+ * before this field existed).
+ */
+export type RentalPropertyKind = 'building' | 'agricultural_land' | 'other_land' | 'vehicle' | 'other_property';
+
 export interface ThaiIncomeEntry {
   id: string;
   grossAmount: number;
   incomeType: IncomeType;
+  /** Only used when incomeType is 'rental_40_5'. */
+  rentalPropertyKind?: RentalPropertyKind;
   withholdingAmount: number;
   monthReceived: number; // 1-12, used for PND94 calculation
   payerName: string;
@@ -137,12 +154,38 @@ export interface FreelancerFormData extends Omit<TaxFormData, 'annualIncome'> {
 /**
  * PND94 obligation check result
  */
+/**
+ * How the PND94 half-year tax estimate was built (RD PND94 guide method; see
+ * calculatePND94Estimate in src/utils/obligationChecks.ts).
+ */
+export interface PND94Estimate {
+  /** Jan–Jun 40(5)-(8) income before anything is taken off. */
+  halfYearIncome: number;
+  /** 65+ income exemption used against it (up to 190,000). */
+  seniorExemption: number;
+  /** halfYearIncome minus seniorExemption. */
+  assessableIncome: number;
+  /** Flat-rate expense deduction on the assessable part. */
+  expenseDeduction: number;
+  /** Half-year allowances (personal, spouse, children, parents). */
+  allowances: number;
+  /** Taxed at the ordinary progressive rates. */
+  netIncome: number;
+  netIncomeTax: number;
+  /** 0.5% of assessable income when it is 120,000 or more, else 0. */
+  grossIncomeTax: number;
+  /** The greater of netIncomeTax and grossIncomeTax, rounded. */
+  provisionalTax: number;
+}
+
 export interface PND94Result {
   required: boolean;
   halfYearIncome: number;
   threshold: number;
   provisionalTax: number;
   dueDate: string;
+  /** Present when computed by checkPND94Obligation. */
+  estimate?: PND94Estimate;
 }
 
 /**
@@ -252,6 +295,11 @@ export interface FreelancerTaxResult {
   ltrBenefitApplied: boolean;
   ltrFlatRateTax?: number; // Tax calculated at 17% flat rate for LTR Highly Skilled
   ltrForeignIncomeExempt: boolean; // True if foreign income is exempt due to LTR visa
+
+  /** Annual minimum tax (0.5% of non-employment income) — 0 when it does not apply. */
+  minimumTax: number;
+  /** True when the minimum tax replaced the ordinary progressive tax. */
+  minimumTaxApplied: boolean;
 }
 
 /**

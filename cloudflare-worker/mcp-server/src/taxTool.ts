@@ -1,6 +1,9 @@
 import { calculateAnnualTax } from '../../../src/utils/taxCalculations';
 import type { ChildData, TaxFormData } from '../../../src/types/taxForm';
 
+/** Upper bound for numberOfChildren (no statutory limit; this only guards the worker). */
+const MAX_CHILDREN = 30;
+
 export interface AnnualTaxArgs {
   annualIncome: number;
   maritalStatus?: 'single' | 'married';
@@ -42,7 +45,7 @@ export const annualTaxInputSchema = {
       default: false,
       description: 'Adds the 190,000 THB senior allowance.',
     },
-    numberOfChildren: { type: 'integer', minimum: 0, default: 0 },
+    numberOfChildren: { type: 'integer', minimum: 0, maximum: MAX_CHILDREN, default: 0 },
     childrenBornOnOrAfter2018: {
       type: 'integer',
       minimum: 0,
@@ -99,7 +102,12 @@ function toFormData(args: AnnualTaxArgs): TaxFormData {
     throw new Error('annualIncome must be a non-negative number.');
   }
 
-  const numberOfChildren = Math.max(0, Math.trunc(args.numberOfChildren ?? 0));
+  // Bounded: the schema is not enforced by every client, and an unbounded value
+  // (e.g. 1e9 or Infinity) would allocate a huge array and crash the worker.
+  const rawChildren = Number(args.numberOfChildren ?? 0);
+  const numberOfChildren = Number.isFinite(rawChildren)
+    ? Math.min(MAX_CHILDREN, Math.max(0, Math.trunc(rawChildren)))
+    : 0;
   const bonusChildren = Math.min(
     numberOfChildren,
     Math.max(0, Math.trunc(args.childrenBornOnOrAfter2018 ?? 0))

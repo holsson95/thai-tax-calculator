@@ -116,7 +116,7 @@ export const INCOME_TYPE_INFO: Record<IncomeType, IncomeTypeInfo> = {
       'Land lease income',
     ],
     withholdingRate: R.whtRental40_5.value, // 5% for rental
-    notes: '30% flat deduction rate, or actual expenses with documentation',
+    notes: 'Flat deduction depends on what you rent out (buildings and vehicles 30%, agricultural land 20%, other land 15%, other property 10%), or actual expenses with documentation',
   },
 
   dividend: {

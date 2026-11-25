@@ -126,6 +126,18 @@ const FreelancerResultsStep: React.FC<FreelancerResultsStepProps> = ({
     <div>
       <StepHeading title="Your Tax Calculation Results">Based on your freelance/self-employment income</StepHeading>
 
+      {/* Annual minimum tax (RD PND90 guide, No. 11 item 9) */}
+      {result.minimumTaxApplied && (
+        <div className="note mb-6" data-testid="minimum-tax-note">
+          <h3 className="note-title">Minimum tax applied</h3>
+          <p className="text-sm text-ink-soft">
+            Your income other than salary is large enough that the Revenue Department's minimum tax
+            applies: 0.5% of that income before expenses and allowances (formatThb(result.minimumTax)), which is
+            more than the tax worked out from the brackets. The tax shown uses the minimum.
+          </p>
+        </div>
+      )}
+
       {/* LTR Visa Benefit Notice */}
       {result.ltrBenefitApplied && (
         <div className="note mb-6">

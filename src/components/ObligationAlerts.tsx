@@ -92,6 +92,12 @@ export const PND94Alert: React.FC<PND94AlertProps> = ({ result }) => {
             Revenue Code, including rental, freelance, contractor, and business
             income.
           </p>
+          <p className="text-xs text-ink-soft mt-1">
+            Estimate: Jan–Jun income less flat-rate expenses and half your annual
+            allowances, taxed at the normal rates (at least 0.5% of that income once it
+            reaches ฿120,000). Insurance, fund and donation payments made in Jan–Jun
+            are not included, so your actual PND94 tax may be lower.
+          </p>
         </div>
       </div>
     </div>

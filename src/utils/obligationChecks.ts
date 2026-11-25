@@ -1,5 +1,6 @@
 import {
   ThaiIncomeEntry,
+  PND94Estimate,
   PND94Result,
   VATResult,
   FreelancerFormData,
@@ -9,9 +10,13 @@ import {
   PND94_QUALIFYING_INCOME_TYPES,
   TAX_YEAR_CONFIG,
   VAT_CONFIG,
+  getEntryFlatRate,
+  isVatExemptRental,
 } from '../config/taxConfig';
-import { TAX_BRACKETS } from '../types/taxForm';
+import { TAX_CONSTANTS } from '../types/taxForm';
 import { TAX_RULES } from '../config/taxRules';
+import { calculateThaiTax } from './tax';
+import { calculateChildAllowance } from './taxCalculations';
 
 /**
  * Calculate half-year (Jan-Jun) income from Thai income entries
@@ -29,42 +34,76 @@ export function calculateHalfYearIncome(entries: ThaiIncomeEntry[]): number {
     .reduce((sum, entry) => sum + entry.grossAmount, 0);
 }
 
+/** Jan–Jun entries of the income types that PND94 covers (40(5)-(8)). */
+function halfYearQualifyingEntries(entries: ThaiIncomeEntry[]): ThaiIncomeEntry[] {
+  return entries.filter(entry =>
+    PND94_QUALIFYING_INCOME_TYPES.includes(entry.incomeType) &&
+    entry.monthReceived >= 1 && entry.monthReceived <= 6 &&
+    Number.isFinite(entry.grossAmount) && entry.grossAmount > 0
+  );
+}
+
 /**
- * Calculate provisional tax estimate for PND94
- * Uses simplified bracket calculation based on projected annual income
+ * Estimate the PND94 half-year tax, following the Revenue Department's PND94
+ * guide (tax-data/2026/residency.json: pnd94-half-year-allowances,
+ * pnd94-gross-income-tax-rate, pnd94-gross-income-tax-threshold):
+ *
+ * 1. Jan–Jun 40(5)-(8) income. A 65+ taxpayer's 190,000 income exemption is
+ *    applied first, to the income with the lowest flat-rate deduction (the
+ *    taxpayer may choose the category; this choice gives the lowest tax).
+ * 2. Less the flat-rate expense deduction for each income type.
+ * 3. Less HALF the annual personal, spouse, child and parent allowances.
+ * 4. Tax at the ordinary full-year progressive rates.
+ * 5. If Jan–Jun assessable income is 120,000 or more, tax is the greater of
+ *    that and 0.5% of the assessable income.
+ *
+ * Not included (the app does not collect Jan–Jun payment amounts): insurance,
+ * fund, social security and donation deductions, and actual expenses. Leaving
+ * them out gives a higher, more cautious estimate.
+ *
+ * Replaces (2026-11-25) a method that doubled the half-year income, applied the
+ * salary-style 50%/100,000 deduction to all income and halved the annual tax.
  */
-export function calculateProvisionalTax(
-  halfYearIncome: number,
-  personalAllowance: number = TAX_RULES.personalAllowance.value,
-  spouseAllowance: number = 0
-): number {
-  // Project full-year income (double the half-year)
-  const projectedAnnualIncome = halfYearIncome * 2;
+export function calculatePND94Estimate(formData: FreelancerFormData): PND94Estimate {
+  const entries = halfYearQualifyingEntries(formData.thaiIncomeEntries);
+  const halfYearIncome = entries.reduce((sum, entry) => sum + entry.grossAmount, 0);
 
-  // Apply basic deductions (simplified for provisional calculation)
-  // 50% expense deduction capped at 100,000 for employment-like income
-  const expenseDeduction = Math.min(projectedAnnualIncome * 0.5, 100000);
-  const totalAllowances = personalAllowance + spouseAllowance;
-  const taxableIncome = Math.max(0, projectedAnnualIncome - expenseDeduction - totalAllowances);
-
-  // Calculate tax using progressive brackets
-  let tax = 0;
-  let remainingIncome = taxableIncome;
-
-  for (let i = 0; i < TAX_BRACKETS.length; i++) {
-    const bracket = TAX_BRACKETS[i];
-    const prevLimit = i === 0 ? 0 : TAX_BRACKETS[i - 1].upTo;
-    const bracketSize = bracket.upTo - prevLimit;
-    const incomeInBracket = Math.min(remainingIncome, bracketSize);
-
-    tax += incomeInBracket * bracket.rate;
-    remainingIncome -= incomeInBracket;
-
-    if (remainingIncome <= 0) break;
+  // 65+ exemption against the lowest-rate income first.
+  let exemptionLeft = formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0;
+  let expenseDeduction = 0;
+  const byRate = [...entries].sort((a, b) => getEntryFlatRate(a) - getEntryFlatRate(b));
+  for (const entry of byRate) {
+    const exempt = Math.min(exemptionLeft, entry.grossAmount);
+    exemptionLeft -= exempt;
+    expenseDeduction += (entry.grossAmount - exempt) * getEntryFlatRate(entry);
   }
+  const seniorExemption = formData.isAge65OrOlder ? Math.min(TAX_CONSTANTS.SENIOR_ALLOWANCE, halfYearIncome) : 0;
+  const assessableIncome = halfYearIncome - seniorExemption;
 
-  // PND94 pays half of projected annual tax
-  return Math.round(tax / 2);
+  const annualAllowances =
+    TAX_CONSTANTS.PERSONAL_ALLOWANCE +
+    (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
+    calculateChildAllowance(formData.children || []) +
+    Math.min(formData.numberOfParents || 0, TAX_CONSTANTS.MAX_PARENTS) * TAX_CONSTANTS.PARENT_ALLOWANCE;
+  const allowances = annualAllowances * TAX_RULES.pnd94HalfYearAllowanceFraction.value;
+
+  const netIncome = Math.max(0, assessableIncome - expenseDeduction - allowances);
+  const netIncomeTax = calculateThaiTax(netIncome);
+  const grossIncomeTax = assessableIncome >= TAX_RULES.pnd94GrossIncomeTaxThreshold.value
+    ? assessableIncome * TAX_RULES.pnd94GrossIncomeTaxRate.value
+    : 0;
+
+  return {
+    halfYearIncome,
+    seniorExemption,
+    assessableIncome,
+    expenseDeduction,
+    allowances,
+    netIncome,
+    netIncomeTax,
+    grossIncomeTax,
+    provisionalTax: Math.round(Math.max(netIncomeTax, grossIncomeTax)),
+  };
 }
 
 /**
@@ -84,13 +123,8 @@ export function checkPND94Obligation(
 
   const required = halfYearIncome > threshold;
 
-  // Calculate spouse allowance if applicable
-  const spouseAllowance =
-    formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_RULES.spouseAllowance.value : 0;
-
-  const provisionalTax = required
-    ? calculateProvisionalTax(halfYearIncome, TAX_RULES.personalAllowance.value, spouseAllowance)
-    : 0;
+  const estimate = calculatePND94Estimate(formData);
+  const provisionalTax = required ? estimate.provisionalTax : 0;
 
   // PND94 due date is September 30 of the tax year
   const dueDate = TAX_YEAR_CONFIG.PND94_DUE_DATE;
@@ -101,6 +135,7 @@ export function checkPND94Obligation(
     threshold,
     provisionalTax,
     dueDate,
+    estimate,
   };
 }
 
@@ -116,24 +151,31 @@ const NON_TURNOVER_INCOME_TYPES: ReadonlySet<ThaiIncomeEntry['incomeType']> = ne
 
 /**
  * Calculate total annual business turnover for the VAT registration check.
- * Excludes salary and dividends (see NON_TURNOVER_INCOME_TYPES).
+ * Excludes salary and dividends (see NON_TURNOVER_INCOME_TYPES) and VAT-exempt
+ * rental of immovable property (tax-data: vat-exempt-rental-immovable-property).
  */
 export function calculateAnnualTurnover(entries: ThaiIncomeEntry[]): number {
   return entries
     .filter(entry => !NON_TURNOVER_INCOME_TYPES.has(entry.incomeType))
+    // Rental of buildings and land is VAT-exempt (Revenue Code s.81(1)(r));
+    // vehicle and other movable-property rental still counts.
+    .filter(entry => !isVatExemptRental(entry))
     .reduce((sum, entry) => sum + entry.grossAmount, 0);
 }
 
 /**
  * Check if VAT registration is required
- * VAT registration is mandatory when annual turnover >= 1,800,000 THB
+ * VAT registration is mandatory when annual turnover exceeds 1,800,000 THB
  */
 export function checkVATRegistration(
   formData: FreelancerFormData
 ): VATResult {
   const turnover = calculateAnnualTurnover(formData.thaiIncomeEntries);
   const threshold = TAX_THRESHOLDS.VAT_REGISTRATION;
-  const required = turnover >= threshold;
+  // Revenue Code s.81/1: a business whose tax base is "not exceeding" the
+  // small-business amount is exempt, so registration starts above the threshold
+  // (was >= until 2026-11-25).
+  const required = turnover > threshold;
 
   return {
     required,
