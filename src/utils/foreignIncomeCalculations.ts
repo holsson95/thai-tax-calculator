@@ -5,13 +5,19 @@ import {
   VisaType,
 } from '../types/freelancerForm';
 import { TAX_THRESHOLDS } from '../config/taxConfig';
-import { TAX_RULES } from '../config/taxRules';
+import { TAX_RULES, RULES_TAX_YEAR } from '../config/taxRules';
 import { hasDTAWithThailand, getPensionDTAExemption } from '../data/dtaCountries';
 
 /**
  * LTR visa types that grant foreign income tax exemption
  */
 const LTR_FOREIGN_INCOME_EXEMPT_VISAS: VisaType[] = [...TAX_RULES.ltrForeignIncomeExemptVisas.value];
+
+/** Parses a date string; returns null when it is not a real date. */
+function parseDate(value: string): Date | null {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
 
 /**
  * Check if a visa type grants foreign income tax exemption
@@ -33,7 +39,7 @@ export function hasLTRFlatRateBenefit(visaType: VisaType): boolean {
  * Taxability requires ALL three conditions:
  * 1. Thai tax resident (180+ days in Thailand)
  * 2. Income earned on or after January 1, 2024
- * 3. Income remitted to Thailand
+ * 3. Income remitted to Thailand during this calculator's tax year (RULES_TAX_YEAR)
  *
  * Exception: LTR visa holders (Wealthy Global Citizen, Wealthy Pensioner,
  * Work-from-Thailand Professional) are exempt from foreign income tax.
@@ -106,8 +112,23 @@ export function isForeignIncomeTaxable(
     };
   }
 
-  const earnedDate = new Date(entry.dateEarned);
+  const earnedDate = parseDate(entry.dateEarned);
   const taxYearStart = new Date(TAX_THRESHOLDS.FOREIGN_INCOME_TAX_YEAR_START);
+
+  // Unreadable date: before 2026-11-25 this fell through to "fully taxable"
+  // (an invalid Date compares false with everything).
+  if (!earnedDate) {
+    return {
+      entry,
+      isTaxable: false,
+      reason: 'Date earned is not a valid date - enter it as YYYY-MM-DD',
+      taxableAmount: 0,
+      foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
+    };
+  }
 
   // Income earned before 2024 - not taxable under new rules
   if (earnedDate < taxYearStart) {
@@ -137,11 +158,43 @@ export function isForeignIncomeTaxable(
     };
   }
 
+  const remittedDate = parseDate(entry.dateRemitted);
+  if (!remittedDate) {
+    return {
+      entry,
+      isTaxable: false,
+      reason: 'Date remitted is not a valid date - enter it as YYYY-MM-DD',
+      taxableAmount: 0,
+      foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
+    };
+  }
+
+  // Remitted income is assessable in the tax year it is brought into Thailand
+  // (Por. 161/2566). A transfer made in another year belongs on that year's return,
+  // not on this calculator's tax year. Before 2026-11-25 every remittance was counted
+  // regardless of year. Date-only ISO strings parse as UTC midnight, hence getUTCFullYear.
+  const remittedYear = remittedDate.getUTCFullYear();
+  if (remittedYear !== RULES_TAX_YEAR) {
+    return {
+      entry,
+      isTaxable: false,
+      reason: `Brought into Thailand in ${remittedYear} - reported on the ${remittedYear} tax return, not ${RULES_TAX_YEAR}`,
+      taxableAmount: 0,
+      foreignTaxCredit: 0,
+      hasDTA: dtaResult.hasDTA,
+      dtaCreditAllowed: dtaResult.creditAllowed,
+      dtaCreditDisallowed: 0,
+    };
+  }
+
   // All conditions met - income is taxable
   return {
     entry,
     isTaxable: true,
-    reason: 'Income earned in 2024+ and remitted to Thailand - fully taxable',
+    reason: `Income earned in 2024+ and remitted to Thailand in ${RULES_TAX_YEAR} - fully taxable`,
     taxableAmount: entry.amountThb,
     foreignTaxCredit: dtaResult.credit,
     hasDTA: dtaResult.hasDTA,
@@ -318,7 +371,9 @@ export function validateForeignIncomeEntry(entry: ForeignIncomeEntry): {
   } else {
     const earnedDate = new Date(entry.dateEarned);
     const today = new Date();
-    if (earnedDate > today) {
+    if (Number.isNaN(earnedDate.getTime())) {
+      errors.push('Date earned is not a valid date');
+    } else if (earnedDate > today) {
       errors.push('Date earned cannot be in the future');
     }
   }
@@ -326,7 +381,9 @@ export function validateForeignIncomeEntry(entry: ForeignIncomeEntry): {
   if (entry.dateRemitted) {
     const remittedDate = new Date(entry.dateRemitted);
     const today = new Date();
-    if (remittedDate > today) {
+    if (Number.isNaN(remittedDate.getTime())) {
+      errors.push('Date remitted is not a valid date');
+    } else if (remittedDate > today) {
       errors.push('Date remitted cannot be in the future');
     }
 

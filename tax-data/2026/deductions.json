@@ -148,8 +148,8 @@
         "url": "https://www.forvismazars.com/th/en/insights/doing-business-in-thailand/payroll/personal-income-tax"
       },
       "verified": true,
-      "verification_notes": "Combined cap and scope (retirement instruments only, excludes life/health insurance) confirmed via strong convergence of secondary sources plus partial primary corroboration. STILL UNRESOLVED: this combined cap is defined in DEDUCTION_CAPS but is NOT referenced/enforced anywhere in src/utils/taxCalculations.ts — the calculation only applies the individual per-fund caps, which could let a user's combined retirement deductions exceed 500,000 THB in the app when they legally cannot. This is a functional gap, not just a sourcing gap, flagged in the original audit and still open.",
-      "used_in": "src/config/taxConfig.ts:166 (DEDUCTION_CAPS.COMBINED_RETIREMENT_CAP) — defined but not enforced in calculation logic"
+      "verification_notes": "Combined cap and scope (retirement instruments only, excludes life/health insurance) confirmed via strong convergence of secondary sources plus partial primary corroboration. STILL UNRESOLVED: this combined cap is defined in DEDUCTION_CAPS but is NOT referenced/enforced anywhere in src/utils/taxCalculations.ts — the calculation only applies the individual per-fund caps, which could let a user's combined retirement deductions exceed 500,000 THB in the app when they legally cannot. This is a functional gap, not just a sourcing gap, flagged in the original audit and still open. | 2026-11-25: RESOLVED — the combined cap is now enforced in calculation logic (see used_in). The pension-fund individual-cap question (max-pension-fund) is still open.",
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown) — ENFORCED since 2026-11-25 for the salaried, company-owner, freelancer and monthly calculators. Funds are filled in form order (pension, provident, RMF, SSF) when the cap binds; that order affects only the displayed breakdown, not the tax."
     },
     {
       "id": "max-life-insurance",
@@ -240,7 +240,7 @@
       },
       "verified": true,
       "verification_notes": "Confirmed directly by RD. The app's plain 10% description matches for the general (non-doubled) donation category. The 2x multiplier for education/hospital/e-Donation categories is NOT modeled in the app — a documented feature gap (understates the deduction for donors to those specific categories) rather than an error, since applying the plain 10% cap without the multiplier is conservative, not incorrect.",
-      "used_in": "src/types/taxForm.ts:249,94 (MAX_DONATION_PERCENT)"
+      "used_in": "src/utils/taxCalculations.ts (calculateDeductionBreakdown) — since 2026-11-25 the 10% cap is applied to income after the expense deduction, allowances AND social security/insurance/retirement-fund deductions, per the condition above (previously it ignored those deductions; the monthly calculator used 10% of gross income)."
     }
   ]
 }

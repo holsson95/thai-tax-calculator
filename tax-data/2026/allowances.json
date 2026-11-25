@@ -86,7 +86,7 @@
       },
       "verified": true,
       "verification_notes": "Verified via two independent reputable secondary sources, both naming Amendment Act No. 46 (B.E. 2561) and the 12 Nov 2018 effective date. The 2018 birth-year cutoff used in the app's code matches. Flagging the adopted-child exclusion as a real modeling gap, not just a sourcing gap — the calculator would currently overstate this allowance for a family whose 2nd+ child is adopted.",
-      "used_in": "src/types/taxForm.ts:240,81-82 (CHILD_ALLOWANCE_BONUS, CHILD_BONUS_BIRTH_YEAR); src/utils/taxCalculations.ts:38-52 (calculateChildAllowance)"
+      "used_in": "src/utils/taxCalculations.ts (getChildAllowanceBreakdown / calculateChildAllowance) — since 2026-11-25 the bonus follows chronological birth order (sorted by birth year), not the order children were entered. Adopted-child exclusion still NOT modeled."
     },
     {
       "id": "parent-allowance",

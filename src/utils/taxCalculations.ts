@@ -31,25 +31,43 @@ import { checkPND94Obligation, checkVATRegistration } from './obligationChecks';
  */
 const LTR_HIGHLY_SKILLED_FLAT_RATE = TAX_RULES.ltrHighlySkilledFlatRate.value;
 
+export interface ChildAllowanceLine {
+  base: number;
+  bonus: number;
+  total: number;
+}
+
 /**
- * Calculate child allowance based on birth year
+ * Child allowance for each child, returned in the order the children were
+ * entered (so UI rows line up), but decided by CHRONOLOGICAL BIRTH ORDER:
  * - Base: 30,000 THB per child
- * - Bonus: Additional 30,000 THB for 2nd+ child born 2018 or later
+ * - Bonus: another 30,000 THB for the 2nd and later child (by birth order)
+ *   born in or after 2018
+ * Source: tax-data/2026/allowances.json#child-allowance-bonus ("by chronological
+ * birth order"). Before 2026-11-25 the app used entry order, so the same family
+ * could get 60,000 or 90,000 depending on which child was typed first.
+ * Children with the same birth year keep their entry order (birth order within a
+ * year is not collected; with the 2018 rule it cannot change the total).
  */
-export function calculateChildAllowance(children: TaxFormData['children']): number {
-  let total = 0;
+export function getChildAllowanceBreakdown(children: TaxFormData['children']): ChildAllowanceLine[] {
+  const birthRank = children
+    .map((child, index) => ({ index, birthYear: child.birthYear }))
+    .sort((a, b) => a.birthYear - b.birthYear || a.index - b.index);
+  const rankOf = new Map(birthRank.map((c, rank) => [c.index, rank]));
 
-  children.forEach((child, index) => {
-    // Base allowance for each child
-    total += TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-
-    // Bonus for 2nd+ child (index >= 1) born 2018 or later
-    if (index >= 1 && child.birthYear >= TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR) {
-      total += TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS;
-    }
+  return children.map((child, index) => {
+    const base = TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
+    const isSecondOrLater = (rankOf.get(index) ?? 0) >= 1;
+    const bonus = isSecondOrLater && child.birthYear >= TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR
+      ? TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS
+      : 0;
+    return { base, bonus, total: base + bonus };
   });
+}
 
-  return total;
+/** Total child allowance (see getChildAllowanceBreakdown for the rule). */
+export function calculateChildAllowance(children: TaxFormData['children']): number {
+  return getChildAllowanceBreakdown(children).reduce((sum, line) => sum + line.total, 0);
 }
 
 /**
@@ -90,12 +108,87 @@ export function calculateStandardDeduction(annualIncome: number): number {
   );
 }
 
+/** The form fields every engine shares for the non-allowance deductions. */
+export type DeductionInputs = Pick<
+  TaxFormData,
+  | 'includeSocialSecurity' | 'socialSecurityContribution'
+  | 'hasLifeInsurance' | 'lifeInsurance'
+  | 'hasHealthInsurance' | 'healthInsurance'
+  | 'hasPensionFund' | 'pensionFund'
+  | 'hasProvidentFund' | 'providentFund'
+  | 'hasRMF' | 'rmf'
+  | 'hasSSF' | 'ssf'
+  | 'hasDonations' | 'donations'
+>;
+
+export type DeductionBreakdown = Pick<
+  TaxBreakdown,
+  'socialSecurity' | 'lifeInsurance' | 'healthInsurance' | 'pensionFund' | 'providentFund' | 'rmf' | 'ssf' | 'donations'
+>;
+
+/** A ticked amount, floored at zero (blank/NaN/negative inputs give nothing). */
+const claimed = (ticked: boolean, amount: number): number =>
+  ticked && Number.isFinite(amount) && amount > 0 ? amount : 0;
+
 /**
- * Calculate total deductions based on user's expenses
- * Returns breakdown object with capped values
+ * Social security, insurance, retirement-fund and donation deductions, with every cap applied.
+ * Shared by the salaried, company-owner, freelancer and monthly calculators so they cannot drift.
+ *
+ * 1. Each item is capped individually (TAX_CONSTANTS).
+ * 2. Pension + provident fund + RMF + SSF together are capped at 500,000
+ *    (tax-data/2026/deductions.json#combined-retirement-cap; enforced from 2026-11-25).
+ *    When the combined cap binds, the funds are filled in form order (pension,
+ *    provident, RMF, SSF) and the later ones trimmed. That order only changes how
+ *    the breakdown is displayed, not the total or the tax.
+ * 3. Donations are capped at 10% of income after the expense deduction,
+ *    allowances AND all the deductions above
+ *    (tax-data/2026/deductions.json#max-donation-percent; before 2026-11-25 the cap
+ *    ignored the deductions in steps 1–2).
+ *
+ * @param incomeAfterAllowances income after the expense deduction and allowances
  */
-export function calculateDeductions(formData: TaxFormData, taxableIncomeBeforeDeductions: number): TaxBreakdown {
-  const breakdown: TaxBreakdown = {
+export function calculateDeductionBreakdown(
+  formData: DeductionInputs,
+  incomeAfterAllowances: number
+): DeductionBreakdown {
+  const socialSecurity = Math.min(claimed(formData.includeSocialSecurity, formData.socialSecurityContribution), TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
+  const lifeInsurance = Math.min(claimed(formData.hasLifeInsurance, formData.lifeInsurance), TAX_CONSTANTS.MAX_LIFE_INSURANCE);
+  const healthInsurance = Math.min(claimed(formData.hasHealthInsurance, formData.healthInsurance), TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
+
+  let retirementRoom = TAX_RULES.combinedRetirementCap.value;
+  const takeRetirement = (amount: number, individualCap: number): number => {
+    const allowed = Math.min(amount, individualCap, retirementRoom);
+    retirementRoom -= allowed;
+    return allowed;
+  };
+  const pensionFund = takeRetirement(claimed(formData.hasPensionFund, formData.pensionFund), TAX_CONSTANTS.MAX_PENSION_FUND);
+  const providentFund = takeRetirement(claimed(formData.hasProvidentFund, formData.providentFund), TAX_CONSTANTS.MAX_PROVIDENT_FUND);
+  const rmf = takeRetirement(claimed(formData.hasRMF, formData.rmf), TAX_CONSTANTS.MAX_RMF);
+  const ssf = takeRetirement(claimed(formData.hasSSF, formData.ssf), TAX_CONSTANTS.MAX_SSF);
+
+  const incomeBeforeDonations = Math.max(
+    0,
+    incomeAfterAllowances - socialSecurity - lifeInsurance - healthInsurance - pensionFund - providentFund - rmf - ssf
+  );
+  const donations = Math.min(
+    claimed(formData.hasDonations, formData.donations),
+    incomeBeforeDonations * TAX_CONSTANTS.MAX_DONATION_PERCENT
+  );
+
+  return { socialSecurity, lifeInsurance, healthInsurance, pensionFund, providentFund, rmf, ssf, donations };
+}
+
+/** Sum of a DeductionBreakdown. */
+export function sumDeductions(d: DeductionBreakdown): number {
+  return d.socialSecurity + d.lifeInsurance + d.healthInsurance + d.pensionFund + d.providentFund + d.rmf + d.ssf + d.donations;
+}
+
+/**
+ * Full breakdown (expense deduction, allowances and deductions) with capped values.
+ * @param incomeAfterAllowances income after the expense deduction and allowances
+ */
+export function calculateDeductions(formData: TaxFormData, incomeAfterAllowances: number): TaxBreakdown {
+  return {
     // Standard expense deduction (50% of income, max 100,000)
     standardDeduction: calculateStandardDeduction(formData.annualIncome),
 
@@ -105,40 +198,8 @@ export function calculateDeductions(formData: TaxFormData, taxableIncomeBeforeDe
     childAllowance: calculateChildAllowance(formData.children),
     parentAllowance: Math.min(formData.numberOfParents, TAX_CONSTANTS.MAX_PARENTS) * TAX_CONSTANTS.PARENT_ALLOWANCE,
 
-    // Social security contribution
-    socialSecurity: formData.includeSocialSecurity
-      ? Math.min(formData.socialSecurityContribution, TAX_CONSTANTS.MAX_SOCIAL_SECURITY)
-      : 0,
-
-    // Insurance (capped individually and combined)
-    lifeInsurance: formData.hasLifeInsurance
-      ? Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE)
-      : 0,
-    healthInsurance: formData.hasHealthInsurance
-      ? Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE)
-      : 0,
-
-    // Retirement funds (capped individually)
-    pensionFund: formData.hasPensionFund
-      ? Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND)
-      : 0,
-    providentFund: formData.hasProvidentFund
-      ? Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND)
-      : 0,
-    rmf: formData.hasRMF
-      ? Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF)
-      : 0,
-    ssf: formData.hasSSF
-      ? Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF)
-      : 0,
-
-    // Donations (limited to 10% of taxable income before donations)
-    donations: formData.hasDonations
-      ? Math.min(formData.donations, taxableIncomeBeforeDeductions * TAX_CONSTANTS.MAX_DONATION_PERCENT)
-      : 0,
+    ...calculateDeductionBreakdown(formData, incomeAfterAllowances),
   };
-
-  return breakdown;
 }
 
 /**
@@ -316,50 +377,14 @@ export function calculateFreelancerAllowances(formData: FreelancerFormData): num
 }
 
 /**
- * Calculate additional deductions for freelancer (insurance, funds, donations)
+ * Additional deductions for a freelancer (social security, insurance, funds, donations).
+ * Same rules and caps as the salaried calculator: see calculateDeductionBreakdown.
  */
 export function calculateFreelancerDeductions(
   formData: FreelancerFormData,
-  taxableIncomeBeforeDeductions: number
+  incomeAfterAllowances: number
 ): number {
-  let total = 0;
-
-  // Social security
-  if (formData.includeSocialSecurity) {
-    total += Math.min(formData.socialSecurityContribution, TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
-  }
-
-  // Insurance
-  if (formData.hasLifeInsurance) {
-    total += Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE);
-  }
-  if (formData.hasHealthInsurance) {
-    total += Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
-  }
-
-  // Retirement funds
-  if (formData.hasPensionFund) {
-    total += Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND);
-  }
-  if (formData.hasProvidentFund) {
-    total += Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND);
-  }
-  if (formData.hasRMF) {
-    total += Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF);
-  }
-  if (formData.hasSSF) {
-    total += Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF);
-  }
-
-  // Donations (limited to 10% of taxable income before donations)
-  if (formData.hasDonations) {
-    total += Math.min(
-      formData.donations,
-      taxableIncomeBeforeDeductions * TAX_CONSTANTS.MAX_DONATION_PERCENT
-    );
-  }
-
-  return total;
+  return sumDeductions(calculateDeductionBreakdown(formData, incomeAfterAllowances));
 }
 
 /**
@@ -393,9 +418,16 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
     : thaiIncomeTotal + taxableForeignIncome;
   const grossIncome = thaiIncomeTotal + taxableForeignIncome;
 
-  // Step 4: Calculate expense deduction (only for non-salary income if LTR Highly Skilled)
+  // Step 4: Calculate expense deduction.
+  // LTR Highly Skilled: the salary is taxed at the flat rate OUTSIDE the progressive
+  // calculation, so its 40(1) expense deduction must not be subtracted from the
+  // remaining (progressive) income. Before 2026-11-25 it was, which understated tax
+  // on the non-salary income by up to 100,000 THB of taxable income.
+  const progressiveIncomeEntries = isLTRHighlySkilled
+    ? formData.thaiIncomeEntries.filter(entry => entry.incomeType !== 'salary_40_1')
+    : formData.thaiIncomeEntries;
   const expenseDeduction = getEffectiveDeduction(
-    formData.thaiIncomeEntries,
+    progressiveIncomeEntries,
     formData.actualExpenses,
     formData.expenseMethod
   );
@@ -403,7 +435,7 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   // Step 5: Generate expense comparison if using auto_compare
   const expenseComparison = formData.expenseMethod === 'auto_compare' || formData.expenseMethod === 'force_actual'
     ? compareExpenseDeductions(
-        formData.thaiIncomeEntries,
+        progressiveIncomeEntries,
         formData.actualExpenses,
         estimateTaxBracketRate(grossIncomeForProgressiveTax - expenseDeduction)
       )
@@ -416,7 +448,8 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
   const incomeAfterDeductions = Math.max(0, grossIncomeForProgressiveTax - expenseDeduction - totalAllowances);
 
   // Step 8: Calculate additional deductions (insurance, funds, donations)
-  const totalDeductions = calculateFreelancerDeductions(formData, incomeAfterDeductions);
+  const deductionBreakdown = calculateDeductionBreakdown(formData, incomeAfterDeductions);
+  const totalDeductions = sumDeductions(deductionBreakdown);
 
   // Step 9: Calculate final taxable income (for progressive brackets)
   const taxableIncome = Math.max(0, incomeAfterDeductions - totalDeductions);
@@ -463,6 +496,7 @@ export function calculateFreelancerTax(formData: FreelancerFormData): Freelancer
     expenseMethod: formData.expenseMethod,
     totalAllowances,
     totalDeductions: expenseDeduction + totalDeductions, // Include expense deduction in total
+    deductionBreakdown,
     taxableIncome,
     grossTaxBeforeCredits,
     withholdingCredits,

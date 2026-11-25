@@ -1,5 +1,13 @@
-import { StepProps, TAX_CONSTANTS } from '../../types/taxForm';
-import { calculateChildAllowance } from '../../utils/taxCalculations';
+import { StepProps, TaxFormData, TAX_CONSTANTS } from '../../types/taxForm';
+import { CompanyOwnerFormData } from '../../types/companyOwnerForm';
+import { calculateAnnualTax, calculateChildAllowance, calculateCompanyOwnerTax } from '../../utils/taxCalculations';
+
+function reviewFigures(formData: TaxFormData) {
+  const result = formData.employmentType === 'company_owner'
+    ? calculateCompanyOwnerTax(formData as unknown as CompanyOwnerFormData)
+    : calculateAnnualTax(formData);
+  return { grossIncome: result.grossIncome, totalAllowances: result.totalAllowances, deductions: result.breakdown };
+}
 
 interface ReviewStepProps extends StepProps {
   goToStep: (step: number) => void;
@@ -29,39 +37,22 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
     return 'Not specified';
   };
 
+  // Capped amounts straight from the engine, so this screen always matches the results.
+  const engineResult = reviewFigures(formData);
   const getActiveDeductions = () => {
-    const active = [];
-    if (formData.hasLifeInsurance && formData.lifeInsurance > 0) {
-      active.push({ label: 'Life Insurance', amount: Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE) });
-    }
-    if (formData.hasHealthInsurance && formData.healthInsurance > 0) {
-      active.push({ label: 'Health Insurance', amount: Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE) });
-    }
-    if (formData.hasPensionFund && formData.pensionFund > 0) {
-      active.push({ label: 'Pension Fund', amount: Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND) });
-    }
-    if (formData.hasProvidentFund && formData.providentFund > 0) {
-      active.push({ label: 'Provident Fund', amount: Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND) });
-    }
-    if (formData.hasRMF && formData.rmf > 0) {
-      active.push({ label: 'RMF', amount: Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF) });
-    }
-    if (formData.hasSSF && formData.ssf > 0) {
-      active.push({ label: 'SSF', amount: Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF) });
-    }
-    if (formData.hasDonations && formData.donations > 0) {
-      const maxDonation = formData.annualIncome * TAX_CONSTANTS.MAX_DONATION_PERCENT;
-      active.push({ label: 'Donations', amount: Math.min(formData.donations, maxDonation) });
-    }
-    return active;
+    const d = engineResult.deductions;
+    return [
+      { label: 'Life Insurance', amount: d.lifeInsurance },
+      { label: 'Health Insurance', amount: d.healthInsurance },
+      { label: 'Pension Fund', amount: d.pensionFund },
+      { label: 'Provident Fund', amount: d.providentFund },
+      { label: 'RMF', amount: d.rmf },
+      { label: 'SSF', amount: d.ssf },
+      { label: 'Donations', amount: d.donations },
+    ].filter((item) => item.amount > 0);
   };
 
-  const totalAllowances =
-    TAX_CONSTANTS.PERSONAL_ALLOWANCE +
-    (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
-    (formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0) +
-    calculateChildAllowance(formData.children) +
-    formData.numberOfParents * TAX_CONSTANTS.PARENT_ALLOWANCE;
+  const totalAllowances = engineResult.totalAllowances;
 
   const activeDeductions = getActiveDeductions();
   const totalDeductions = activeDeductions.reduce((sum, d) => sum + d.amount, 0);
@@ -96,7 +87,8 @@ const ReviewStep: React.FC<ReviewStepProps> = ({ formData, goToStep, nextStep })
             <div>
               <h3 className="field-label text-ink-mute">Annual Income</h3>
               <p className="text-ink mt-1 text-lg font-semibold">
-                {formatCurrency(formData.annualIncome)}
+                {/* From the engine: company owners have no annualIncome field (salary + fees + PIT dividends instead) */}
+                {formatCurrency(engineResult.grossIncome)}
               </p>
               {formData.includeSocialSecurity && formData.socialSecurityContribution > 0 && (
                 <p className="text-sm text-ink-soft mt-1">

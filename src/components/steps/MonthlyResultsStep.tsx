@@ -2,26 +2,16 @@ import { useEffect, useState, useMemo } from 'react';
 import LeadCTA from '../leads/LeadCTA';
 import { leadContextFromSalary } from '../../utils/leadContext';
 import { track, taxBand } from '../../utils/analytics';
-import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS, ChildData } from '../../types/taxForm';
-import { calculateThaiTax, getTaxByBracket } from '../../utils/tax';
+import { MonthlyFormData, MonthlyIncomeEntry, MONTHLY_TAX_CONSTANTS } from '../../types/taxForm';
+import { monthlyToAnnualInput } from '../../utils/monthlyEstimate';
+import { getTaxByBracket } from '../../utils/tax';
+import { calculateAnnualTax } from '../../utils/taxCalculations';
 import TaxFlowDiagram, { TaxFlowStep, TaxFlowBracket } from '../TaxFlowDiagram';
 import TakeHomeIncomeCard from '../TakeHomeIncomeCard';
 import { FieldLabel, ResultCell, SourceTicket, Stamp, StepHeading } from '../ui/form';
 import { RULES_TAX_YEAR } from '../../config/taxRules';
 
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-// Calculate child allowance with birth year bonuses
-const calculateChildAllowance = (children: ChildData[]): number => {
-  return children.reduce((total, child, index) => {
-    let allowance = MONTHLY_TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-    // Bonus for 2nd+ child born 2018 or later
-    if (index >= 1 && child.birthYear >= MONTHLY_TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR) {
-      allowance += MONTHLY_TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS;
-    }
-    return total + allowance;
-  }, 0);
-};
 
 interface MonthlyResultsStepProps {
   formData: MonthlyFormData;
@@ -52,87 +42,28 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
     return (formData.monthlySalary * 12) + (formData.annualBonus || 0) + (formData.annualOtherIncome || 0);
   };
 
-  // Calculate tax based on current formData
+  // Calculate tax based on current formData, using the shared annual engine
   const calculateResult = useMemo(() => {
     const annualIncome = getAnnualIncome();
-
-    // Standard expense deduction for employment income: 50% of income, max 100,000 THB
-    const standardDeduction = Math.min(
-      annualIncome * MONTHLY_TAX_CONSTANTS.STANDARD_DEDUCTION_RATE,
-      MONTHLY_TAX_CONSTANTS.MAX_STANDARD_DEDUCTION
-    );
-
-    const personalAllowance = MONTHLY_TAX_CONSTANTS.PERSONAL_ALLOWANCE;
-    let totalAllowances = personalAllowance;
-    let otherDeductions = 0;
-
-    // Add social security if included
-    if (formData.includeSocialSecurity && formData.socialSecurityContribution > 0) {
-      otherDeductions += Math.min(formData.socialSecurityContribution, MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY);
-    }
-
-    // For detailed estimate, add more deductions
-    if (formData.estimateType === 'detailed') {
-      // Spouse allowance
-      if (formData.maritalStatus === 'married' && formData.spouseHasNoIncome) {
-        totalAllowances += MONTHLY_TAX_CONSTANTS.SPOUSE_ALLOWANCE;
-      }
-
-      // Child allowance with birth year bonuses
-      const childAllowance = calculateChildAllowance(formData.children || []);
-      totalAllowances += childAllowance;
-
-      // Parent allowance
-      const parentAllowance = (formData.numberOfParents || 0) * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE;
-      totalAllowances += parentAllowance;
-
-      // Insurance deductions
-      if (formData.hasLifeInsurance) {
-        otherDeductions += Math.min(formData.lifeInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_LIFE_INSURANCE);
-      }
-      if (formData.hasHealthInsurance) {
-        otherDeductions += Math.min(formData.healthInsurance || 0, MONTHLY_TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
-      }
-      if (formData.hasPensionFund) {
-        otherDeductions += Math.min(formData.pensionFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PENSION_FUND);
-      }
-      if (formData.hasProvidentFund) {
-        otherDeductions += Math.min(formData.providentFund || 0, MONTHLY_TAX_CONSTANTS.MAX_PROVIDENT_FUND);
-      }
-      if (formData.hasRMF) {
-        otherDeductions += Math.min(formData.rmf || 0, MONTHLY_TAX_CONSTANTS.MAX_RMF);
-      }
-      if (formData.hasSSF) {
-        otherDeductions += Math.min(formData.ssf || 0, MONTHLY_TAX_CONSTANTS.MAX_SSF);
-      }
-
-      // Donations (limited to 10% of income)
-      if (formData.hasDonations) {
-        const maxDonation = Math.floor(annualIncome * MONTHLY_TAX_CONSTANTS.MAX_DONATION_PERCENT);
-        otherDeductions += Math.min(formData.donations || 0, maxDonation);
-      }
-    }
-
-    const totalDeductions = standardDeduction + totalAllowances + otherDeductions;
-    const taxableIncome = Math.max(0, annualIncome - totalDeductions);
-    const annualTax = calculateThaiTax(taxableIncome);
-    const monthlyWithholding = annualTax / 12;
+    const annual = calculateAnnualTax(monthlyToAnnualInput(formData, annualIncome));
+    const b = annual.breakdown;
+    const otherDeductions = annual.totalDeductions - b.standardDeduction;
 
     return {
       annualIncome,
-      standardDeduction,
-      personalAllowance,
-      totalAllowances,
+      standardDeduction: b.standardDeduction,
+      personalAllowance: b.personalAllowance,
+      totalAllowances: annual.totalAllowances,
       otherDeductions,
-      socialSecurity: formData.includeSocialSecurity
-        ? Math.min(formData.socialSecurityContribution || 0, MONTHLY_TAX_CONSTANTS.MAX_SOCIAL_SECURITY)
-        : 0,
-      totalDeductions,
-      taxableIncome,
-      annualTax,
-      monthlyWithholding,
-      effectiveRate: annualIncome > 0 ? (annualTax / annualIncome) * 100 : 0,
+      socialSecurity: b.socialSecurity,
+      breakdown: b,
+      totalDeductions: b.standardDeduction + annual.totalAllowances + otherDeductions,
+      taxableIncome: annual.taxableIncome,
+      annualTax: annual.taxOwed,
+      monthlyWithholding: annual.taxOwed / 12,
+      effectiveRate: annual.effectiveRate,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   const leadContext = useMemo(
@@ -248,11 +179,10 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       }
 
       if (formData.children && formData.children.length > 0) {
-        const childAllowance = calculateChildAllowance(formData.children);
         values.push({
           key: 'childAllowance',
           label: `Child Allowance (${formData.children.length})`,
-          value: childAllowance,
+          value: calculateResult.breakdown.childAllowance,
           editable: false,
         });
       }
@@ -261,7 +191,16 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
         values.push({
           key: 'parentAllowance',
           label: `Parent Allowance (${formData.numberOfParents})`,
-          value: formData.numberOfParents * MONTHLY_TAX_CONSTANTS.PARENT_ALLOWANCE,
+          value: calculateResult.breakdown.parentAllowance,
+          editable: false,
+        });
+      }
+
+      if (formData.isAge65OrOlder) {
+        values.push({
+          key: 'seniorAllowance',
+          label: 'Age 65+ Exemption',
+          value: calculateResult.breakdown.seniorAllowance,
           editable: false,
         });
       }
@@ -327,8 +266,10 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
       }
 
       if (formData.hasDonations) {
-        const annualIncome = getAnnualIncome();
-        const maxDonation = Math.floor(annualIncome * MONTHLY_TAX_CONSTANTS.MAX_DONATION_PERCENT);
+        // Cap = 10% of income after every other deduction. Taxable income plus the
+        // donations already allowed is exactly that "income before donations".
+        const incomeBeforeDonations = calculateResult.taxableIncome + calculateResult.breakdown.donations;
+        const maxDonation = Math.floor(incomeBeforeDonations * MONTHLY_TAX_CONSTANTS.MAX_DONATION_PERCENT);
         values.push({
           key: 'donations',
           label: 'Donations',
@@ -340,7 +281,7 @@ const MonthlyResultsStep: React.FC<MonthlyResultsStepProps> = ({ formData, setFo
     }
 
     return values;
-  }, [formData, calculateResult.standardDeduction]);
+  }, [formData, calculateResult]);
 
   const handleValueChange = (key: string, value: string, maxValue?: number) => {
     const numValue = parseFloat(value.replace(/[^0-9]/g, '')) || 0;

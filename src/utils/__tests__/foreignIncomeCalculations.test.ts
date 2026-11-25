@@ -23,7 +23,7 @@ function createForeignIncomeEntry(overrides: Partial<ForeignIncomeEntry> = {}): 
     currency: 'USD',
     amountThb: 350000,
     dateEarned: '2024-03-01',
-    dateRemitted: '2024-04-15',
+    dateRemitted: '2026-04-15', // inside the 2026 tax year being calculated
     foreignTaxPaid: 0,
     description: 'Foreign work',
     country: 'USA',
@@ -178,9 +178,9 @@ describe('analyzeForeignIncome', () => {
       isThaiResident: true,
       visaType: 'regular',
       foreignIncomeEntries: [
-        createForeignIncomeEntry({ amountThb: 300000, dateRemitted: '2024-05-01' }), // taxable
+        createForeignIncomeEntry({ amountThb: 300000, dateRemitted: '2026-05-01' }), // taxable
         createForeignIncomeEntry({ amountThb: 200000, dateRemitted: null }), // not remitted
-        createForeignIncomeEntry({ amountThb: 100000, dateEarned: '2023-01-01', dateRemitted: '2024-01-01' }), // pre-2024
+        createForeignIncomeEntry({ amountThb: 100000, dateEarned: '2023-01-01', dateRemitted: '2026-01-01' }), // pre-2024
       ],
     });
 
@@ -266,7 +266,7 @@ describe('validateForeignIncomeEntry', () => {
 describe('calculateForeignIncomeSummary', () => {
   it('summarizes taxable vs non-taxable entries and effective foreign tax rate', () => {
     const entries = [
-      createForeignIncomeEntry({ amountThb: 300000, foreignTaxPaid: 30000, dateRemitted: '2024-05-01' }),
+      createForeignIncomeEntry({ amountThb: 300000, foreignTaxPaid: 30000, dateRemitted: '2026-05-01' }),
       createForeignIncomeEntry({ amountThb: 100000, foreignTaxPaid: 0, dateRemitted: null }),
     ];
     const summary = calculateForeignIncomeSummary(entries, true, 'regular');

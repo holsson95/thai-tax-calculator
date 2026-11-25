@@ -1,6 +1,6 @@
 import { FreelancerStepProps } from '../../types/freelancerForm';
 import { TAX_CONSTANTS } from '../../types/taxForm';
-import { calculateChildAllowance } from '../../utils/taxCalculations';
+import { calculateChildAllowance, calculateFreelancerTax } from '../../utils/taxCalculations';
 import { calculateTotalFlatRateDeductions, getTotalGrossIncome, getTotalWithholding } from '../../utils/expenseCalculations';
 import { getResidencyStatusDescription } from '../../utils/foreignIncomeCalculations';
 import { INCOME_TYPE_INFO } from '../../data/incomeTypes';
@@ -59,39 +59,25 @@ const FreelancerReviewStep: React.FC<FreelancerReviewStepProps> = ({
     }
   };
 
+  // Capped amounts straight from the engine, so this screen always matches the results.
+  const engineResult = (() => {
+    const r = calculateFreelancerTax(formData);
+    return { totalAllowances: r.totalAllowances, deductions: r.deductionBreakdown };
+  })();
   const getActiveDeductions = () => {
-    const active = [];
-    if (formData.hasLifeInsurance && formData.lifeInsurance > 0) {
-      active.push({ label: 'Life Insurance', amount: Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE) });
-    }
-    if (formData.hasHealthInsurance && formData.healthInsurance > 0) {
-      active.push({ label: 'Health Insurance', amount: Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE) });
-    }
-    if (formData.hasPensionFund && formData.pensionFund > 0) {
-      active.push({ label: 'Pension Fund', amount: Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND) });
-    }
-    if (formData.hasProvidentFund && formData.providentFund > 0) {
-      active.push({ label: 'Provident Fund', amount: Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND) });
-    }
-    if (formData.hasRMF && formData.rmf > 0) {
-      active.push({ label: 'RMF', amount: Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF) });
-    }
-    if (formData.hasSSF && formData.ssf > 0) {
-      active.push({ label: 'SSF', amount: Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF) });
-    }
-    if (formData.hasDonations && formData.donations > 0) {
-      const maxDonation = (thaiIncomeTotal + foreignIncomeTotal) * TAX_CONSTANTS.MAX_DONATION_PERCENT;
-      active.push({ label: 'Donations', amount: Math.min(formData.donations, maxDonation) });
-    }
-    return active;
+    const d = engineResult.deductions;
+    return [
+      { label: 'Life Insurance', amount: d.lifeInsurance },
+      { label: 'Health Insurance', amount: d.healthInsurance },
+      { label: 'Pension Fund', amount: d.pensionFund },
+      { label: 'Provident Fund', amount: d.providentFund },
+      { label: 'RMF', amount: d.rmf },
+      { label: 'SSF', amount: d.ssf },
+      { label: 'Donations', amount: d.donations },
+    ].filter((item) => item.amount > 0);
   };
 
-  const totalAllowances =
-    TAX_CONSTANTS.PERSONAL_ALLOWANCE +
-    (formData.maritalStatus === 'married' && formData.spouseHasNoIncome ? TAX_CONSTANTS.SPOUSE_ALLOWANCE : 0) +
-    (formData.isAge65OrOlder ? TAX_CONSTANTS.SENIOR_ALLOWANCE : 0) +
-    calculateChildAllowance(formData.children) +
-    formData.numberOfParents * TAX_CONSTANTS.PARENT_ALLOWANCE;
+  const totalAllowances = engineResult.totalAllowances;
 
   const activeDeductions = getActiveDeductions();
   const totalDeductions = activeDeductions.reduce((sum, d) => sum + d.amount, 0);

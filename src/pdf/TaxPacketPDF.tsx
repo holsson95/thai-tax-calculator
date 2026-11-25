@@ -1,10 +1,8 @@
 import { TAX_YEAR_CONFIG } from '../config/taxConfig';
 import { Document } from '@react-pdf/renderer';
-import { TaxFormData, TaxCalculationResult } from '../types/taxForm';
+import { TaxFormData } from '../types/taxForm';
 import { FreelancerFormData, FreelancerTaxResult } from '../types/freelancerForm';
-import { SoleProprietorFormData } from '../types/soleProprietorForm';
-import { CompanyOwnerFormData } from '../types/companyOwnerForm';
-import { calculateAnnualTax, calculateFreelancerTax } from '../utils/taxCalculations';
+import { calculatePacketResult, isFreelancerFlow, PacketFormData } from './packetResult';
 import { generateChecklist } from '../utils/checklistGenerator';
 
 import PDFCoverPage from './PDFCoverPage';
@@ -14,38 +12,18 @@ import PDFTaxCalculation from './PDFTaxCalculation';
 import PDFChecklist from './PDFChecklist';
 import PDFPreparerNotes from './PDFPreparerNotes';
 
-type AnyFormData =
-  | TaxFormData
-  | FreelancerFormData
-  | SoleProprietorFormData
-  | CompanyOwnerFormData;
+type AnyFormData = PacketFormData;
 
 interface TaxPacketPDFProps {
   formData: AnyFormData;
   taxYear?: number;
 }
 
-function isFreelancerLike(data: AnyFormData): data is FreelancerFormData {
-  return data.employmentType === 'freelancer' ||
-    data.employmentType === 'self-employed' ||
-    data.employmentType === 'sole_proprietor' ||
-    data.employmentType === 'business';
-}
-
 const TaxPacketPDF: React.FC<TaxPacketPDFProps> = ({ formData, taxYear = TAX_YEAR_CONFIG.CURRENT_TAX_YEAR }) => {
-  const isFreelancer = isFreelancerLike(formData);
+  const isFreelancer = isFreelancerFlow(formData);
 
-  let result: TaxCalculationResult | FreelancerTaxResult;
-  let breakdown: TaxCalculationResult['breakdown'] | undefined;
-
-  if (isFreelancer) {
-    result = calculateFreelancerTax(formData as FreelancerFormData);
-    breakdown = undefined;
-  } else {
-    const annualResult = calculateAnnualTax(formData as TaxFormData);
-    result = annualResult;
-    breakdown = annualResult.breakdown;
-  }
+  // Same engine the on-screen results used (retirees → freelancer, company owners → company owner).
+  const { result, breakdown } = calculatePacketResult(formData);
 
   const checklist = generateChecklist(formData);
 

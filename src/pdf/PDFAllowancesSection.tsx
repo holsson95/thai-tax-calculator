@@ -3,6 +3,7 @@ import { Page, Text, View } from '@react-pdf/renderer';
 import { TaxFormData, TaxBreakdown, TAX_CONSTANTS } from '../types/taxForm';
 import { FreelancerFormData, FreelancerTaxResult, ExpenseMethod } from '../types/freelancerForm';
 import { styles } from './pdfStyles';
+import { getChildAllowanceBreakdown } from '../utils/taxCalculations';
 
 function formatThb(amount: number): string {
   return 'THB ' + amount.toLocaleString('en-US', { maximumFractionDigits: 0 });
@@ -63,44 +64,29 @@ const PDFAllowancesSection: React.FC<PDFAllowancesSectionProps> = ({
       allowances.push({ label: 'Senior Citizen Allowance (65+)', amount: TAX_CONSTANTS.SENIOR_ALLOWANCE });
     }
     if (formData.children.length > 0) {
-      let childTotal = 0;
-      formData.children.forEach((c, i) => {
-        childTotal += TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-        if (i >= 1 && c.birthYear >= TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR) {
-          childTotal += TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS;
-        }
-      });
+      const childTotal = getChildAllowanceBreakdown(formData.children).reduce((sum, line) => sum + line.total, 0);
       allowances.push({ label: `Children's Allowance (${formData.children.length} child${formData.children.length !== 1 ? 'ren' : ''})`, amount: childTotal });
     }
     if (formData.numberOfParents > 0) {
-      allowances.push({ label: `Parent Support Allowance (${formData.numberOfParents})`, amount: formData.numberOfParents * TAX_CONSTANTS.PARENT_ALLOWANCE });
+      allowances.push({ label: `Parent Support Allowance (${formData.numberOfParents})`, amount: Math.min(formData.numberOfParents, TAX_CONSTANTS.MAX_PARENTS) * TAX_CONSTANTS.PARENT_ALLOWANCE });
     }
   }
   const totalAllowances = allowances.reduce((s, a) => s + a.amount, 0);
 
   // Build deductions list
   const deductions: { label: string; amount: number; cap?: string }[] = [];
-  if (breakdown) {
-    if (breakdown.standardDeduction) deductions.push({ label: 'Expense Deduction (50%, max THB100,000)', amount: breakdown.standardDeduction });
-    if (breakdown.socialSecurity) deductions.push({ label: 'Social Security Contributions', amount: breakdown.socialSecurity });
-    if (breakdown.lifeInsurance) deductions.push({ label: 'Life Insurance Premium', amount: breakdown.lifeInsurance, cap: 'max THB100,000' });
-    if (breakdown.healthInsurance) deductions.push({ label: 'Health Insurance Premium', amount: breakdown.healthInsurance, cap: 'max THB25,000' });
-    if (breakdown.pensionFund) deductions.push({ label: 'Pension Fund Contribution', amount: breakdown.pensionFund, cap: 'max THB500,000' });
-    if (breakdown.providentFund) deductions.push({ label: 'Provident Fund Contribution', amount: breakdown.providentFund, cap: 'max THB500,000' });
-    if (breakdown.rmf) deductions.push({ label: 'RMF (Retirement Mutual Fund)', amount: breakdown.rmf, cap: 'max THB500,000' });
-    if (breakdown.ssf) deductions.push({ label: 'SSF (Super Savings Fund)', amount: breakdown.ssf, cap: 'max THB200,000' });
-    if (breakdown.donations) deductions.push({ label: 'Charitable Donations', amount: breakdown.donations, cap: 'max 10% of income' });
-  } else {
-    if (formData.includeSocialSecurity && formData.socialSecurityContribution > 0) {
-      deductions.push({ label: 'Social Security Contributions', amount: formData.socialSecurityContribution });
-    }
-    if (formData.hasLifeInsurance && formData.lifeInsurance > 0) deductions.push({ label: 'Life Insurance Premium', amount: Math.min(formData.lifeInsurance, TAX_CONSTANTS.MAX_LIFE_INSURANCE), cap: 'max THB100,000' });
-    if (formData.hasHealthInsurance && formData.healthInsurance > 0) deductions.push({ label: 'Health Insurance Premium', amount: Math.min(formData.healthInsurance, TAX_CONSTANTS.MAX_HEALTH_INSURANCE), cap: 'max THB25,000' });
-    if (formData.hasPensionFund && formData.pensionFund > 0) deductions.push({ label: 'Pension Fund Contribution', amount: Math.min(formData.pensionFund, TAX_CONSTANTS.MAX_PENSION_FUND), cap: 'max THB500,000' });
-    if (formData.hasProvidentFund && formData.providentFund > 0) deductions.push({ label: 'Provident Fund Contribution', amount: Math.min(formData.providentFund, TAX_CONSTANTS.MAX_PROVIDENT_FUND), cap: 'max THB500,000' });
-    if (formData.hasRMF && formData.rmf > 0) deductions.push({ label: 'RMF (Retirement Mutual Fund)', amount: Math.min(formData.rmf, TAX_CONSTANTS.MAX_RMF), cap: 'max THB500,000' });
-    if (formData.hasSSF && formData.ssf > 0) deductions.push({ label: 'SSF (Super Savings Fund)', amount: Math.min(formData.ssf, TAX_CONSTANTS.MAX_SSF), cap: 'max THB200,000' });
-    if (formData.hasDonations && formData.donations > 0) deductions.push({ label: 'Charitable Donations', amount: formData.donations, cap: 'max 10% of income' });
+  // Capped amounts from the engine (individual caps, 500,000 combined retirement cap, donation cap).
+  const capped = breakdown ?? freelancerResult?.deductionBreakdown;
+  if (breakdown?.standardDeduction) deductions.push({ label: 'Expense Deduction (50%, max THB100,000)', amount: breakdown.standardDeduction });
+  if (capped) {
+    if (capped.socialSecurity) deductions.push({ label: 'Social Security Contributions', amount: capped.socialSecurity });
+    if (capped.lifeInsurance) deductions.push({ label: 'Life Insurance Premium', amount: capped.lifeInsurance, cap: 'max THB100,000' });
+    if (capped.healthInsurance) deductions.push({ label: 'Health Insurance Premium', amount: capped.healthInsurance, cap: 'max THB25,000' });
+    if (capped.pensionFund) deductions.push({ label: 'Pension Fund Contribution', amount: capped.pensionFund, cap: 'max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.providentFund) deductions.push({ label: 'Provident Fund Contribution', amount: capped.providentFund, cap: 'max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.rmf) deductions.push({ label: 'RMF (Retirement Mutual Fund)', amount: capped.rmf, cap: 'max THB500,000; retirement funds combined max THB500,000' });
+    if (capped.ssf) deductions.push({ label: 'SSF (Super Savings Fund)', amount: capped.ssf, cap: 'max THB200,000; retirement funds combined max THB500,000' });
+    if (capped.donations) deductions.push({ label: 'Charitable Donations', amount: capped.donations, cap: 'max 10% of income after other deductions' });
   }
   const totalDeductions = deductions.reduce((s, d) => s + d.amount, 0);
 
@@ -133,11 +119,10 @@ const PDFAllowancesSection: React.FC<PDFAllowancesSectionProps> = ({
               <Text style={[styles.tableHeaderCell, { width: 80, textAlign: 'right' }]}>Allowance</Text>
             </View>
             {formData.children.map((c, i) => {
-              const base = TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-              const bonus = (i >= 1 && c.birthYear >= TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR) ? TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS : 0;
+              const { base, bonus } = getChildAllowanceBreakdown(formData.children)[i];
               const notes = [
                 c.isStudent ? 'Full-time student (20–25)' : '',
-                bonus > 0 ? '+THB30,000 birth bonus (2nd+ child born 2018+)' : '',
+                bonus > 0 ? '+THB30,000 birth bonus (2nd+ child by birth order, born 2018+)' : '',
               ].filter(Boolean).join('; ') || '—';
               return (
                 <View key={i} style={[styles.tableRow, i % 2 === 1 ? styles.tableRowAlt : {}]}>

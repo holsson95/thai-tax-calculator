@@ -268,17 +268,22 @@ describe('calculateAnnualTurnover', () => {
     expect(calculateAnnualTurnover([])).toBe(0);
   });
 
-  it('sums all income regardless of type or month', () => {
+  it('sums business income from every month', () => {
     const entries: ThaiIncomeEntry[] = [
       createIncomeEntry({ grossAmount: 500000, monthReceived: 3 }),
       createIncomeEntry({ grossAmount: 800000, monthReceived: 9 }),
-      createIncomeEntry({
-        grossAmount: 600000,
-        incomeType: 'salary_40_1',
-        monthReceived: 6,
-      }),
     ];
-    expect(calculateAnnualTurnover(entries)).toBe(1900000);
+    expect(calculateAnnualTurnover(entries)).toBe(1300000);
+  });
+
+  it('excludes salary (40(1)) and dividends, which are not VAT turnover', () => {
+    const entries: ThaiIncomeEntry[] = [
+      createIncomeEntry({ grossAmount: 500000, monthReceived: 3 }),
+      createIncomeEntry({ grossAmount: 600000, incomeType: 'salary_40_1', monthReceived: 6 }),
+      createIncomeEntry({ grossAmount: 900000, incomeType: 'dividend', monthReceived: 4 }),
+      createIncomeEntry({ grossAmount: 100000, incomeType: 'rental_40_5', monthReceived: 2 }),
+    ];
+    expect(calculateAnnualTurnover(entries)).toBe(600000);
   });
 });
 

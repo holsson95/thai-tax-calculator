@@ -8,6 +8,7 @@ import {
   TAX_THRESHOLDS,
   PND94_QUALIFYING_INCOME_TYPES,
   TAX_YEAR_CONFIG,
+  VAT_CONFIG,
 } from '../config/taxConfig';
 import { TAX_BRACKETS } from '../types/taxForm';
 import { TAX_RULES } from '../config/taxRules';
@@ -104,11 +105,23 @@ export function checkPND94Obligation(
 }
 
 /**
- * Calculate total annual turnover for VAT registration check
- * Includes all Thai income entries regardless of type
+ * Income types that are not business turnover for VAT: employment pay
+ * (Section 40(1)) and dividends are not sales of goods or services.
+ * The VAT threshold applies to "taxable turnover"
+ * (tax-data/2026/vat-and-business-obligations.json#vat-registration-threshold).
+ * Before 2026-11-25 every Thai income entry counted, so a salaried freelancer
+ * could be told to register for VAT on the strength of their salary.
+ */
+const NON_TURNOVER_INCOME_TYPES: ReadonlySet<ThaiIncomeEntry['incomeType']> = new Set(['salary_40_1', 'dividend']);
+
+/**
+ * Calculate total annual business turnover for the VAT registration check.
+ * Excludes salary and dividends (see NON_TURNOVER_INCOME_TYPES).
  */
 export function calculateAnnualTurnover(entries: ThaiIncomeEntry[]): number {
-  return entries.reduce((sum, entry) => sum + entry.grossAmount, 0);
+  return entries
+    .filter(entry => !NON_TURNOVER_INCOME_TYPES.has(entry.incomeType))
+    .reduce((sum, entry) => sum + entry.grossAmount, 0);
 }
 
 /**
@@ -126,7 +139,7 @@ export function checkVATRegistration(
     required,
     turnover,
     threshold,
-    mustRegisterWithinDays: required ? 30 : 0,
+    mustRegisterWithinDays: required ? VAT_CONFIG.REGISTRATION_DEADLINE_DAYS : 0,
   };
 }
 

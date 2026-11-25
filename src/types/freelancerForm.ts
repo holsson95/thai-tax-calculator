@@ -219,6 +219,17 @@ export interface FreelancerTaxResult {
   expenseMethod: ExpenseMethod;
   totalAllowances: number;
   totalDeductions: number;
+  /** Social security, insurance, fund and donation deductions after all caps. */
+  deductionBreakdown: {
+    socialSecurity: number;
+    lifeInsurance: number;
+    healthInsurance: number;
+    pensionFund: number;
+    providentFund: number;
+    rmf: number;
+    ssf: number;
+    donations: number;
+  };
 
   // Tax computation
   taxableIncome: number;

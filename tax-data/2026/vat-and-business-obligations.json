@@ -15,7 +15,7 @@
       },
       "verified": true,
       "verification_notes": "rd.go.th confirms the legal mechanism (Section 81/1, exact figure set by Royal Decree) and multiple independent secondary sources (Stripe, Siam Legal, Forvis Mazars) converge on 1,800,000 THB as the current decree figure. The underlying Royal Decree's own text was not directly fetched, so treat as well-corroborated rather than fully primary-verified.",
-      "used_in": "src/config/taxConfig.ts:44 (TAX_THRESHOLDS.VAT_REGISTRATION); src/utils/obligationChecks.ts:117-130 (checkVATRegistration)"
+      "used_in": "src/utils/obligationChecks.ts (calculateAnnualTurnover, checkVATRegistration) — since 2026-11-25 turnover excludes Section 40(1) salary and dividends (app interpretation of 'taxable turnover': neither is a sale of goods or services). Rental and 'other' income are still counted; VAT-exempt categories such as residential rent are NOT modeled."
     },
     {
       "id": "vat-registration-deadline-days",

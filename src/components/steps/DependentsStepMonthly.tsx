@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MonthlyStepProps, ChildData, MONTHLY_TAX_CONSTANTS } from '../../types/taxForm';
+import { getChildAllowanceBreakdown } from '../../utils/taxCalculations';
+import { MonthlyStepProps, MONTHLY_TAX_CONSTANTS } from '../../types/taxForm';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
@@ -16,19 +17,11 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
     return age >= 20 && age <= 25;
   };
 
-  const calculateChildAllowance = (child: ChildData, index: number): number => {
-    let allowance = MONTHLY_TAX_CONSTANTS.CHILD_ALLOWANCE_BASE;
-    // Bonus for 2nd+ child born 2018 or later
-    if (index >= 1 && child.birthYear >= MONTHLY_TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR) {
-      allowance += MONTHLY_TAX_CONSTANTS.CHILD_ALLOWANCE_BONUS;
-    }
-    return allowance;
-  };
+  // Per-child allowance from the engine: the 2018+ bonus follows birth order, not entry order.
+  const childAllowances = getChildAllowanceBreakdown(formData.children);
 
   const getTotalChildAllowance = (): number => {
-    return formData.children.reduce((total, child, index) => {
-      return total + calculateChildAllowance(child, index);
-    }, 0);
+    return childAllowances.reduce((total, line) => total + line.total, 0);
   };
 
   const handleAddChild = () => {
@@ -144,8 +137,8 @@ const DependentsStepMonthly: React.FC<MonthlyStepProps> = ({ formData, setFormDa
               {formData.children.map((child, index) => {
                 const age = calculateAge(child.birthYear);
                 const showStudentOption = isStudentAgeRange(child.birthYear);
-                const allowance = calculateChildAllowance(child, index);
-                const hasBonus = index >= 1 && child.birthYear >= MONTHLY_TAX_CONSTANTS.CHILD_BONUS_BIRTH_YEAR;
+                const allowance = childAllowances[index]?.total ?? 0;
+                const hasBonus = (childAllowances[index]?.bonus ?? 0) > 0;
 
                 return (
                   <div key={index} className="bg-paper-white border border-paper-rule p-3 mb-3">

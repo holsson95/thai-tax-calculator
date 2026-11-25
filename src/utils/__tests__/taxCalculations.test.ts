@@ -170,22 +170,34 @@ describe('calculateDeductions', () => {
     expect(breakdown.healthInsurance).toBe(TAX_CONSTANTS.MAX_HEALTH_INSURANCE);
   });
 
-  it('caps retirement funds at their maximums', () => {
+  it.each([
+    ['pension', { hasPensionFund: true, pensionFund: 600000 }, 'pensionFund', TAX_CONSTANTS.MAX_PENSION_FUND],
+    ['provident', { hasProvidentFund: true, providentFund: 600000 }, 'providentFund', TAX_CONSTANTS.MAX_PROVIDENT_FUND],
+    ['RMF', { hasRMF: true, rmf: 600000 }, 'rmf', TAX_CONSTANTS.MAX_RMF],
+    ['SSF', { hasSSF: true, ssf: 300000 }, 'ssf', TAX_CONSTANTS.MAX_SSF],
+  ] as const)('caps the %s fund at its own maximum when claimed alone', (_label, fields, key, cap) => {
+    const breakdown = calculateDeductions(createBaseFormData(fields), 2000000);
+    expect(breakdown[key]).toBe(cap);
+  });
+
+  it('caps pension + provident + RMF + SSF together at 500,000, filling in form order', () => {
+    // tax-data/2026/deductions.json#combined-retirement-cap
     const formData = createBaseFormData({
       hasPensionFund: true,
-      pensionFund: 600000,
+      pensionFund: 200000,
       hasProvidentFund: true,
-      providentFund: 600000,
+      providentFund: 250000,
       hasRMF: true,
       rmf: 600000,
       hasSSF: true,
       ssf: 300000,
     });
     const breakdown = calculateDeductions(formData, 2000000);
-    expect(breakdown.pensionFund).toBe(TAX_CONSTANTS.MAX_PENSION_FUND);
-    expect(breakdown.providentFund).toBe(TAX_CONSTANTS.MAX_PROVIDENT_FUND);
-    expect(breakdown.rmf).toBe(TAX_CONSTANTS.MAX_RMF);
-    expect(breakdown.ssf).toBe(TAX_CONSTANTS.MAX_SSF);
+    expect(breakdown.pensionFund).toBe(200000);
+    expect(breakdown.providentFund).toBe(250000);
+    expect(breakdown.rmf).toBe(50000);
+    expect(breakdown.ssf).toBe(0);
+    expect(breakdown.pensionFund + breakdown.providentFund + breakdown.rmf + breakdown.ssf).toBe(500000);
   });
 
   it('limits donations to 10% of taxable income before donations', () => {
@@ -288,11 +300,13 @@ describe('calculateAnnualTax', () => {
     // Standard deduction: 100,000
     // Allowances: 60,000 + 60,000 + 30,000 + 120,000 = 270,000
     // Income after standard + allowances: 2,000,000 - 100,000 - 270,000 = 1,630,000
-    // Other deductions: 100,000 + 25,000 + 500,000 + 500,000 + 500,000 + 200,000 = 1,825,000
-    // Taxable: max(0, 1,630,000 - 1,825,000) = 0
+    // Other deductions: 100,000 life + 25,000 health + 500,000 retirement funds
+    //   (pension/provident/RMF/SSF claimed 1,700,000 but capped at 500,000 combined) = 625,000
+    // Taxable: 1,630,000 - 625,000 = 1,005,000
+    // Tax: 115,000 (up to 1M) + 5,000 x 25% = 116,250
     expect(result.totalAllowances).toBe(270000);
-    expect(result.taxableIncome).toBe(0); // Deductions exceed income after allowances
-    expect(result.taxOwed).toBe(0);
+    expect(result.taxableIncome).toBe(1005000);
+    expect(result.taxOwed).toBeCloseTo(116250, 6);
   });
 
   it('calculates refund when tax withheld exceeds tax owed', () => {
@@ -640,7 +654,7 @@ describe('calculateFreelancerTax', () => {
         isThaiResident: true,
         hasForeignIncome: true,
         foreignIncomeEntries: [
-          createForeignIncomeEntry(350000, '2024-03-01', '2024-04-15', 10000),
+          createForeignIncomeEntry(350000, '2024-03-01', '2026-04-15', 10000),
         ],
         thaiIncomeEntries: [
           createThaiIncomeEntry(500000, 'business_sales_40_8'),
@@ -686,7 +700,7 @@ describe('calculateFreelancerTax', () => {
         isThaiResident: false,
         hasForeignIncome: true,
         foreignIncomeEntries: [
-          createForeignIncomeEntry(350000, '2024-03-01', '2024-04-15'),
+          createForeignIncomeEntry(350000, '2024-03-01', '2026-04-15'),
         ],
         thaiIncomeEntries: [
           createThaiIncomeEntry(500000, 'business_sales_40_8'),
@@ -707,7 +721,7 @@ describe('calculateFreelancerTax', () => {
         isThaiResident: true,
         hasForeignIncome: true,
         foreignIncomeEntries: [
-          createForeignIncomeEntry(350000, '2023-06-01', '2024-04-15'), // Earned before 2024
+          createForeignIncomeEntry(350000, '2023-06-01', '2026-04-15'), // Earned before 2024
         ],
         thaiIncomeEntries: [
           createThaiIncomeEntry(500000, 'business_sales_40_8'),
@@ -944,7 +958,7 @@ describe('calculateFreelancerTax', () => {
         visaType: 'ltr_wealthy_global',
         hasForeignIncome: true,
         foreignIncomeEntries: [
-          createForeignIncomeEntry(1000000, '2024-03-01', '2024-04-15'),
+          createForeignIncomeEntry(1000000, '2024-03-01', '2026-04-15'),
         ],
         thaiIncomeEntries: [
           createThaiIncomeEntry(500000, 'business_sales_40_8'),
@@ -987,7 +1001,7 @@ describe('calculateFreelancerTax', () => {
         isThaiResident: true,
         hasForeignIncome: true,
         foreignIncomeEntries: [
-          createForeignIncomeEntry(500000, '2024-03-01', '2024-04-15'),
+          createForeignIncomeEntry(500000, '2024-03-01', '2026-04-15'),
         ],
         thaiIncomeEntries: [],
         expenseMethod: 'force_flat',
