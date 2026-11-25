@@ -92,6 +92,9 @@ const QuickTaxCalculator: React.FC<QuickTaxCalculatorProps> = ({ onResult }) => 
   }, []);
 
   const effectiveRate = result && annualIncome > 0 ? (result.annualTax / annualIncome) * 100 : 0;
+  const yearText = result ? fmt(result.annualTax) : '–––';
+  const monthText = result ? fmt(result.monthlyTax) : '–––';
+  const longFigures = Math.max(yearText.length, monthText.length) > 6;
 
   return (
     <div className="on-paper text-ink">
@@ -119,7 +122,7 @@ const QuickTaxCalculator: React.FC<QuickTaxCalculatorProps> = ({ onResult }) => 
       </fieldset>
 
       {/* 2 — income */}
-      <div className="mt-5">
+      <div className="mt-5 [container-type:inline-size]">
         <label htmlFor="quick-income" className="field-label block border-b-2 border-desk pb-1.5 mb-3">
           2 · {PERIOD_LABELS[period]} salary, in baht
         </label>
@@ -155,20 +158,24 @@ const QuickTaxCalculator: React.FC<QuickTaxCalculatorProps> = ({ onResult }) => 
       {/* 3 — result */}
       <div className="mt-5">
         <p className="field-label border-b-2 border-desk pb-1.5 mb-3">3 · Estimated Thai income tax</p>
-        <div className="relative border-2 border-desk" aria-live="polite">
-          <div className="grid grid-cols-2 divide-x-2 divide-desk">
-            <div className="px-4 py-3">
-              <p className="text-xs text-ink-mute">Per year</p>
-              <p className={`font-mono text-[34px] sm:text-[40px] font-bold leading-tight tabular-nums ${result ? 'text-ink' : 'text-ink-mute'}`}>
-                {result ? fmt(result.annualTax) : '–––'}
-              </p>
-            </div>
-            <div className="px-4 py-3">
-              <p className="text-xs text-ink-mute">Per month</p>
-              <p className={`font-mono text-[34px] sm:text-[40px] font-bold leading-tight tabular-nums ${result ? 'text-ink' : 'text-ink-mute'}`}>
-                {result ? fmt(result.monthlyTax) : '–––'}
-              </p>
-            </div>
+        <div className="relative border-2 border-desk [--fig-max:34px] sm:[--fig-max:40px]" aria-live="polite">
+          {/* Long figures stack on phones so each gets the full width; each figure also shrinks to fit its cell. */}
+          <div className={`grid ${longFigures ? 'grid-cols-1 divide-y-2 sm:grid-cols-2 sm:divide-y-0 sm:divide-x-2' : 'grid-cols-2 divide-x-2'} divide-desk`}>
+            {[
+              { label: 'Per year', text: yearText },
+              { label: 'Per month', text: monthText },
+            ].map(cell => (
+              <div key={cell.label} className="min-w-0 px-4 py-3 [container-type:inline-size]">
+                <p className="text-xs text-ink-mute">{cell.label}</p>
+                <p
+                  className={`whitespace-nowrap font-mono font-bold leading-tight tabular-nums ${result ? 'text-ink' : 'text-ink-mute'}`}
+                  // Monospace digits are ~0.6em wide: cap the size so the whole figure fits the cell.
+                  style={{ fontSize: `min(var(--fig-max), calc(100cqi / ${(cell.text.length * 0.62).toFixed(2)}))` }}
+                >
+                  {cell.text}
+                </p>
+              </div>
+            ))}
           </div>
           <div className="border-t-2 border-desk py-2 pl-4 pr-28 text-xs text-ink-soft sm:pr-4">
             {result ? (

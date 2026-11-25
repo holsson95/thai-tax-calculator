@@ -308,8 +308,10 @@
   /* Income typed into a row of boxed digit cells, like a paper form.
      JetBrains Mono advances 0.6em per glyph; letter-spacing pads each glyph to one cell. */
   .comb-input {
-    --cell: 40px;
-    --fs: 28px;
+    /* Nine cells that always fit the sheet: 40px boxes, shrinking on narrow phones so typed digits
+       stay lined up with the comb instead of scrolling out of it. */
+    --cell: min(40px, calc((100cqi - 2px) / 9));
+    --fs: calc(var(--cell) * 0.7);
     font-family: "JetBrains Mono Variable", ui-monospace, monospace;
     font-size: var(--fs);
     font-weight: 600;
@@ -335,7 +337,4 @@
   }
   .comb-input::placeholder { color: #A8AEC2; }
   .comb-input:focus { outline: none; background-color: #FEF8E1; }
-  @media (max-width: 420px) {
-    .comb-input { --cell: 32px; --fs: 22px; }
-  }
 }

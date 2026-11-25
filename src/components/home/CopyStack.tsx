@@ -109,8 +109,10 @@ const CopyStack: React.FC = () => {
         })}
       </div>
 
-      {/* The stack: every sheet shares one grid cell, so the tallest sets the height and nothing jumps. */}
-      <div className="grid grid-cols-[minmax(0,1fr)]">
+      {/* The stack: every sheet shares one grid cell. On desktop the tallest sets the height so nothing
+          jumps; below lg the sheets behind are taken out of flow, so the active sheet sets the height and
+          a short sheet doesn't leave a tall empty bottom on phones. */}
+      <div className="relative grid grid-cols-[minmax(0,1fr)]">
         {SHEETS.map((s, i) => {
           const depth = depthOf(i);
           const isActive = depth === 0;
@@ -124,7 +126,7 @@ const CopyStack: React.FC = () => {
               // React 18 has no typed `inert`; an empty string renders the boolean attribute.
               {...(!isActive ? ({ inert: '' } as Record<string, string>) : {})}
               style={{ zIndex: 20 - depth, gridArea: '1 / 1' }}
-              className={`${s.paper} ${FAN[depth]} min-w-0 origin-bottom-left px-5 pb-7 pt-6 text-ink shadow-sheet transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:px-8 sm:pt-7`}
+              className={`${s.paper} ${FAN[depth]} ${isActive ? '' : 'max-lg:absolute max-lg:inset-0 max-lg:overflow-hidden'} min-w-0 origin-bottom-left px-5 pb-7 pt-6 text-ink shadow-sheet transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] sm:px-8 sm:pt-7`}
             >
               <div className={isActive ? 'opacity-100 transition-opacity duration-200' : 'opacity-0'}>
                 {s.id === 'quick' && <QuickTaxCalculator onResult={onResult} />}
